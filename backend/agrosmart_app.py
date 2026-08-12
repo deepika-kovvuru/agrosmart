@@ -6,13 +6,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/')
 CORS(app)
 
-# ─────────────────────────────────────────
-# DATABASE CONFIGURATION
-# Priority: DATABASE_URL env var (Render PostgreSQL) → SQLite (local dev)
-# ─────────────────────────────────────────
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    if request.path.startswith('/api/') or request.path in [
+        '/signup', '/login', '/get_current_user', '/logout', '/profile', 
+        '/farm_details', '/crop_advisories', '/pest_alerts', '/treatments', 
+        '/market_prices', '/mandis', '/farm_schedule', '/farming_tips', '/news_articles'
+    ]:
+        return jsonify({'error': 'Not found'}), 404
+    relative_path = request.path.lstrip('/')
+    if relative_path and app.static_folder and os.path.exists(os.path.join(app.static_folder, relative_path)):
+        return app.send_static_file(relative_path)
+    return app.send_static_file('index.html')
+
 database_url = os.environ.get('DATABASE_URL', '')
 
 if database_url:

@@ -336,6 +336,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       obscureText: isPassword && !(passwordVisible ?? false),
       keyboardType: keyboardType,
       validator: validator,
+      enableSuggestions: false,
+      autocorrect: false,
       style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
       decoration: InputDecoration(
         hintText: hint.tr,

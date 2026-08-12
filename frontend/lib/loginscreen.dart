@@ -231,6 +231,8 @@ class _LoginScreenState extends State<LoginScreen>
                         TextFormField(
                           controller: _phoneCtrl,
                           keyboardType: TextInputType.emailAddress,
+                          enableSuggestions: false,
+                          autocorrect: false,
                           style: const TextStyle(
                               fontFamily: 'Poppins', fontSize: 14),
                           decoration: InputDecoration(
@@ -250,6 +252,8 @@ class _LoginScreenState extends State<LoginScreen>
                         TextFormField(
                           controller: _passCtrl,
                           obscureText: !_passwordVisible,
+                          enableSuggestions: false,
+                          autocorrect: false,
                           style: const TextStyle(
                               fontFamily: 'Poppins', fontSize: 14),
                           decoration: InputDecoration(

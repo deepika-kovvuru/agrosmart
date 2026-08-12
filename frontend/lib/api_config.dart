@@ -24,7 +24,7 @@ class ApiConfig {
   /// Falls back to primary URL if none respond.
   static Future<void> resolveBaseUrl() async {
     if (kIsWeb) {
-      _baseUrl = 'http://localhost:5000';
+      _baseUrl = 'https://agrosmart-app-service.onrender.com';
       return;
     }
 

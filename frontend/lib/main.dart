@@ -17,6 +17,7 @@ import 'translation_provider.dart';
 import 'api_config.dart';
 import 'connectivity_service.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -28,7 +29,9 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HttpOverrides.global = MyHttpOverrides();
+  if (!kIsWeb) {
+    HttpOverrides.global = MyHttpOverrides();
+  }
 
   // Initialize connectivity monitoring
   await ConnectivityService.instance.initialize();
