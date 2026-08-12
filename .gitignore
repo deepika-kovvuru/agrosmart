@@ -1,0 +1,44 @@
+# Dependency directories
+**/node_modules/
+**/.pnp/
+**/.pnp.js
+
+# Testing
+**/coverage/
+
+# Production
+**/build/
+**/dist/
+
+# IDEs and editors
+**/.idea/
+**/.vscode/
+**/*.iml
+**/*.ipr
+**/*.iws
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*.venv/
+**/venv/
+**/env/
+
+# Databases
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# Flutter
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+
+# Backups
+frontend_backup/
