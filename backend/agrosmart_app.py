@@ -171,7 +171,8 @@ def login():
         data = request.get_json()
         if not data or 'email' not in data or 'password' not in data:
             return jsonify({'error': 'Email and password required'}), 400
-        user = User.query.filter_by(email=data['email']).first()
+        # Try to find user by email OR phone number
+        user = User.query.filter((User.email == data['email']) | (User.phone == data['email'])).first()
         if not user or not check_password_hash(user.password, data['password']):
             return jsonify({'error': 'Invalid credentials'}), 401
         session = ActiveSession(email=user.email)
