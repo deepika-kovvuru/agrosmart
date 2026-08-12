@@ -715,9 +715,15 @@ def health():
     return jsonify({'status': 'ok', 'service': 'AGROSMART API'}), 200
 
 
+
+# ─────────────────────────────────────────
+# DATABASE INITIALIZATION (Runs in Gunicorn & Dev)
+# ─────────────────────────────────────────
+with app.app_context():
+    db.create_all()
+    _seed_static_data()
+
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        _seed_static_data()
     # use_reloader=False prevents the double-process issue that breaks localtunnel
     app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)
