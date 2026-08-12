@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 /// The URL is auto-resolved at app startup via [resolveBaseUrl].
 class ApiConfig {
   // Primary: public localtunnel URL (update this when starting a new tunnel)
-  static const String _primaryUrl = 'https://stale-hands-kick.loca.lt';
+  static const String _primaryUrl = 'https://soft-nights-sin.loca.lt';
 
   // Fallback candidates for local development / BlueStacks
   static const List<String> _fallbacks = [
