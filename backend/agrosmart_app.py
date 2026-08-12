@@ -161,6 +161,11 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User registered successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+
 @app.route('/test_db', methods=['GET'])
 def test_db():
     try:
@@ -171,6 +176,7 @@ def test_db():
         return jsonify(res), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 
 @app.route('/login', methods=['POST'])
