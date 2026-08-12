@@ -166,19 +166,6 @@ def signup():
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 
-@app.route('/test_db', methods=['GET'])
-def test_db():
-    try:
-        users = User.query.all()
-        res = []
-        for u in users:
-            res.append({'name': u.name, 'email': u.email, 'phone': u.phone})
-        return jsonify(res), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-
 @app.route('/login', methods=['POST'])
 def login():
     try:
