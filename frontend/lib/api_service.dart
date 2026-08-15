@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart' as path;
 import 'api_config.dart';
 import 'user_session.dart';
+
 
 class ApiService {
   static final Map<String, String> _headers = {
@@ -540,6 +544,45 @@ class ApiService {
       return {'success': false, 'error': decoded['error'] ?? 'AI request failed'};
     } catch (e) {
       return {'success': false, 'error': 'Connection failed: $e'};
+    }
+  }
+
+  static Future<Map<String, dynamic>> analyzeImage(File imageFile) async {
+    try {
+      final uri = Uri.parse('${ApiConfig.baseUrl}/api/analyze-image');
+      final request = http.MultipartRequest('POST', uri);
+      
+      request.headers.addAll({
+        'Accept': 'application/json',
+        'Bypass-Tunnel-Reminder': 'true',
+      });
+      
+      final ext = path.extension(imageFile.path).toLowerCase();
+      String mimeType = 'image/jpeg';
+      if (ext == '.png') {
+        mimeType = 'image/png';
+      } else if (ext == '.gif') {
+        mimeType = 'image/gif';
+      }
+      
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          imageFile.path,
+          contentType: MediaType.parse(mimeType),
+        ),
+      );
+      
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      final decoded = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return decoded;
+      }
+      return {'success': false, 'message': decoded['message'] ?? 'Image upload failed'};
+    } catch (e) {
+      return {'success': false, 'message': 'Image analysis failed: $e'};
     }
   }
 }

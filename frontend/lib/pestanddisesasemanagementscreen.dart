@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'app_theme.dart';
 import 'api_service.dart';
+import 'offline_api_service.dart';
 import 'user_session.dart';
 import 'translation_provider.dart';
 
@@ -45,57 +46,31 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
           _diagnosisResult = null;
         });
 
-        // Simulate AI analysis delay
-        await Future.delayed(const Duration(seconds: 2));
+        // Trigger dynamic image analysis through our offline-caching API service layer
+        final result = await OfflineApiService.analyzeImage(File(pickedFile.path));
 
-        setState(() {
-          _isIdentifying = false;
-          
-          final hash = pickedFile.path.hashCode.abs();
-          final choice = hash % 4;
-          
-          if (choice == 0) {
-            _diagnosisResult = {
-              'pest_name': 'Fall Armyworm'.tr,
-              'confidence': '${85 + (hash % 11)}%',
-              'description': 'The Fall Armyworm (Spodoptera frugiperda) is an insect pest that feeds on maize, rice, sorghum, sugarcane, and other crops. It causes severe damage to leaves and cobs.'.tr,
-              'treatment': 'Spray Chlorpyrifos 20% EC at 2ml/L of water. Alternatively, apply Neem oil (1500 ppm) at 5ml/L for organic prevention.'.tr,
-              'severity': 'High'.tr,
-              'severityColor': const Color(0xFFE63946),
-            };
-          } else if (choice == 1) {
-            _diagnosisResult = {
-              'pest_name': 'Bacterial Leaf Blight'.tr,
-              'confidence': '${88 + (hash % 8)}%',
-              'description': 'Bacterial Leaf Blight (caused by Xanthomonas oryzae) produces linear yellowing and drying of leaves starting from the tips, common in warm, humid weather.'.tr,
-              'treatment': 'Spray Streptocycline @ 0.1g/L combined with Copper Oxychloride @ 2g/L. Keep water levels low in the field for 3 days.'.tr,
-              'severity': 'High'.tr,
-              'severityColor': const Color(0xFFE63946),
-            };
-          } else if (choice == 2) {
-            _diagnosisResult = {
-              'pest_name': 'Whitefly Infestation'.tr,
-              'confidence': '${90 + (hash % 7)}%',
-              'description': 'Whiteflies suck sap from the undersides of leaves, causing leaf curling, yellowing, and secreting honeydew which attracts sooty mold.'.tr,
-              'treatment': 'Spray Acetamiprid 20% SP @ 0.2g/L or use yellow sticky traps (10 per acre). Avoid excessive nitrogen fertilizers.'.tr,
-              'severity': 'Medium'.tr,
-              'severityColor': const Color(0xFFFFB703),
-            };
-          } else {
-            _diagnosisResult = {
-              'pest_name': 'Early Blight'.tr,
-              'confidence': '${86 + (hash % 10)}%',
-              'description': 'Early Blight (caused by Alternaria solani) shows as brown concentric rings ("target board" pattern) on older leaves first, leading to defoliation.'.tr,
-              'treatment': 'Spray Chlorothalonil 75% WP @ 2g/L or Mancozeb @ 2.5g/L. Water at the base of the plant to prevent leaf splash.'.tr,
-              'severity': 'Medium'.tr,
-              'severityColor': const Color(0xFFFFB703),
-            };
-          }
-        });
+        if (mounted) {
+          setState(() {
+            _isIdentifying = false;
+            if (result['success'] == true) {
+              _diagnosisResult = result;
+            } else {
+              _diagnosisResult = {
+                'is_agricultural': false,
+                'category': 'unknown',
+                'confidence': 0.0,
+                'message': result['message'] ?? 'Image analysis failed.'.tr,
+              };
+            }
+          });
+        }
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
       if (mounted) {
+        setState(() {
+          _isIdentifying = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to access camera or gallery.'.tr),
@@ -704,132 +679,270 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
 
           // Diagnostic result card
           if (!_isIdentifying && _diagnosisResult != null) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                  ),
-                ],
-                border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.psychology_rounded, color: AppTheme.primary, size: 24),
-                      const SizedBox(width: 8),
-                      Text(
-                        'AI Diagnosis Result'.tr,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textPrimary,
-                          fontFamily: 'Poppins',
-                        ),
+            if (_diagnosisResult!['is_agricultural'] == false)
+              // Non-agricultural warning card (Face, Unknown, etc.)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF0F1), // soft light red
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFFFC1C5)),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, color: Color(0xFFD90429), size: 48),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Non-Agricultural Image Detected'.tr,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Color(0xFFD90429),
+                        fontFamily: 'Poppins',
                       ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _diagnosisResult!['severityColor'].withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _diagnosisResult!['severity'],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _diagnosisResult!['message'] ?? 'Please upload a crop, leaf, fruit, pest, soil, or farm image.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF2B2D42),
+                        height: 1.5,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Detected Category: ${_diagnosisResult!['category'].toString().toUpperCase()} (${(_diagnosisResult!['confidence'] * 100).round()}% confidence)'.tr,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              // Context-Specific Agricultural Result Card
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                    ),
+                  ],
+                  border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.psychology_rounded, color: AppTheme.primary, size: 24),
+                        const SizedBox(width: 8),
+                        Text(
+                          'AI Diagnosis Result'.tr,
                           style: TextStyle(
-                            color: _diagnosisResult!['severityColor'],
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary,
                             fontFamily: 'Poppins',
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 24),
-                  Row(
-                    children: [
-                      Text(
-                        _diagnosisResult!['pest_name'],
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textPrimary,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '(${_diagnosisResult!['confidence']})',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.success,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _diagnosisResult!['description'],
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppTheme.textSecondary,
-                      height: 1.5,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.healing_rounded, color: Color(0xFF2E7D32), size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Recommended Treatment'.tr,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2E7D32),
-                                fontFamily: 'Poppins',
-                              ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: (_diagnosisResult!['category'] == 'soil' || _diagnosisResult!['category'] == 'farm_field')
+                                ? AppTheme.primary.withValues(alpha: 0.1)
+                                : (_diagnosisResult!['analysis']['severity'] == 'High' ? const Color(0xFFE63946).withValues(alpha: 0.1) : const Color(0xFFFFB703).withValues(alpha: 0.1)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            ((_diagnosisResult!['category'] == 'soil' || _diagnosisResult!['category'] == 'farm_field')
+                                ? 'Healthy'.tr
+                                : _diagnosisResult!['analysis']['severity']).tr,
+                            style: TextStyle(
+                              color: (_diagnosisResult!['category'] == 'soil' || _diagnosisResult!['category'] == 'farm_field')
+                                  ? AppTheme.primary
+                                  : (_diagnosisResult!['analysis']['severity'] == 'High' ? const Color(0xFFE63946) : const Color(0xFFFFB703)),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                              fontFamily: 'Poppins',
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          _diagnosisResult!['treatment'],
-                          style: const TextStyle(
-                            fontSize: 12.5,
-                            color: Color(0xFF1B5E20),
-                            height: 1.5,
-                            fontFamily: 'Poppins',
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    const Divider(height: 24),
+                    
+                    // Render details according to category
+                    if (_diagnosisResult!['category'] == 'crop_leaf') ...[
+                      Row(
+                        children: [
+                          Text(
+                            _diagnosisResult!['analysis']['condition'].toString().tr,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.textPrimary,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '(${(_diagnosisResult!['confidence'] * 100).round()}%)',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.success,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Crop: ${cropToFriendly(_diagnosisResult!['crop'])}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Visible Symptoms:'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5, fontFamily: 'Poppins'),
+                      ),
+                      ...(_diagnosisResult!['analysis']['symptoms'] as List<dynamic>).map((sym) => Padding(
+                        padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.fiber_manual_record, size: 6, color: Colors.black54),
+                            const SizedBox(width: 6),
+                            Text(sym.toString().tr, style: const TextStyle(fontSize: 12, fontFamily: 'Poppins')),
+                          ],
+                        ),
+                      )),
+                      const SizedBox(height: 16),
+                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
+                    ]
+                    else if (_diagnosisResult!['category'] == 'pest_insect') ...[
+                      Row(
+                        children: [
+                          Text(
+                            _diagnosisResult!['analysis']['pest_name'].toString().tr,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.textPrimary,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '(${(_diagnosisResult!['confidence'] * 100).round()}%)',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.success,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Affected Crops: ${_diagnosisResult!['analysis']['affected_crops']}'.tr,
+                        style: const TextStyle(fontSize: 12.5, color: Colors.black87, fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Characteristics: ${_diagnosisResult!['analysis']['characteristics']}'.tr,
+                        style: const TextStyle(fontSize: 12.5, color: Colors.black54, fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
+                    ]
+                    else if (_diagnosisResult!['category'] == 'soil') ...[
+                      Text(
+                        'Soil Classification: ${_diagnosisResult!['analysis']['soil_type']}'.tr,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Estimated Condition: ${_diagnosisResult!['analysis']['condition']}'.tr,
+                        style: const TextStyle(fontSize: 12.5, color: Colors.black87, fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF8E1), // warning yellow background
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFFFD54F)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.info_outline, color: Color(0xFFF57F17), size: 16),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _diagnosisResult!['analysis']['concerns'].toString().tr,
+                                style: const TextStyle(fontSize: 11, color: Color(0xFF5D4037), height: 1.4, fontFamily: 'Poppins'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
+                    ]
+                    else if (_diagnosisResult!['category'] == 'farm_field') ...[
+                      Text(
+                        'Agricultural Field Analysis'.tr,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Canopy Coverage: ${_diagnosisResult!['analysis']['crop_coverage']}'.tr,
+                        style: const TextStyle(fontSize: 12.5, color: Colors.black87, fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Health Observation: ${_diagnosisResult!['analysis']['health_observation']}'.tr,
+                        style: const TextStyle(fontSize: 12.5, color: Colors.black54, fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Weed Presence: ${_diagnosisResult!['analysis']['weed_presence']}'.tr,
+                        style: const TextStyle(fontSize: 12.5, color: Colors.black54, fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
+                    ],
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 20),
             AppButton(
-              label: 'Scan Another Photo'.tr,
+              label: 'Scan Another Image'.tr,
               isOutlined: true,
               icon: Icons.refresh_rounded,
               onTap: _clearImage,
@@ -838,6 +951,51 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
         ],
       ),
     );
+  }
+
+  Widget _buildTreatmentBox(String recommendation) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F5E9),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.healing_rounded, color: Color(0xFF2E7D32), size: 18),
+              const SizedBox(width: 6),
+              Text(
+                'Recommended Guidelines'.tr,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2E7D32),
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            recommendation.tr,
+            style: const TextStyle(
+              fontSize: 12.5,
+              color: Color(0xFF1B5E20),
+              height: 1.5,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String cropToFriendly(String? crop) {
+    if (crop == null) return 'N/A';
+    return crop.tr;
   }
 }
 
