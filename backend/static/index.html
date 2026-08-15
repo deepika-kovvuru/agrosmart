@@ -1,38 +1,686 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="/">
-
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="frontend">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>frontend</title>
-  <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrosmart - Connected Mobile Client</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+    <!-- Toast Notifications (inside body for global overlay) -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Centered Phone Device Wrapper -->
+    <div class="device-wrapper">
+        <div class="phone-frame">
+            <!-- Mock Phone Status Bar -->
+            <div class="phone-status-bar">
+                <span class="status-time" id="status-time">18:16</span>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>🛜</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Scrollable App Screen Viewport -->
+            <div class="phone-viewport">
+
+                <!-- 1. SPLASH SCREEN -->
+                <section id="screen-splash" class="screen-view active">
+                    <div class="splash-content">
+                        <div class="splash-logo-ripple">
+                            <div class="ripple-ring r1"></div>
+                            <div class="ripple-ring r2"></div>
+                            <div class="splash-logo-box">🌾</div>
+                        </div>
+                        <h2>Agrosmart</h2>
+                        <p>Smart Farming Solution</p>
+                    </div>
+                </section>
+
+                <!-- 2. ONBOARDING SCREEN -->
+                <section id="screen-onboarding" class="screen-view">
+                    <div class="onboarding-carousel">
+                        <div class="onboarding-slides">
+                            <!-- Slide 1 -->
+                            <div class="onboarding-slide active" data-slide="0">
+                                <div class="onboarding-img">🚜</div>
+                                <h2>Real-time Advisory</h2>
+                                <p>Get hyper-local advisories, weather updates, and expert recommendations directly on your phone.</p>
+                            </div>
+                            <!-- Slide 2 -->
+                            <div class="onboarding-slide" data-slide="1">
+                                <div class="onboarding-img">📊</div>
+                                <h2>Market Pricing</h2>
+                                <p>Track live commodity prices across various Mandis to get the best return for your yield.</p>
+                            </div>
+                            <!-- Slide 3 -->
+                            <div class="onboarding-slide" data-slide="2">
+                                <div class="onboarding-img">🛡️</div>
+                                <h2>Pest Protection</h2>
+                                <p>Identify pests, get disease warnings, and receive organic or chemical treatment guides.</p>
+                            </div>
+                        </div>
+                        <div class="onboarding-dots">
+                            <span class="dot active"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                        <div class="onboarding-actions">
+                            <button id="onboarding-btn" class="btn primary-btn">Next</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. LOGIN SCREEN -->
+                <section id="screen-login" class="screen-view">
+                    <div class="auth-header">
+                        <h2>Sign In</h2>
+                        <p>Enter your credentials to continue</p>
+                    </div>
+                    <div class="auth-form-wrapper">
+                        <form id="login-form">
+                            <div class="input-group">
+                                <label for="login-email">Mobile / Email</label>
+                                <input type="text" id="login-email" required placeholder="Enter mobile or email">
+                            </div>
+                            <div class="input-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" required placeholder="Enter password">
+                            </div>
+                            <div class="auth-options">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" checked> Remember me
+                                </label>
+                                <span class="forgot-pass-link">Forgot Password?</span>
+                            </div>
+                            <button type="submit" class="btn primary-btn w-full">Sign In</button>
+                        </form>
+                        <p class="auth-switch">Don't have an account? <span id="btn-to-register">Register here</span></p>
+                    </div>
+                </section>
+
+                <!-- 4. REGISTER SCREEN -->
+                <section id="screen-register" class="screen-view">
+                    <div class="auth-header">
+                        <h2>Create Account</h2>
+                        <p>Join thousands of smart farmers today</p>
+                    </div>
+                    <div class="auth-form-wrapper">
+                        <form id="register-form">
+                            <div class="input-group">
+                                <label for="register-username">Full Name</label>
+                                <input type="text" id="register-username" required placeholder="Enter full name">
+                            </div>
+                            <div class="input-group">
+                                <label for="register-email">Email Address</label>
+                                <input type="email" id="register-email" required placeholder="Enter email">
+                            </div>
+                            <div class="input-group">
+                                <label for="register-phone">Phone Number</label>
+                                <input type="tel" id="register-phone" required placeholder="Enter phone number">
+                            </div>
+                            <div class="input-group">
+                                <label for="register-state">State / Region</label>
+                                <input type="text" id="register-state" required placeholder="Enter state (e.g. Kurnool)">
+                            </div>
+                            <div class="input-group">
+                                <label for="register-password">Password</label>
+                                <input type="password" id="register-password" required placeholder="Enter password">
+                            </div>
+                            <button type="submit" class="btn primary-btn w-full">Create Account</button>
+                        </form>
+                        <p class="auth-switch">Already have an account? <span id="btn-to-login">Sign in here</span></p>
+                    </div>
+                </section>
+
+                <!-- 5. HOME SCREEN -->
+                <section id="screen-home" class="screen-view">
+                    <!-- Home Header -->
+                    <div class="mobile-header">
+                        <div class="user-profile-row">
+                            <div class="user-avatar" id="avatar-btn">👤</div>
+                            <div class="user-greeting-col">
+                                <span class="sub-greeting">Welcome back,</span>
+                                <h3 id="user-greeting-name">Farmer</h3>
+                            </div>
+                            <div class="loc-badge">
+                                📍 <span id="user-greeting-loc">Kurnool</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screen-content-padding">
+                        <!-- Weather Widget Card -->
+                        <div class="mobile-card weather-card">
+                            <div class="weather-top">
+                                <span class="weather-big-icon">🌤️</span>
+                                <div class="weather-col">
+                                    <h3>31°C</h3>
+                                    <p>Partly Cloudy · Humidity 58%</p>
+                                </div>
+                            </div>
+                            <div class="weather-bottom">
+                                <div class="weather-day">
+                                    <span>Mon</span><span>☀️</span><span>32°C</span>
+                                </div>
+                                <div class="weather-day">
+                                    <span>Tue</span><span>🌧️</span><span>28°C</span>
+                                </div>
+                                <div class="weather-day">
+                                    <span>Wed</span><span>🌧️</span><span>29°C</span>
+                                </div>
+                                <div class="weather-day">
+                                    <span>Thu</span><span>⛅</span><span>30°C</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions Grid -->
+                        <div class="quick-grid mt-16">
+                            <div class="quick-item" data-route="crop_advisory">
+                                <div class="quick-icon-box q-green">🌾</div>
+                                <span>Advisory</span>
+                            </div>
+                            <div class="quick-item" data-route="pest">
+                                <div class="quick-icon-box q-red">🐛</div>
+                                <span>Pest Alert</span>
+                            </div>
+                            <div class="quick-item" data-route="market">
+                                <div class="quick-icon-box q-indigo">📊</div>
+                                <span>Market</span>
+                            </div>
+                            <div class="quick-item" data-route="tips">
+                                <div class="quick-icon-box q-gold">📰</div>
+                                <span>News & Tips</span>
+                            </div>
+                        </div>
+
+                        <!-- Home Summary Lists -->
+                        <div class="section-title-row mt-20">
+                            <h3>Active Area Alerts</h3>
+                        </div>
+                        <div id="home-pest-alerts" class="mobile-list-wrapper mt-8">
+                            <!-- Dynamically loaded -->
+                        </div>
+
+                        <div class="section-title-row mt-20">
+                            <h3>Mandi Prices Snapshot</h3>
+                        </div>
+                        <div id="home-market-prices" class="mobile-list-wrapper mt-8">
+                            <!-- Dynamically loaded -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. CROP ADVISORY SCREEN -->
+                <section id="screen-crop_advisory" class="screen-view">
+                    <div class="mobile-app-bar ab-green">
+                        <button class="back-btn">⬅</button>
+                        <h3>Crop Advisory</h3>
+                        <div class="ab-badge" id="advisory-loc-badge">Kurnool</div>
+                    </div>
+                    
+                    <div class="crop-advisory-subheader">
+                        <!-- Crop chips -->
+                        <div class="crop-chips-scroll">
+                            <button class="crop-chip active" data-crop="Paddy">Paddy</button>
+                            <button class="crop-chip" data-crop="Maize">Maize</button>
+                            <button class="crop-chip" data-crop="Groundnut">Groundnut</button>
+                            <button class="crop-chip" data-crop="Cotton">Cotton</button>
+                            <button class="crop-chip" data-crop="Soybean">Soybean</button>
+                        </div>
+                        <div class="crop-stats-row">
+                            <div class="c-stat-col">
+                                <span>Growth Stage</span>
+                                <strong>Vegetative V5</strong>
+                            </div>
+                            <div class="c-stat-col border-x">
+                                <span>Health Score</span>
+                                <strong style="color:var(--success)">87/100 🟢</strong>
+                            </div>
+                            <div class="c-stat-col">
+                                <span>Next Action</span>
+                                <strong>Irrigate</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs Header -->
+                    <div class="mobile-tabs ab-green-tabs">
+                        <button class="tab-item active" data-tab="advisory">Advisory</button>
+                        <button class="tab-item" data-tab="schedule">Schedule</button>
+                        <button class="tab-item" data-tab="history">History</button>
+                    </div>
+
+                    <div class="screen-content-padding">
+                        <!-- Advisory Tab -->
+                        <div id="tabview-advisory" class="tabview active">
+                            <div class="ai-banner">
+                                <div class="ai-banner-text">
+                                    <h4>🤖 AI Recommendation</h4>
+                                    <p id="ai-banner-desc">Based on current weather & soil data, your crop needs attention.</p>
+                                </div>
+                                <span class="ai-banner-emoji">🌾</span>
+                            </div>
+                            <div id="advisory-list" class="mobile-list-wrapper mt-16">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Schedule Tab -->
+                        <div id="tabview-schedule" class="tabview">
+                            <div class="flex-space-between mb-12">
+                                <h4 style="font-weight:700;">Upcoming Activities</h4>
+                                <button id="btn-add-activity" class="btn outline-btn btn-xs">➕ Add Task</button>
+                            </div>
+                            <div id="schedule-list" class="mobile-list-wrapper">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- History Tab -->
+                        <div id="tabview-history" class="tabview">
+                            <div class="empty-state">
+                                📋
+                                <h4>Advisory History</h4>
+                                <p>Past 30 days of farm logs are empty.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ask AI Floating Action Button -->
+                    <button id="floating-ask-ai" class="floating-fab">
+                        🤖 Ask AI
+                    </button>
+                </section>
+
+                <!-- 7. PEST SCREEN -->
+                <section id="screen-pest" class="screen-view">
+                    <div class="mobile-app-bar ab-red">
+                        <button class="back-btn">⬅</button>
+                        <h3>Pest & Disease</h3>
+                        <div class="ab-badge">Outbreaks</div>
+                    </div>
+
+                    <div class="pest-subheader">
+                        <div class="risk-card">
+                            <span class="risk-emoji">⚠️</span>
+                            <div class="risk-details">
+                                <h4 id="risk-level-label">District Risk: MEDIUM</h4>
+                                <p id="risk-region-label">Kurnool district · Live</p>
+                            </div>
+                            <button class="btn btn-xs outline-btn" style="border-color:white;color:white;">View Map</button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs Header -->
+                    <div class="mobile-tabs ab-red-tabs">
+                        <button class="tab-item active" data-tab="pest-alerts">Active Alerts</button>
+                        <button class="tab-item" data-tab="treatments">Treatments</button>
+                        <button class="tab-item" data-tab="identify">Identify</button>
+                    </div>
+
+                    <div class="screen-content-padding">
+                        <!-- Alerts Tab -->
+                        <div id="tabview-pest-alerts" class="tabview active">
+                            <div class="ai-banner pb-banner">
+                                <span>🛡️</span>
+                                <div class="ai-banner-text">
+                                    <h4>Prevention Strategy</h4>
+                                    <p>Scout fields twice a week during this high-humidity period.</p>
+                                </div>
+                            </div>
+                            <div id="pest-alerts-list" class="mobile-list-wrapper mt-16">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Treatments Tab -->
+                        <div id="tabview-treatments" class="tabview">
+                            <div id="treatments-list" class="mobile-list-wrapper">
+                                <!-- Loaded dynamically -->
+                            </div>
+                            <div class="alert-info-box mt-16">
+                                ⚠️ Always wear protective gear when handling chemical sprays.
+                            </div>
+                        </div>
+
+                        <!-- Identify Tab -->
+                        <div id="tabview-identify" class="tabview">
+                            <div class="identify-camera-box">
+                                <span class="camera-icon">📷</span>
+                                <h4>Take a Photo</h4>
+                                <p>Capture affected leaves or stems for instant AI disease identification.</p>
+                            </div>
+                            <button class="btn primary-btn w-full mt-16">Open Camera</button>
+                            <button class="btn outline-btn w-full mt-8">Upload from Gallery</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. MARKET SCREEN -->
+                <section id="screen-market" class="screen-view">
+                    <div class="mobile-app-bar ab-indigo">
+                        <button class="back-btn">⬅</button>
+                        <h3>Market Prices</h3>
+                        <div class="ab-badge">Live</div>
+                    </div>
+
+                    <div class="market-subheader" style="padding: 12px 16px;">
+                        <div class="mandi-dropdown-row" style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: bold; min-width: 60px;">📍 State:</span>
+                            <select id="state-select" style="flex: 1; border-radius: 8px; padding: 6px 12px; font-weight: 600; border: 1px solid var(--border-color); background: white;">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                        <div class="mandi-dropdown-row" style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: bold; min-width: 60px;">🏪 Mandi:</span>
+                            <select id="mandi-select" style="flex: 1; border-radius: 8px; padding: 6px 12px; font-weight: 600; border: 1px solid var(--border-color); background: white;">
+                                <option value="">Select Mandi</option>
+                            </select>
+                        </div>
+                        <p class="mandi-timestamp" id="market-last-updated" style="margin-top: 8px; font-size: 11px; color: var(--text-light); text-align: left;"></p>
+                    </div>
+
+                    <div class="screen-content-padding">
+                        <!-- Stat chips row -->
+                        <div class="market-stats-row mb-12">
+                            <div class="market-stat-chip up" id="market-stat-rising">▲ 3 Rising</div>
+                            <div class="market-stat-chip down" id="market-stat-falling">▼ 1 Falling</div>
+                            <div class="market-stat-chip stable" id="market-stat-stable">= 0 Stable</div>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div class="search-bar">
+                            <span>🔍</span>
+                            <input type="text" id="market-search" placeholder="Search commodity...">
+                        </div>
+
+                        <!-- Category filters scrolling -->
+                        <div class="category-chips-scroll mt-12">
+                            <button class="category-chip active" data-cat="All">All</button>
+                            <button class="category-chip" data-cat="Cereals">Cereals</button>
+                            <button class="category-chip" data-cat="Pulses">Pulses</button>
+                            <button class="category-chip" data-cat="Oilseed">Oilseed</button>
+                            <button class="category-chip" data-cat="Vegetables">Vegetables</button>
+                            <button class="category-chip" data-cat="Fruits">Fruits</button>
+                        </div>
+
+                        <div id="market-prices-list" class="mobile-list-wrapper mt-16">
+                            <!-- Loaded dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. TIPS SCREEN -->
+                <section id="screen-tips" class="screen-view">
+                    <div class="mobile-app-bar ab-darkgreen">
+                        <button class="back-btn">⬅</button>
+                        <h3>Tips & News</h3>
+                        <div class="ab-badge">Feeds</div>
+                    </div>
+
+                    <!-- Tabs Header -->
+                    <div class="mobile-tabs ab-darkgreen-tabs">
+                        <button class="tab-item active" data-tab="news">Latest News</button>
+                        <button class="tab-item" data-tab="tips">Expert Tips</button>
+                    </div>
+
+                    <div class="screen-content-padding">
+                        <!-- News Tab -->
+                        <div id="tabview-news" class="tabview active">
+                            <!-- Featured News Card -->
+                            <div id="featured-news-container">
+                                <!-- Loaded dynamically -->
+                            </div>
+                            <div id="news-list" class="mobile-list-wrapper mt-16">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Tips Tab -->
+                        <div id="tabview-tips" class="tabview">
+                            <div class="tip-advisory-card">
+                                💡 Daily Smart Tip
+                                <p>Early weeding reduces nutrient competition by up to 40%.</p>
+                            </div>
+                            <div id="tips-deck" class="mobile-list-wrapper mt-12">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. PROFILE SCREEN -->
+                <section id="screen-profile" class="screen-view">
+                    <div class="mobile-app-bar ab-darkgreen">
+                        <button class="back-btn">⬅</button>
+                        <h3>Profile</h3>
+                        <div class="ab-badge">Settings</div>
+                    </div>
+
+                    <div class="profile-header-card">
+                        <div class="profile-big-avatar">👤</div>
+                        <h3 id="profile-card-name">Farmer Name</h3>
+                        <p id="profile-card-email">farmer@example.com</p>
+                    </div>
+
+                    <div class="screen-content-padding">
+                        <div class="settings-list">
+                            <!-- Personal Info Toggle -->
+                            <div class="settings-item" id="settings-personal-btn">
+                                <div class="settings-item-left">
+                                    <span>👤</span>
+                                    <div>
+                                        <h4>Personal Information</h4>
+                                        <p>Manage your login and contact details</p>
+                                    </div>
+                                </div>
+                                <span>➔</span>
+                            </div>
+
+                            <!-- Farm details Toggle -->
+                            <div class="settings-item" id="settings-farm-btn">
+                                <div class="settings-item-left">
+                                    <span>🌾</span>
+                                    <div>
+                                        <h4>Farm Specifications</h4>
+                                        <p>Land area, crops, soil, and irrigation</p>
+                                    </div>
+                                </div>
+                                <span>➔</span>
+                            </div>
+
+                             <!-- Language selector -->
+                             <div class="settings-item">
+                                 <div class="settings-item-left">
+                                     <span>🌐</span>
+                                     <div>
+                                         <h4 id="settings-lang-title">Language</h4>
+                                         <p id="settings-lang-desc">Choose your preferred language</p>
+                                     </div>
+                                 </div>
+                                 <select id="web-lang-select" style="border:none;background:transparent;color:var(--primary);font-weight:700;font-size:12px;outline:none;cursor:pointer;">
+                                     <option value="0">English</option>
+                                     <option value="1">Assamese (অসমীয়া)</option>
+                                     <option value="2">Bengali (বাংলা)</option>
+                                     <option value="3">Bodo (बर')</option>
+                                     <option value="4">Dogri (डोगरी)</option>
+                                     <option value="5">Gujarati (ગુજરાતી)</option>
+                                     <option value="6">Hindi (हिन्दी)</option>
+                                     <option value="7">Kannada (ಕನ್ನಡ)</option>
+                                     <option value="8">Kashmiri (کٲशुर)</option>
+                                     <option value="9">Konkani (कोंकणी)</option>
+                                     <option value="10">Maithili (मैथिली)</option>
+                                     <option value="11">Malayalam (മലയാളം)</option>
+                                     <option value="12">Manipuri (মৈতৈলোন)</option>
+                                     <option value="13">Marathi (मराठी)</option>
+                                     <option value="14">Nepali (नेपाली)</option>
+                                     <option value="15">Odia (ଓଡ଼ିଆ)</option>
+                                     <option value="16">Punjabi (ਪੰਜਾਬੀ)</option>
+                                     <option value="17">Sanskrit (संस्कृतम्)</option>
+                                     <option value="18">Santali (संताली)</option>
+                                     <option value="19">Sindhi (सिन्धी)</option>
+                                     <option value="20">Tamil (தமிழ்)</option>
+                                     <option value="21">Telugu (తెలుగు)</option>
+                                     <option value="22">Urdu (اردو)</option>
+                                 </select>
+                             </div>
+
+                             <!-- Dark Mode Toggle -->
+                             <div class="settings-item">
+                                 <div class="settings-item-left">
+                                     <span>🌙</span>
+                                     <div>
+                                         <h4 id="settings-dark-title">Dark Mode</h4>
+                                         <p id="settings-dark-desc">Toggle light and dark appearance</p>
+                                     </div>
+                                 </div>
+                                 <label class="switch-container" style="position:relative;display:inline-block;width:40px;height:22px;">
+                                     <input type="checkbox" id="web-dark-toggle" style="opacity:0;width:0;height:0;">
+                                     <span class="slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.4s;border-radius:22px;"></span>
+                                 </label>
+                             </div>
+
+                            <!-- Log Out button -->
+                            <div class="settings-item logout" id="settings-logout-btn">
+                                <div class="settings-item-left">
+                                    <span>🚪</span>
+                                    <div>
+                                        <h4 style="color:var(--error);" id="settings-logout-title">Log Out</h4>
+                                        <p id="settings-logout-desc">Exit your active session</p>
+                                    </div>
+                                </div>
+                                <span>➔</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SUB-PAGES (Sliding Overlays for Profile editing) -->
+                <!-- Personal Info Panel -->
+                <div id="panel-personal-info" class="sliding-overlay">
+                    <div class="mobile-app-bar ab-darkgreen">
+                        <button class="overlay-close-btn" data-overlay="personal-info">⬅</button>
+                        <h3>Personal Info</h3>
+                        <button id="btn-save-personal" class="btn btn-xs outline-btn" style="border-color:white;color:white;">Save</button>
+                    </div>
+                    <div class="screen-content-padding">
+                        <form id="profile-info-form" class="overlay-form">
+                            <div class="input-group">
+                                <label for="profile-username">Full Name</label>
+                                <input type="text" id="profile-username" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-email">Email Address</label>
+                                <input type="email" id="profile-email" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-phone">Phone Number</label>
+                                <input type="tel" id="profile-phone" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-state">State / Region</label>
+                                <input type="text" id="profile-state" required>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Farm details Panel -->
+                <div id="panel-farm-details" class="sliding-overlay">
+                    <div class="mobile-app-bar ab-darkgreen">
+                        <button class="overlay-close-btn" data-overlay="farm-details">⬅</button>
+                        <h3>Farm Specifications</h3>
+                        <button id="btn-save-farm" class="btn btn-xs outline-btn" style="border-color:white;color:white;">Save</button>
+                    </div>
+                    <div class="screen-content-padding">
+                        <form id="profile-farm-form" class="overlay-form">
+                            <div class="input-group">
+                                <label for="profile-land-area">Land Area (Acres)</label>
+                                <input type="number" id="profile-land-area" step="0.1" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-crops">Primary Crops</label>
+                                <input type="text" id="profile-crops" required placeholder="e.g. Paddy, Maize">
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-soil">Soil Type</label>
+                                <select id="profile-soil">
+                                    <option value="Black Soil">Black Soil</option>
+                                    <option value="Red Soil">Red Soil</option>
+                                    <option value="Alluvial Soil">Alluvial Soil</option>
+                                    <option value="Sandy Loam">Sandy Loam</option>
+                                    <option value="Clayey">Clayey</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-irrigation">Irrigation Source</label>
+                                <select id="profile-irrigation">
+                                    <option value="Borewell">Borewell</option>
+                                    <option value="Canal Irrigation">Canal Irrigation</option>
+                                    <option value="Drip Irrigation">Drip Irrigation</option>
+                                    <option value="Rainfed">Rainfed</option>
+                                    <option value="Sprinkler">Sprinkler</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Schedule Dialog Overlay -->
+    <div id="schedule-dialog-overlay" class="dialog-overlay hidden">
+        <div class="dialog-card">
+            <h3>Add Farm Activity</h3>
+            <form id="schedule-dialog-form">
+                <div class="input-group">
+                    <label for="schedule-dialog-activity">Activity Name</label>
+                    <input type="text" id="schedule-dialog-activity" required placeholder="e.g. Weed control, Fertilization">
+                </div>
+                <div class="input-group">
+                    <label for="schedule-dialog-date">Scheduled Date & Time</label>
+                    <input type="datetime-local" id="schedule-dialog-date" required>
+                </div>
+                <div class="dialog-actions">
+                    <button type="button" id="schedule-dialog-cancel" class="btn outline-btn btn-sm">Cancel</button>
+                    <button type="submit" class="btn primary-btn btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Price History Chart Dialog Overlay -->
+    <div id="chart-dialog-overlay" class="dialog-overlay hidden">
+        <div class="dialog-card" style="width: 360px; max-width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 id="chart-crop-title" style="margin: 0; font-size: 16px;">Crop Price Trend</h3>
+                <button type="button" id="chart-dialog-close" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary);">✖</button>
+            </div>
+            <p id="chart-mandi-subtitle" style="font-size: 11px; color: var(--text-light); margin-bottom: 12px; margin-top: -6px;"></p>
+            
+            <!-- Time period selector -->
+            <div class="category-chips-scroll" style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <button class="category-chip active chart-period-btn" data-days="1">1 Day</button>
+                <button class="category-chip chart-period-btn" data-days="7">7 Days</button>
+                <button class="category-chip chart-period-btn" data-days="30">30 Days</button>
+            </div>
+            
+            <div style="height: 200px; width: 100%; position: relative;">
+                <canvas id="crop-history-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

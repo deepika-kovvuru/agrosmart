@@ -77,16 +77,63 @@ class FarmDetail(db.Model):
     region        = db.Column(db.String(255), nullable=True)
     updated_at    = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class State(db.Model):
+    __tablename__ = 'states'
+    id         = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    state_name = db.Column(db.String(100), unique=True, nullable=False)
+
+class Mandi(db.Model):
+    __tablename__ = 'mandis'
+    id         = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    mandi_name = db.Column(db.String(255), nullable=False)
+    state_id   = db.Column(db.Integer, db.ForeignKey('states.id'), nullable=False)
+    district   = db.Column(db.String(100), nullable=True)
+    location   = db.Column(db.String(255), nullable=True)
+    
+    state_rel  = db.relationship('State', backref='mandis')
+
+class Crop(db.Model):
+    __tablename__ = 'crops'
+    id        = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crop_name = db.Column(db.String(100), unique=True, nullable=False)
+    category  = db.Column(db.String(50), nullable=True)
+
 class MarketPrice(db.Model):
     __tablename__ = 'market_prices'
-    id         = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    mandi      = db.Column(db.String(100), nullable=False)
-    commodity  = db.Column(db.String(100), nullable=False)
-    category   = db.Column(db.String(50),  nullable=False)
-    price      = db.Column(db.Numeric(10, 2), nullable=False)
-    prev_price = db.Column(db.Numeric(10, 2), nullable=False)
-    unit       = db.Column(db.String(20), default='qtl')
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id             = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    mandi_id       = db.Column(db.Integer, db.ForeignKey('mandis.id'), nullable=False)
+    crop_id        = db.Column(db.Integer, db.ForeignKey('crops.id'), nullable=False)
+    minimum_price  = db.Column(db.Float, nullable=True)
+    maximum_price  = db.Column(db.Float, nullable=True)
+    modal_price    = db.Column(db.Float, nullable=True)
+    previous_price = db.Column(db.Float, nullable=False)
+    current_price  = db.Column(db.Float, nullable=False)
+    price_date     = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    updated_at     = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    unit           = db.Column(db.String(20), default='₹/quintal')
+
+    mandi_rel = db.relationship('Mandi', backref='prices')
+    crop_rel = db.relationship('Crop', backref='prices')
+
+    @property
+    def mandi(self):
+        return self.mandi_rel.mandi_name if self.mandi_rel else ""
+
+    @property
+    def commodity(self):
+        return self.crop_rel.crop_name if self.crop_rel else ""
+
+    @property
+    def category(self):
+        return self.crop_rel.category if self.crop_rel else ""
+
+    @property
+    def price(self):
+        return self.current_price
+
+    @property
+    def prev_price(self):
+        return self.previous_price
 
 class CropAdvisory(db.Model):
     __tablename__ = 'crop_advisories'
@@ -425,14 +472,62 @@ def add_treatment():
 @app.route('/market_prices', methods=['GET'])
 def get_market_prices():
     try:
-        mandi    = request.args.get('mandi')
+        mandi_name = request.args.get('mandi')
         category = request.args.get('category')
-        query    = MarketPrice.query
-        if mandi:
-            query = query.filter_by(mandi=mandi)
+        query = MarketPrice.query
+        if mandi_name:
+            query = query.join(Mandi).filter(Mandi.mandi_name == mandi_name)
         if category and category != 'All':
-            query = query.filter_by(category=category)
+            query = query.join(Crop).filter(Crop.category == category)
         prices = query.all()
+
+        # If no prices exist for this mandi in the database, seed them automatically
+        if mandi_name and not prices:
+            mandi_obj = Mandi.query.filter_by(mandi_name=mandi_name).first()
+            state_id = mandi_obj.state_id if mandi_obj else 1
+            if not mandi_obj:
+                mandi_obj = Mandi(mandi_name=mandi_name, state_id=1, district=mandi_name, location=mandi_name)
+                db.session.add(mandi_obj)
+                db.session.commit()
+            
+            import random
+            default_commodities = [
+                {'commodity': 'Paddy (Fine)', 'category': 'Cereals', 'price': 2200, 'prev': 2160, 'unit': 'qtl'},
+                {'commodity': 'Maize', 'category': 'Cereals', 'price': 1850, 'prev': 1865, 'unit': 'qtl'},
+                {'commodity': 'Groundnut', 'category': 'Oilseed', 'price': 5700, 'prev': 5620, 'unit': 'qtl'},
+                {'commodity': 'Soybean', 'category': 'Oilseed', 'price': 4150, 'prev': 4125, 'unit': 'qtl'},
+                {'commodity': 'Cotton', 'category': 'Fruits', 'price': 6200, 'prev': 6200, 'unit': 'qtl'},
+                {'commodity': 'Sugarcane', 'category': 'Vegetables', 'price': 350, 'prev': 340, 'unit': 'ton'},
+                {'commodity': 'Wheat', 'category': 'Cereals', 'price': 2400, 'prev': 2380, 'unit': 'qtl'},
+            ]
+            for c in default_commodities:
+                crop_obj = Crop.query.filter_by(crop_name=c['commodity']).first()
+                if not crop_obj:
+                    crop_obj = Crop(crop_name=c['commodity'], category=c['category'])
+                    db.session.add(crop_obj)
+                    db.session.commit()
+                
+                db.session.add(MarketPrice(
+                    mandi_id=mandi_obj.id,
+                    crop_id=crop_obj.id,
+                    minimum_price=float(c['price']) * 0.95,
+                    maximum_price=float(c['price']) * 1.05,
+                    modal_price=c['price'],
+                    previous_price=c['prev'],
+                    current_price=c['price'],
+                    price_date=datetime.utcnow().date(),
+                    updated_at=datetime.utcnow() - timedelta(hours=random.randint(1, 12))
+                ))
+            db.session.commit()
+            
+            # Re-fetch
+            query = MarketPrice.query
+            if mandi_name:
+                query = query.join(Mandi).filter(Mandi.mandi_name == mandi_name)
+            if category and category != 'All':
+                query = query.join(Crop).filter(Crop.category == category)
+            prices = query.all()
+
         result = []
         for p in prices:
             change = float(p.price) - float(p.prev_price)
@@ -455,10 +550,28 @@ def add_market_price():
         required = ['mandi', 'commodity', 'category', 'price', 'prev_price']
         if not data or not all(k in data for k in required):
             return jsonify({'error': 'Missing required fields'}), 400
+            
+        mandi_obj = Mandi.query.filter_by(mandi_name=data['mandi']).first()
+        if not mandi_obj:
+            mandi_obj = Mandi(mandi_name=data['mandi'], state_id=1, district=data['mandi'], location=data['mandi'])
+            db.session.add(mandi_obj)
+            db.session.commit()
+            
+        crop_obj = Crop.query.filter_by(crop_name=data['commodity']).first()
+        if not crop_obj:
+            crop_obj = Crop(crop_name=data['commodity'], category=data['category'])
+            db.session.add(crop_obj)
+            db.session.commit()
+
         price = MarketPrice(
-            mandi=data['mandi'], commodity=data['commodity'],
-            category=data['category'], price=data['price'],
-            prev_price=data['prev_price'], unit=data.get('unit', 'qtl')
+            mandi_id=mandi_obj.id,
+            crop_id=crop_obj.id,
+            minimum_price=float(data['price']) * 0.95,
+            maximum_price=float(data['price']) * 1.05,
+            modal_price=float(data['price']),
+            previous_price=float(data['prev_price']),
+            current_price=float(data['price']),
+            unit=data.get('unit', '₹/quintal')
         )
         db.session.add(price)
         db.session.commit()
@@ -475,8 +588,9 @@ def update_market_price(price_id):
         price = MarketPrice.query.get(price_id)
         if not price:
             return jsonify({'error': 'Price not found'}), 404
-        price.prev_price = float(price.price)  # shift current to prev
-        price.price      = data.get('price', price.price)
+        price.previous_price = float(price.current_price)
+        price.current_price  = data.get('price', price.current_price)
+        price.modal_price    = data.get('price', price.modal_price)
         price.updated_at = datetime.utcnow()
         db.session.commit()
         return jsonify({'message': 'Price updated'}), 200
@@ -487,8 +601,133 @@ def update_market_price(price_id):
 @app.route('/mandis', methods=['GET'])
 def get_mandis():
     try:
-        mandis = db.session.query(MarketPrice.mandi).distinct().all()
-        return jsonify([m[0] for m in mandis]), 200
+        mandis = Mandi.query.all()
+        return jsonify([m.mandi_name for m in mandis]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ─────────────────────────────────────────
+# NEW STATE-BASED MARKET PRICES APIs
+# ─────────────────────────────────────────
+
+@app.route('/api/states', methods=['GET'])
+def get_api_states():
+    try:
+        states = State.query.order_by(State.state_name.asc()).all()
+        return jsonify([{
+            'id': s.id,
+            'state_name': s.state_name
+        } for s in states]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/mandis', methods=['GET'])
+def get_api_mandis():
+    try:
+        state_name = request.args.get('state')
+        query = Mandi.query
+        if state_name:
+            query = query.join(State).filter(State.state_name == state_name)
+        mandis = query.order_by(Mandi.mandi_name.asc()).all()
+        return jsonify([{
+            'id': m.id,
+            'mandi_name': m.mandi_name,
+            'state_id': m.state_id,
+            'state': m.state_rel.state_name if m.state_rel else "",
+            'district': m.district,
+            'location': m.location
+        } for m in mandis]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/market-prices', methods=['GET'])
+def get_api_market_prices():
+    try:
+        state_name = request.args.get('state')
+        mandi_name = request.args.get('mandi')
+        crop_name = request.args.get('crop')
+        
+        query = MarketPrice.query.join(Mandi).join(Crop)
+        
+        if state_name:
+            query = query.join(State, Mandi.state_id == State.id).filter(State.state_name == state_name)
+        if mandi_name:
+            query = query.filter(Mandi.mandi_name == mandi_name)
+        if crop_name:
+            query = query.filter(Crop.crop_name == crop_name)
+            
+        prices = query.order_by(MarketPrice.updated_at.desc()).all()
+        
+        mandi_map = {}
+        for p in prices:
+            m_id = p.mandi_id
+            if m_id not in mandi_map:
+                mandi_map[m_id] = {
+                    'mandi_name': p.mandi_rel.mandi_name,
+                    'district': p.mandi_rel.district,
+                    'prices': []
+                }
+            
+            # Prevent double entries for chart/history in base listing
+            if any(pr['crop'] == p.crop_rel.crop_name for pr in mandi_map[m_id]['prices']):
+                continue
+                
+            change = float(p.current_price) - float(p.previous_price)
+            pct_change = round((change / float(p.previous_price)) * 100, 2) if float(p.previous_price) > 0 else 0.0
+            
+            trend = "STABLE"
+            if change > 0:
+                trend = "RISING"
+            elif change < 0:
+                trend = "FALLING"
+                
+            mandi_map[m_id]['prices'].append({
+                'crop': p.crop_rel.crop_name,
+                'minimum_price': float(p.minimum_price) if p.minimum_price else float(p.current_price),
+                'maximum_price': float(p.maximum_price) if p.maximum_price else float(p.current_price),
+                'modal_price': float(p.modal_price) if p.modal_price else float(p.current_price),
+                'previous_price': float(p.previous_price),
+                'current_price': float(p.current_price),
+                'price_change': round(change, 2),
+                'percentage_change': pct_change,
+                'trend': trend,
+                'unit': p.unit,
+                'updated_at': p.updated_at.strftime('%Y-%m-%d')
+            })
+            
+        return jsonify({
+            'state': state_name or "All States",
+            'mandis': list(mandi_map.values())
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/price-history', methods=['GET'])
+def get_price_history():
+    try:
+        mandi_name = request.args.get('mandi')
+        crop_name = request.args.get('crop')
+        days = int(request.args.get('days', 30))
+        
+        if not mandi_name or not crop_name:
+            return jsonify({'error': 'Missing mandi or crop name'}), 400
+            
+        query = MarketPrice.query.join(Mandi).join(Crop)\
+            .filter(Mandi.mandi_name == mandi_name)\
+            .filter(Crop.crop_name == crop_name)\
+            .order_by(MarketPrice.price_date.asc())
+            
+        prices = query.all()
+        if len(prices) > days:
+            prices = prices[-days:]
+            
+        return jsonify([{
+            'date': p.price_date.strftime('%Y-%m-%d'),
+            'price': float(p.current_price),
+            'prev_price': float(p.previous_price),
+            'modal_price': float(p.modal_price) if p.modal_price else float(p.current_price)
+        } for p in prices]), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -721,6 +960,123 @@ def _seed_static_data():
         ]
         for a in alerts:
             db.session.add(a)
+
+    # Seed States, Crops, Mandis, and Market Prices if State table is empty
+    if State.query.count() == 0:
+        # 1. Add States
+        states_list = [
+            'Andhra Pradesh', 'Telangana', 'Karnataka', 'Tamil Nadu', 
+            'Maharashtra', 'Kerala', 'Odisha', 'West Bengal', 'Gujarat', 
+            'Rajasthan', 'Punjab', 'Haryana', 'Uttar Pradesh', 'Madhya Pradesh', 
+            'Bihar', 'Chhattisgarh', 'Jharkhand', 'Assam'
+        ]
+        states_db = {}
+        for s_name in states_list:
+            state = State(state_name=s_name)
+            db.session.add(state)
+            states_db[s_name] = state
+        db.session.commit() # commit so they get IDs
+
+        # 2. Add Crops
+        crops_list = [
+            {'name': 'Rice', 'cat': 'Cereals'},
+            {'name': 'Paddy (Fine)', 'cat': 'Cereals'},
+            {'name': 'Cotton', 'cat': 'Oilseed'},
+            {'name': 'Red Chilli', 'cat': 'Vegetables'},
+            {'name': 'Maize', 'cat': 'Cereals'},
+            {'name': 'Groundnut', 'cat': 'Oilseed'},
+            {'name': 'Tomato', 'cat': 'Vegetables'},
+            {'name': 'Onion', 'cat': 'Vegetables'},
+            {'name': 'Turmeric', 'cat': 'Vegetables'},
+            {'name': 'Soybean', 'cat': 'Oilseed'},
+            {'name': 'Wheat', 'cat': 'Cereals'},
+            {'name': 'Sugarcane', 'cat': 'Vegetables'}
+        ]
+        crops_db = {}
+        for c in crops_list:
+            crop = Crop(crop_name=c['name'], category=c['cat'])
+            db.session.add(crop)
+            crops_db[c['name']] = crop
+        db.session.commit()
+
+        # 3. Add Mandis
+        mandis_list = [
+            # Andhra Pradesh
+            {'name': 'Guntur Market Yard', 'state': 'Andhra Pradesh', 'dist': 'Guntur', 'loc': 'Guntur'},
+            {'name': 'Vijayawada Market', 'state': 'Andhra Pradesh', 'dist': 'Krishna', 'loc': 'Vijayawada'},
+            {'name': 'Kurnool Market', 'state': 'Andhra Pradesh', 'dist': 'Kurnool', 'loc': 'Kurnool'},
+            {'name': 'Nellore Market', 'state': 'Andhra Pradesh', 'dist': 'Nellore', 'loc': 'Nellore'},
+            {'name': 'Anantapur Market', 'state': 'Andhra Pradesh', 'dist': 'Anantapur', 'loc': 'Anantapur'},
+            {'name': 'Kadapa Market', 'state': 'Andhra Pradesh', 'dist': 'Kadapa', 'loc': 'Kadapa'},
+            # Telangana
+            {'name': 'Hyderabad Mandi', 'state': 'Telangana', 'dist': 'Hyderabad', 'loc': 'Bowenpally'},
+            {'name': 'Warangal Market', 'state': 'Telangana', 'dist': 'Warangal', 'loc': 'Warangal'},
+            # Karnataka
+            {'name': 'Bengaluru Mandi', 'state': 'Karnataka', 'dist': 'Bengaluru', 'loc': 'Yeshwanthpur'},
+            # Maharashtra
+            {'name': 'Pune Mandi', 'state': 'Maharashtra', 'dist': 'Pune', 'loc': 'Gultekdi'},
+            {'name': 'Mumbai Mandi', 'state': 'Maharashtra', 'dist': 'Mumbai', 'loc': 'Vashi'},
+        ]
+        mandis_db = []
+        for m in mandis_list:
+            state_obj = states_db.get(m['state'])
+            if state_obj:
+                mandi = Mandi(
+                    mandi_name=m['name'],
+                    state_id=state_obj.id,
+                    district=m['dist'],
+                    location=m['loc']
+                )
+                db.session.add(mandi)
+                mandis_db.append({'obj': mandi, 'state_name': m['state']})
+        db.session.commit()
+
+        # 4. Add Market Prices with 30-day history
+        import random
+        from datetime import datetime, timedelta
+        
+        for m_data in mandis_db:
+            mandi = m_data['obj']
+            
+            # Select 4-7 random crops for this mandi
+            selected_crops = list(crops_db.values())
+            random.shuffle(selected_crops)
+            selected_crops = selected_crops[:random.randint(4, 7)]
+            
+            for crop in selected_crops:
+                # Base price for this crop
+                base_price = 2000
+                if 'chilli' in crop.crop_name.lower(): base_price = 18000
+                elif 'ground' in crop.crop_name.lower(): base_price = 5500
+                elif 'cotton' in crop.crop_name.lower(): base_price = 6000
+                elif 'soy' in crop.crop_name.lower(): base_price = 4000
+                elif 'sugar' in crop.crop_name.lower(): base_price = 350
+                elif 'tomato' in crop.crop_name.lower(): base_price = 1500
+                elif 'onion' in crop.crop_name.lower(): base_price = 2000
+                
+                current_val = base_price
+                for day_offset in range(30, -1, -1):
+                    price_date = (datetime.utcnow() - timedelta(days=day_offset)).date()
+                    change_pct = random.uniform(-0.03, 0.04) # -3% to +4% change
+                    prev_val = current_val
+                    current_val = round(prev_val * (1 + change_pct), 2)
+                    
+                    min_val = round(current_val * 0.95, 2)
+                    max_val = round(current_val * 1.05, 2)
+                    
+                    db.session.add(MarketPrice(
+                        mandi_id=mandi.id,
+                        crop_id=crop.id,
+                        minimum_price=min_val,
+                        maximum_price=max_val,
+                        modal_price=current_val,
+                        previous_price=prev_val,
+                        current_price=current_val,
+                        price_date=price_date,
+                        updated_at=datetime.combine(price_date, datetime.min.time()) + timedelta(hours=random.randint(8, 17)),
+                        unit='₹/quintal' if 'sugar' not in crop.crop_name.lower() else '₹/ton'
+                    ))
+        db.session.commit()
 
     db.session.commit()
 

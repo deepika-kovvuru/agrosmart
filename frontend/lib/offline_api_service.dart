@@ -155,6 +155,39 @@ class OfflineApiService {
   // SPECIFIC ENDPOINTS (using getCached)
   // ─────────────────────────────────────────
 
+  static Future<Map<String, dynamic>> getStates() async =>
+      getCached('/api/states', 'states');
+
+  static Future<Map<String, dynamic>> getMandisByState(String state) async =>
+      getCached('/api/mandis?state=${Uri.encodeComponent(state)}', 'mandis_$state');
+
+  static Future<Map<String, dynamic>> getMarketPricesByState({
+    String? state,
+    String? mandi,
+    String? crop,
+  }) async {
+    var ep = '/api/market-prices';
+    final params = <String>[];
+    if (state != null && state.isNotEmpty) {
+      params.add('state=${Uri.encodeComponent(state)}');
+    }
+    if (mandi != null && mandi.isNotEmpty) {
+      params.add('mandi=${Uri.encodeComponent(mandi)}');
+    }
+    if (crop != null && crop.isNotEmpty) {
+      params.add('crop=${Uri.encodeComponent(crop)}');
+    }
+    if (params.isNotEmpty) {
+      ep += '?${params.join('&')}';
+    }
+    return getCached(ep, 'market_prices_state_${state ?? "all"}_${mandi ?? ""}_${crop ?? ""}');
+  }
+
+  static Future<Map<String, dynamic>> getPriceHistory(String mandi, String crop, {int days = 30}) async {
+    final ep = '/api/price-history?mandi=${Uri.encodeComponent(mandi)}&crop=${Uri.encodeComponent(crop)}&days=$days';
+    return getCached(ep, 'price_history_${mandi}_${crop}_$days');
+  }
+
   static Future<Map<String, dynamic>> getPestAlerts({String? region}) async {
     final ep = region != null ? '/pest_alerts?region=${Uri.encodeComponent(region)}' : '/pest_alerts';
     return getCached(ep, 'pest_alerts_${region ?? "all"}');

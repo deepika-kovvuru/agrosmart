@@ -302,6 +302,78 @@ class ApiService {
   // MARKET PRICE APIs
   // ─────────────────────────────────────────
 
+  static Future<List<dynamic>> getStates() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/api/states'),
+        headers: _headers,
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  static Future<List<dynamic>> getMandisByState(String state) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/api/mandis?state=${Uri.encodeComponent(state)}'),
+        headers: _headers,
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  static Future<Map<String, dynamic>> getMarketPricesByState({
+    String? state,
+    String? mandi,
+    String? crop,
+  }) async {
+    try {
+      String url = '${ApiConfig.baseUrl}/api/market-prices';
+      final List<String> params = [];
+      if (state != null && state.isNotEmpty) {
+        params.add('state=${Uri.encodeComponent(state)}');
+      }
+      if (mandi != null && mandi.isNotEmpty) {
+        params.add('mandi=${Uri.encodeComponent(mandi)}');
+      }
+      if (crop != null && crop.isNotEmpty) {
+        params.add('crop=${Uri.encodeComponent(crop)}');
+      }
+      if (params.isNotEmpty) {
+        url += '?${params.join('&')}';
+      }
+      final response = await http.get(Uri.parse(url), headers: _headers);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (_) {}
+    return {};
+  }
+
+  static Future<List<dynamic>> getPriceHistory({
+    required String mandi,
+    required String crop,
+    int days = 30,
+  }) async {
+    try {
+      final url = '${ApiConfig.baseUrl}/api/price-history'
+          '?mandi=${Uri.encodeComponent(mandi)}'
+          '&crop=${Uri.encodeComponent(crop)}'
+          '&days=$days';
+      final response = await http.get(Uri.parse(url), headers: _headers);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (_) {}
+    return [];
+  }
+
   static Future<List<dynamic>> getMarketPrices({String? mandi, String? category}) async {
     try {
       String url = '${ApiConfig.baseUrl}/market_prices';

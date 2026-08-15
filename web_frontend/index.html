@@ -371,25 +371,28 @@
                         <div class="ab-badge">Live</div>
                     </div>
 
-                    <div class="market-subheader">
-                        <div class="mandi-dropdown-row">
-                            <span>🏪</span>
-                            <select id="mandi-select">
-                                <option value="Kurnool">Kurnool Mandi</option>
-                                <option value="Hyderabad">Hyderabad Mandi</option>
-                                <option value="Vijayawada">Vijayawada Mandi</option>
-                                <option value="Guntur">Guntur Mandi</option>
+                    <div class="market-subheader" style="padding: 12px 16px;">
+                        <div class="mandi-dropdown-row" style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: bold; min-width: 60px;">📍 State:</span>
+                            <select id="state-select" style="flex: 1; border-radius: 8px; padding: 6px 12px; font-weight: 600; border: 1px solid var(--border-color); background: white;">
+                                <option value="">Select State</option>
                             </select>
                         </div>
-                        <p class="mandi-timestamp">Updated: Today, 9:15 AM</p>
+                        <div class="mandi-dropdown-row" style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: bold; min-width: 60px;">🏪 Mandi:</span>
+                            <select id="mandi-select" style="flex: 1; border-radius: 8px; padding: 6px 12px; font-weight: 600; border: 1px solid var(--border-color); background: white;">
+                                <option value="">Select Mandi</option>
+                            </select>
+                        </div>
+                        <p class="mandi-timestamp" id="market-last-updated" style="margin-top: 8px; font-size: 11px; color: var(--text-light); text-align: left;"></p>
                     </div>
 
                     <div class="screen-content-padding">
                         <!-- Stat chips row -->
                         <div class="market-stats-row mb-12">
-                            <div class="market-stat-chip up">▲ 3 Rising</div>
-                            <div class="market-stat-chip down">▼ 1 Falling</div>
-                            <div class="market-stat-chip stable">= 0 Stable</div>
+                            <div class="market-stat-chip up" id="market-stat-rising">▲ 3 Rising</div>
+                            <div class="market-stat-chip down" id="market-stat-falling">▼ 1 Falling</div>
+                            <div class="market-stat-chip stable" id="market-stat-stable">= 0 Stable</div>
                         </div>
 
                         <!-- Search Bar -->
@@ -655,6 +658,29 @@
         </div>
     </div>
 
+    <!-- Price History Chart Dialog Overlay -->
+    <div id="chart-dialog-overlay" class="dialog-overlay hidden">
+        <div class="dialog-card" style="width: 360px; max-width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 id="chart-crop-title" style="margin: 0; font-size: 16px;">Crop Price Trend</h3>
+                <button type="button" id="chart-dialog-close" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary);">✖</button>
+            </div>
+            <p id="chart-mandi-subtitle" style="font-size: 11px; color: var(--text-light); margin-bottom: 12px; margin-top: -6px;"></p>
+            
+            <!-- Time period selector -->
+            <div class="category-chips-scroll" style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <button class="category-chip active chart-period-btn" data-days="1">1 Day</button>
+                <button class="category-chip chart-period-btn" data-days="7">7 Days</button>
+                <button class="category-chip chart-period-btn" data-days="30">30 Days</button>
+            </div>
+            
+            <div style="height: 200px; width: 100%; position: relative;">
+                <canvas id="crop-history-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
