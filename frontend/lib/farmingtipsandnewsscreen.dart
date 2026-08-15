@@ -17,6 +17,7 @@ class NewsArticle {
   final String imageEmoji;
   final Color categoryColor;
   final bool isFeatured;
+  final String link;
 
   const NewsArticle({
     required this.id,
@@ -28,6 +29,7 @@ class NewsArticle {
     required this.imageEmoji,
     required this.categoryColor,
     this.isFeatured = false,
+    this.link = '',
   });
 }
 
@@ -65,6 +67,9 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
   final Set<String> _savedArticles = {};
   bool _isLoadingNews = true;
   bool _isLoadingTips = true;
+  bool _isLive = false;
+  bool _isRefreshing = false;
+  DateTime? _lastRefreshed;
   List<NewsArticle> _news = [];
   List<FarmingTip> _tips = [];
 
@@ -81,7 +86,7 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _loadNews();
+    _loadLiveNews();
     _loadTips();
   }
 
@@ -97,11 +102,47 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
     }
   }
 
-  void _loadNews() async {
+  Future<void> _loadLiveNews({bool forceRefresh = false}) async {
+    if (!mounted) return;
     setState(() => _isLoadingNews = true);
-    final res = await ApiService.getNewsArticles();
-    if (mounted) {
+
+    if (forceRefresh) {
+      setState(() => _isRefreshing = true);
+      await ApiService.refreshLiveNews();
+    }
+
+    final liveRes = await ApiService.getLiveNews(limit: 40);
+
+    if (!mounted) return;
+
+    if (liveRes.isNotEmpty) {
+      // Live RSS data received
       setState(() {
+        _isLive = true;
+        _lastRefreshed = DateTime.now();
+        _news = liveRes.map((a) {
+          return NewsArticle(
+            id: a['id']?.toString() ?? '',
+            category: a['category'] ?? 'Market Update',
+            title: a['title'] ?? '',
+            summary: a['summary'] ?? '',
+            source: a['source'] ?? 'Live Feed',
+            timeAgo: a['published_at'] ?? 'Today',
+            imageEmoji: a['image_emoji'] ?? '📰',
+            categoryColor: _parseHexColor(a['category_color']),
+            isFeatured: a['is_featured'] == true,
+            link: a['link'] ?? '',
+          );
+        }).toList();
+        _isLoadingNews = false;
+        _isRefreshing = false;
+      });
+    } else {
+      // Fallback to static DB news
+      final res = await ApiService.getNewsArticles();
+      if (!mounted) return;
+      setState(() {
+        _isLive = false;
         if (res.isNotEmpty) {
           _news = res.map((a) {
             return NewsArticle(
@@ -114,18 +155,19 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
               imageEmoji: a['image_emoji'] ?? '📰',
               categoryColor: _parseHexColor(a['category_color']),
               isFeatured: a['is_featured'] == true,
+              link: '',
             );
           }).toList();
         } else {
-          // fallback mock news
           _news = const [
-            NewsArticle(id: '1', category: 'Market Update', title: 'Wheat Prices Surge 12% Amid Global Supply Concerns', summary: 'International wheat futures climbed sharply this week as drought conditions persist in key growing regions.', source: 'Agrosmart Market Daily', timeAgo: '2h ago', imageEmoji: '🌾', categoryColor: Color(0xFFE07B39), isFeatured: true),
-            NewsArticle(id: '2', category: 'Technology', title: 'AI-Powered Irrigation Systems Cut Water Usage by 40%', summary: 'New smart drip systems with soil-moisture sensors help farmers reduce water consumption.', source: 'FarmTech Review', timeAgo: '5h ago', imageEmoji: '💧', categoryColor: Color(0xFF2196F3)),
-            NewsArticle(id: '3', category: 'Pest Alert', title: 'Fall Armyworm Detected in Northern Districts', summary: 'Agricultural authorities issued an advisory after fall armyworm infestations were confirmed.', source: 'Crop Protection News', timeAgo: '8h ago', imageEmoji: '🐛', categoryColor: Color(0xFFE53935)),
-            NewsArticle(id: '4', category: 'Policy', title: 'Govt Announces ₹50,000 Cr Subsidy Package for Farmers', summary: 'New relief package supports small farmers with fertilizer subsidies and low-interest crop loans.', source: 'Agrosmart Policy Hub', timeAgo: '1d ago', imageEmoji: '🏛️', categoryColor: Color(0xFF7B1FA2)),
+            NewsArticle(id: '1', category: 'Market Update', title: 'Wheat Prices Surge 12% Amid Global Supply Concerns', summary: 'International wheat futures climbed sharply this week as drought conditions persist in key growing regions.', source: 'Agrosmart Market Daily', timeAgo: '2h ago', imageEmoji: '🌾', categoryColor: Color(0xFFE07B39), isFeatured: true, link: ''),
+            NewsArticle(id: '2', category: 'Technology', title: 'AI-Powered Irrigation Systems Cut Water Usage by 40%', summary: 'New smart drip systems with soil-moisture sensors help farmers reduce water consumption.', source: 'FarmTech Review', timeAgo: '5h ago', imageEmoji: '💧', categoryColor: Color(0xFF2196F3), link: ''),
+            NewsArticle(id: '3', category: 'Pest Alert', title: 'Fall Armyworm Detected in Northern Districts', summary: 'Agricultural authorities issued an advisory after fall armyworm infestations were confirmed.', source: 'Crop Protection News', timeAgo: '8h ago', imageEmoji: '🐛', categoryColor: Color(0xFFE53935), link: ''),
+            NewsArticle(id: '4', category: 'Policy', title: 'Govt Announces ₹50,000 Cr Subsidy Package for Farmers', summary: 'New relief package supports small farmers with fertilizer subsidies and low-interest crop loans.', source: 'Agrosmart Policy Hub', timeAgo: '1d ago', imageEmoji: '🏛️', categoryColor: Color(0xFF7B1FA2), link: ''),
           ];
         }
         _isLoadingNews = false;
+        _isRefreshing = false;
       });
     }
   }
@@ -327,12 +369,63 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
     final NewsArticle? featured = featuredList.isNotEmpty ? featuredList.first : null;
 
     return RefreshIndicator(
-      onRefresh: () async {
-        _loadNews();
-      },
+      color: const Color(0xFF2D6A4F),
+      onRefresh: () => _loadLiveNews(forceRefresh: true),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(child: _buildCategoryFilter()),
+          // LIVE indicator banner
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _isLive ? const Color(0xFFE8F5E9) : const Color(0xFFFFF8E1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: _isLive ? const Color(0xFF52B788) : const Color(0xFFFFD54F),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8, height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _isLive ? const Color(0xFF1B5E20) : const Color(0xFFF57F17),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _isLive
+                            ? '🔴 LIVE — ${_news.length} articles from Krishi Jagran, The Hindu, PIB & more · Updated ${_lastRefreshed != null ? '${DateTime.now().difference(_lastRefreshed!).inMinutes}m ago' : 'now'}'
+                            : '📡 Cached news — Pull down to fetch live updates',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: _isLive ? const Color(0xFF1B5E20) : const Color(0xFF5D4037),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
+                    if (_isRefreshing)
+                      const SizedBox(
+                        width: 14, height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF2D6A4F)),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () => _loadLiveNews(forceRefresh: true),
+                        child: const Icon(Icons.refresh_rounded, size: 18, color: Color(0xFF2D6A4F)),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           if (featured != null)
             SliverToBoxAdapter(
               child: _buildFeaturedCard(featured),
@@ -351,16 +444,40 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
                       color: Color(0xFF1B4332),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'See All'.tr,
-                      style: const TextStyle(
-                        color: Color(0xFF2D6A4F),
-                        fontWeight: FontWeight.w600,
+                  if (_isLive)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE53935).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.circle, size: 7, color: Color(0xFFE53935)),
+                          const SizedBox(width: 4),
+                          Text(
+                            'LIVE'.tr,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFFE53935),
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'See All'.tr,
+                        style: const TextStyle(
+                          color: Color(0xFF2D6A4F),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

@@ -530,6 +530,39 @@ class ApiService {
     return [];
   }
 
+  static Future<List<dynamic>> getLiveNews({String? category, int? limit}) async {
+    try {
+      String url = '${ApiConfig.baseUrl}/api/live-news';
+      final List<String> params = [];
+      if (category != null && category.isNotEmpty && category != 'All') {
+        params.add('category=${Uri.encodeComponent(category)}');
+      }
+      if (limit != null) {
+        params.add('limit=$limit');
+      }
+      if (params.isNotEmpty) {
+        url += '?${params.join('&')}';
+      }
+      final response = await http.get(Uri.parse(url), headers: _headers).timeout(const Duration(seconds: 12));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  static Future<bool> refreshLiveNews() async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/api/live-news/refresh'),
+        headers: _headers,
+      ).timeout(const Duration(seconds: 15));
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<Map<String, dynamic>> askAI(String message) async {
     try {
       final response = await http.post(

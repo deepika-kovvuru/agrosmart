@@ -3,8 +3,13 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
+import re
+import requests as req_lib
+import feedparser
+import threading
+import time
 from PIL import Image
 
 app = Flask(__name__, static_folder='static', static_url_path='/')
@@ -905,8 +910,193 @@ def add_news_article():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+# ─────────────────────────────────────────
+# LIVE NEWS FEED (RSS-based real-time)
+# ─────────────────────────────────────────
+
+# In-memory cache: {cache_key: (timestamp, data)}
+_news_cache = {}
+_NEWS_CACHE_TTL = 600  # seconds (10 min)
+
+# Agricultural RSS feeds
+_AGRI_FEEDS = [
+    {
+        'url': 'https://www.krishijagran.com/feed/',
+        'source': 'Krishi Jagran',
+        'category': 'Market Update',
+        'emoji': '🌾',
+        'color': '#E07B39'
+    },
+    {
+        'url': 'https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms',
+        'source': 'Times of India – Agriculture',
+        'category': 'Policy',
+        'emoji': '📰',
+        'color': '#7B1FA2'
+    },
+    {
+        'url': 'https://www.thehindu.com/sci-tech/agriculture/feeder/default.rss',
+        'source': 'The Hindu – Agriculture',
+        'category': 'Technology',
+        'emoji': '🔬',
+        'color': '#2196F3'
+    },
+    {
+        'url': 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3',
+        'source': 'PIB – Agriculture',
+        'category': 'Policy',
+        'emoji': '🏛️',
+        'color': '#7B1FA2'
+    },
+    {
+        'url': 'https://www.downtoearth.org.in/rss/news',
+        'source': 'Down To Earth',
+        'category': 'Climate',
+        'emoji': '🌍',
+        'color': '#00897B'
+    },
+    {
+        'url': 'https://www.agrifarming.in/feed',
+        'source': 'Agri Farming',
+        'category': 'Technology',
+        'emoji': '🌿',
+        'color': '#2196F3'
+    },
+]
+
+_CATEGORY_KEYWORDS = {
+    'Pest Alert': ['pest', 'insect', 'armyworm', 'locust', 'borer', 'aphid', 'whitefly', 'mite', 'disease', 'blight', 'fungal', 'rust'],
+    'Market Update': ['price', 'msp', 'mandi', 'market', 'export', 'import', 'wheat', 'rice', 'commodity', 'futures', 'procurement', 'apmc'],
+    'Climate': ['monsoon', 'rainfall', 'drought', 'weather', 'imd', 'flood', 'heat', 'climate', 'cyclone', 'temperature'],
+    'Technology': ['drone', 'ai', 'sensor', 'satellite', 'technology', 'digital', 'precision', 'iot', 'smart', 'irrigation', 'robot', 'app'],
+    'Policy': ['government', 'govt', 'policy', 'subsidy', 'scheme', 'pm-kisan', 'yojana', 'ministry', 'budget', 'law', 'regulation', 'relief', 'credit', 'loan'],
+}
+
+_EMOJI_MAP = {
+    'Pest Alert': '🐛',
+    'Market Update': '📈',
+    'Climate': '🌧️',
+    'Technology': '💡',
+    'Policy': '🏛️',
+}
+_COLOR_MAP = {
+    'Pest Alert': '#E53935',
+    'Market Update': '#E07B39',
+    'Climate': '#00897B',
+    'Technology': '#2196F3',
+    'Policy': '#7B1FA2',
+}
+
+def _classify_article(title, summary):
+    """Classify an article into a category based on keywords in title+summary."""
+    text = (title + ' ' + summary).lower()
+    for cat, keywords in _CATEGORY_KEYWORDS.items():
+        if any(kw in text for kw in keywords):
+            return cat
+    return 'Market Update'
+
+def _clean_html(raw):
+    """Strip HTML tags from text."""
+    if not raw:
+        return ''
+    clean = re.sub(r'<[^>]+>', '', raw)
+    clean = re.sub(r'\s+', ' ', clean).strip()
+    return clean[:300]
+
+def _fetch_live_articles():
+    """Fetch and aggregate news from all RSS feeds with caching."""
+    now = time.time()
+    cache_key = 'live_news'
+    if cache_key in _news_cache:
+        ts, cached = _news_cache[cache_key]
+        if now - ts < _NEWS_CACHE_TTL:
+            return cached
+
+    articles = []
+    seen_titles = set()
+    headers = {'User-Agent': 'Mozilla/5.0 (Agrosmart/1.0)'}
+
+    for feed_cfg in _AGRI_FEEDS:
+        try:
+            resp = req_lib.get(feed_cfg['url'], headers=headers, timeout=5)
+            feed = feedparser.parse(resp.content)
+            for entry in feed.entries[:6]:
+                title = _clean_html(entry.get('title', '')).strip()
+                if not title or title in seen_titles:
+                    continue
+                seen_titles.add(title)
+
+                raw_summary = entry.get('summary', entry.get('description', ''))
+                summary = _clean_html(raw_summary)
+
+                # Auto-classify using keyword matching
+                category = _classify_article(title, summary)
+
+                # Parse published date
+                published_str = 'Today'
+                try:
+                    pub = entry.get('published_parsed') or entry.get('updated_parsed')
+                    if pub:
+                        pub_dt = datetime(*pub[:6])
+                        delta = datetime.utcnow() - pub_dt
+                        if delta.days == 0:
+                            hrs = delta.seconds // 3600
+                            published_str = f'{hrs}h ago' if hrs > 0 else 'Just now'
+                        elif delta.days == 1:
+                            published_str = '1 day ago'
+                        else:
+                            published_str = pub_dt.strftime('%d %b %Y')
+                except Exception:
+                    pass
+
+                articles.append({
+                    'id': str(abs(hash(title)) % 999999),
+                    'category': category,
+                    'title': title,
+                    'summary': summary or 'Read more on ' + feed_cfg['source'],
+                    'source': feed_cfg['source'],
+                    'image_emoji': _EMOJI_MAP.get(category, feed_cfg['emoji']),
+                    'category_color': _COLOR_MAP.get(category, feed_cfg['color']),
+                    'is_featured': len(articles) == 0,  # first article is featured
+                    'published_at': published_str,
+                    'link': entry.get('link', ''),
+                    'live': True
+                })
+        except Exception:
+            continue  # skip unreachable feeds silently
+
+    # Sort by relevance: featured first, then chronological
+    articles.sort(key=lambda a: (not a['is_featured']))
+
+    _news_cache[cache_key] = (now, articles)
+    return articles
+
+@app.route('/api/live-news', methods=['GET'])
+def get_live_news():
+    """Fetch real-time agricultural news from multiple RSS feeds."""
+    try:
+        category = request.args.get('category', '')
+        limit = int(request.args.get('limit', 30))
+        articles = _fetch_live_articles()
+        if category and category.lower() not in ('all', ''):
+            articles = [a for a in articles if a['category'].lower() == category.lower()]
+        return jsonify(articles[:limit]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/live-news/refresh', methods=['POST'])
+def refresh_live_news():
+    """Force-clear the news cache and re-fetch."""
+    _news_cache.clear()
+    try:
+        articles = _fetch_live_articles()
+        return jsonify({'message': f'Refreshed {len(articles)} articles', 'count': len(articles)}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def _seed_static_data():
     """Seed treatments, tips, news if tables are empty"""
+
 
     # Treatments
     if Treatment.query.count() == 0:
