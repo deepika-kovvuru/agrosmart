@@ -652,23 +652,28 @@ def get_api_market_prices():
         try:
             last_price = MarketPrice.query.order_by(MarketPrice.updated_at.desc()).first()
             if last_price and (datetime.utcnow() - last_price.updated_at).total_seconds() > 180:
-                import random
-                today = datetime.utcnow().date()
-                today_prices = MarketPrice.query.filter(MarketPrice.price_date == today).all()
-                for p in today_prices:
-                    p.previous_price = p.current_price
-                    change_pct = random.uniform(-0.015, 0.02) # -1.5% to +2% live fluctuation
-                    p.current_price = round(p.previous_price * (1 + change_pct), 2)
-                    if p.minimum_price:
-                        p.minimum_price = round(p.current_price * 0.95, 2)
-                    if p.maximum_price:
-                        p.maximum_price = round(p.current_price * 1.05, 2)
-                    p.modal_price = p.current_price
-                    p.updated_at = datetime.utcnow()
+                from sqlalchemy import text
+                db.session.execute(text("""
+                    UPDATE market_prices 
+                    SET 
+                        previous_price = current_price,
+                        current_price = ROUND((current_price * (1.0 + (random() * 0.035 - 0.015)))::numeric, 2),
+                        updated_at = NOW()
+                    WHERE price_date = CURRENT_DATE
+                """))
+                db.session.execute(text("""
+                    UPDATE market_prices
+                    SET
+                        minimum_price = ROUND((current_price * 0.95)::numeric, 2),
+                        maximum_price = ROUND((current_price * 1.05)::numeric, 2),
+                        modal_price = current_price
+                    WHERE price_date = CURRENT_DATE
+                """))
                 db.session.commit()
         except Exception as ex:
             db.session.rollback()
             print("Fluctuation update failed:", ex)
+
 
         query = MarketPrice.query.join(Mandi).join(Crop)
         
