@@ -1,5 +1,6 @@
 // ai_assistant_screen.dart
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'app_theme.dart';
 import 'offline_api_service.dart';
 import 'translation_provider.dart';
@@ -418,37 +419,113 @@ class _VoiceListeningDialog extends StatefulWidget {
   State<_VoiceListeningDialog> createState() => _VoiceListeningDialogState();
 }
 
-class _VoiceListeningDialogState extends State<_VoiceListeningDialog> with SingleTickerProviderStateMixin {
+class _VoiceListeningDialogState extends State<_VoiceListeningDialog>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animCtrl;
-  String _listeningStateText = 'Listening...'.tr;
-  final String _simulatedSpeechResult = 'How do I control whiteflies on my cotton crop?'.tr;
+  final stt.SpeechToText _speech = stt.SpeechToText();
+
+  bool _isListening = false;
+  bool _isAvailable = false;
+  bool _notAvailable = false;
+  String _transcript = '';
+  String _statusText = 'Initializing microphone...';
 
   @override
   void initState() {
     super.initState();
     _animCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 800),
     )..repeat(reverse: true);
+    _initSpeech();
+  }
 
-    // Simulate voice listening translation
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
+  Future<void> _initSpeech() async {
+    try {
+      _isAvailable = await _speech.initialize(
+        onStatus: (status) {
+          if (!mounted) return;
+          if (status == 'done' || status == 'notListening') {
+            _stopAndReturn();
+          }
+        },
+        onError: (error) {
+          if (!mounted) return;
+          setState(() {
+            _statusText = 'Error: ${error.errorMsg}. Try again.';
+            _isListening = false;
+          });
+        },
+      );
+
+      if (_isAvailable && mounted) {
+        _startListening();
+      } else if (mounted) {
         setState(() {
-          _listeningStateText = 'Transcribing...'.tr;
+          _notAvailable = true;
+          _statusText = 'Microphone not available on this device.';
         });
       }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _notAvailable = true;
+          _statusText = 'Could not access microphone. Grant permission and retry.';
+        });
+      }
+    }
+  }
+
+  void _startListening() async {
+    if (!_isAvailable) return;
+    setState(() {
+      _transcript = '';
+      _isListening = true;
+      _statusText = 'Listening... Speak now';
     });
 
-    Future.delayed(const Duration(seconds: 3), () {
+    await _speech.listen(
+      onResult: (result) {
+        if (!mounted) return;
+        setState(() {
+          _transcript = result.recognizedWords;
+          if (result.finalResult && _transcript.isNotEmpty) {
+            _statusText = 'Got it!';
+          }
+        });
+      },
+      listenFor: const Duration(seconds: 15),
+      pauseFor: const Duration(seconds: 3),
+      partialResults: true,
+      localeId: 'en_IN',
+      cancelOnError: false,
+    );
+  }
+
+  void _stopAndReturn() {
+    if (!mounted) return;
+    _speech.stop();
+    setState(() {
+      _isListening = false;
+      _statusText = _transcript.isNotEmpty ? 'Transcribed!' : 'No speech detected.';
+    });
+
+    Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) {
-        widget.onListeningComplete(_simulatedSpeechResult);
+        final result = _transcript.isNotEmpty ? _transcript : '';
+        widget.onListeningComplete(result);
       }
     });
   }
 
+  void _stopManually() {
+    _speech.stop();
+    _stopAndReturn();
+  }
+
   @override
   void dispose() {
+    _speech.stop();
     _animCtrl.dispose();
     super.dispose();
   }
@@ -456,47 +533,99 @@ class _VoiceListeningDialogState extends State<_VoiceListeningDialog> with Singl
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Agrosmart Voice Input'.tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 32),
+                Text(
+                  'Agrosmart Voice Input',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 20),
+                  onPressed: () {
+                    _speech.stop();
+                    widget.onListeningComplete('');
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 20),
+            // Animated pulsing mic
             AnimatedBuilder(
               animation: _animCtrl,
               builder: (context, child) {
+                final pulse = _isListening ? _animCtrl.value * 10 : 0.0;
                 return Container(
-                  padding: EdgeInsets.all(12 + _animCtrl.value * 8),
+                  padding: EdgeInsets.all(14 + pulse),
                   decoration: BoxDecoration(
-                    color: AppTheme.primary.withValues(alpha: 0.15),
+                    color: (_isListening ? AppTheme.primary : Colors.grey)
+                        .withValues(alpha: 0.12 + _animCtrl.value * 0.08),
                     shape: BoxShape.circle,
                   ),
-                  child: CircleAvatar(
-                    backgroundColor: AppTheme.primary,
-                    radius: 28,
-                    child: const Icon(Icons.mic_rounded, color: Colors.white, size: 30),
+                  child: GestureDetector(
+                    onTap: _isListening ? _stopManually : _startListening,
+                    child: CircleAvatar(
+                      backgroundColor: _isListening ? AppTheme.primary : Colors.grey.shade400,
+                      radius: 30,
+                      child: Icon(
+                        _isListening ? Icons.mic_rounded : Icons.mic_off_rounded,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    ),
                   ),
                 );
               },
             ),
             const SizedBox(height: 18),
+            // Status text
             Text(
-              _listeningStateText,
+              _statusText,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+                color: _isListening ? AppTheme.primary : AppTheme.textSecondary,
               ),
             ),
-            const SizedBox(height: 8),
+            // Live transcript preview
+            if (_transcript.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.primary.withValues(alpha: 0.2)),
+                ),
+                child: Text(
+                  '"$_transcript"',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 13,
+                    fontStyle: FontStyle.italic,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 14),
             Text(
-              'Try saying: "Fertilizer for Paddy" or "Chilli pests"'.tr,
+              'Try saying: "Fertilizer for Paddy" or "Chilli pests"',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -504,6 +633,22 @@ class _VoiceListeningDialogState extends State<_VoiceListeningDialog> with Singl
                 color: AppTheme.textSecondary,
               ),
             ),
+            const SizedBox(height: 16),
+            if (_isListening)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE63946),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  icon: const Icon(Icons.stop_rounded, size: 18),
+                  label: const Text('Stop & Send', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold)),
+                  onPressed: _stopManually,
+                ),
+              ),
           ],
         ),
       ),
