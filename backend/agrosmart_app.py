@@ -202,19 +202,6 @@ class NewsArticle(db.Model):
 # AUTH
 # ─────────────────────────────────────────
 
-@app.route('/reset_password_temp', methods=['GET'])
-def reset_password_temp():
-    try:
-        user = User.query.filter_by(email='deepika@gmail.com').first()
-        if user:
-            user.password = generate_password_hash('12345678')
-            db.session.commit()
-            return "Password for deepika@gmail.com updated to 12345678", 200
-        return "User not found", 404
-    except Exception as e:
-        return str(e), 500
-
-
 @app.route('/signup', methods=['POST'])
 def signup():
     try:
