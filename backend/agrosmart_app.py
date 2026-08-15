@@ -648,6 +648,28 @@ def get_api_market_prices():
         mandi_name = request.args.get('mandi')
         crop_name = request.args.get('crop')
         
+        # Trigger live price fluctuation updates (if last update was > 3 minutes ago)
+        try:
+            last_price = MarketPrice.query.order_by(MarketPrice.updated_at.desc()).first()
+            if last_price and (datetime.utcnow() - last_price.updated_at).total_seconds() > 180:
+                import random
+                today = datetime.utcnow().date()
+                today_prices = MarketPrice.query.filter(MarketPrice.price_date == today).all()
+                for p in today_prices:
+                    p.previous_price = p.current_price
+                    change_pct = random.uniform(-0.015, 0.02) # -1.5% to +2% live fluctuation
+                    p.current_price = round(p.previous_price * (1 + change_pct), 2)
+                    if p.minimum_price:
+                        p.minimum_price = round(p.current_price * 0.95, 2)
+                    if p.maximum_price:
+                        p.maximum_price = round(p.current_price * 1.05, 2)
+                    p.modal_price = p.current_price
+                    p.updated_at = datetime.utcnow()
+                db.session.commit()
+        except Exception as ex:
+            db.session.rollback()
+            print("Fluctuation update failed:", ex)
+
         query = MarketPrice.query.join(Mandi).join(Crop)
         
         if state_name:
@@ -1013,9 +1035,49 @@ def _seed_static_data():
             {'name': 'Warangal Market', 'state': 'Telangana', 'dist': 'Warangal', 'loc': 'Warangal'},
             # Karnataka
             {'name': 'Bengaluru Mandi', 'state': 'Karnataka', 'dist': 'Bengaluru', 'loc': 'Yeshwanthpur'},
+            {'name': 'Hubli Market', 'state': 'Karnataka', 'dist': 'Dharwad', 'loc': 'Hubli'},
+            # Tamil Nadu
+            {'name': 'Chennai Koyambedu', 'state': 'Tamil Nadu', 'dist': 'Chennai', 'loc': 'Koyambedu'},
+            {'name': 'Coimbatore Market', 'state': 'Tamil Nadu', 'dist': 'Coimbatore', 'loc': 'MTP Road'},
             # Maharashtra
             {'name': 'Pune Mandi', 'state': 'Maharashtra', 'dist': 'Pune', 'loc': 'Gultekdi'},
             {'name': 'Mumbai Mandi', 'state': 'Maharashtra', 'dist': 'Mumbai', 'loc': 'Vashi'},
+            # Kerala
+            {'name': 'Kochi Market', 'state': 'Kerala', 'dist': 'Ernakulam', 'loc': 'Nettoor'},
+            {'name': 'Kozhikode Mandi', 'state': 'Kerala', 'dist': 'Kozhikode', 'loc': 'Kozhikode'},
+            # Odisha
+            {'name': 'Bhubaneswar Mandi', 'state': 'Odisha', 'dist': 'Khurda', 'loc': 'Bhubaneswar'},
+            {'name': 'Cuttack Market', 'state': 'Odisha', 'dist': 'Cuttack', 'loc': 'Cuttack'},
+            # West Bengal
+            {'name': 'Kolkata Mandi', 'state': 'West Bengal', 'dist': 'Kolkata', 'loc': 'Barabazar'},
+            {'name': 'Siliguri Market', 'state': 'West Bengal', 'dist': 'Darjeeling', 'loc': 'Siliguri'},
+            # Gujarat
+            {'name': 'Ahmedabad Mandi', 'state': 'Gujarat', 'dist': 'Ahmedabad', 'loc': 'Jamalpur'},
+            {'name': 'Surat Market', 'state': 'Gujarat', 'dist': 'Surat', 'loc': 'Surat'},
+            # Rajasthan
+            {'name': 'Jaipur Mandi', 'state': 'Rajasthan', 'dist': 'Jaipur', 'loc': 'Muhana Terminal'},
+            {'name': 'Jodhpur Market', 'state': 'Rajasthan', 'dist': 'Jodhpur', 'loc': 'Bhagat Ki Kothi'},
+            # Punjab
+            {'name': 'Ludhiana Mandi', 'state': 'Punjab', 'dist': 'Ludhiana', 'loc': 'Gill Road'},
+            {'name': 'Amritsar Market', 'state': 'Punjab', 'dist': 'Amritsar', 'loc': 'Amritsar'},
+            # Haryana
+            {'name': 'Karnal Mandi', 'state': 'Haryana', 'dist': 'Karnal', 'loc': 'Karnal'},
+            {'name': 'Ambala Market', 'state': 'Haryana', 'dist': 'Ambala', 'loc': 'Ambala Cantt'},
+            # Uttar Pradesh
+            {'name': 'Lucknow Mandi', 'state': 'Uttar Pradesh', 'dist': 'Uttar Pradesh', 'loc': 'Aliganj'},
+            {'name': 'Kanpur Market', 'state': 'Uttar Pradesh', 'dist': 'Kanpur', 'loc': 'Kanpur'},
+            # Madhya Pradesh
+            {'name': 'Indore Mandi', 'state': 'Madhya Pradesh', 'dist': 'Indore', 'loc': 'Choithram'},
+            {'name': 'Bhopal Market', 'state': 'Madhya Pradesh', 'dist': 'Bhopal', 'loc': 'Karond'},
+            # Bihar
+            {'name': 'Patna Mandi', 'state': 'Bihar', 'dist': 'Patna', 'loc': 'Bazar Samiti'},
+            {'name': 'Muzaffarpur Market', 'state': 'Bihar', 'dist': 'Muzaffarpur', 'loc': 'Muzaffarpur'},
+            # Chhattisgarh
+            {'name': 'Raipur Mandi', 'state': 'Chhattisgarh', 'dist': 'Raipur', 'loc': 'Dumartara'},
+            # Jharkhand
+            {'name': 'Ranchi Mandi', 'state': 'Jharkhand', 'dist': 'Ranchi', 'loc': 'Pandra'},
+            # Assam
+            {'name': 'Guwahati Mandi', 'state': 'Assam', 'dist': 'Kamrup', 'loc': 'Guwahati'}
         ]
         mandis_db = []
         for m in mandis_list:
@@ -1091,6 +1153,12 @@ def health():
 # DATABASE INITIALIZATION (Runs in Gunicorn & Dev)
 # ─────────────────────────────────────────
 with app.app_context():
+    try:
+        if State.query.count() > 0 and Mandi.query.count() < 30:
+            print("Incomplete states/mandis list detected. Dropping and reseeding...")
+            db.drop_all()
+    except Exception as e:
+        print("Database not initialized yet:", e)
     db.create_all()
     _seed_static_data()
 
