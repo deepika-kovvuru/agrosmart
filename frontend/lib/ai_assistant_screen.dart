@@ -614,7 +614,7 @@ class _VoiceListeningDialogState extends State<_VoiceListeningDialog>
                 child: Text(
                   '"$_transcript"',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 13,
                     fontStyle: FontStyle.italic,
