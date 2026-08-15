@@ -1097,6 +1097,7 @@ def _seed_static_data():
         import random
         from datetime import datetime, timedelta
         
+        prices_to_insert = []
         for m_data in mandis_db:
             mandi = m_data['obj']
             
@@ -1126,21 +1127,22 @@ def _seed_static_data():
                     min_val = round(current_val * 0.95, 2)
                     max_val = round(current_val * 1.05, 2)
                     
-                    db.session.add(MarketPrice(
-                        mandi_id=mandi.id,
-                        crop_id=crop.id,
-                        minimum_price=min_val,
-                        maximum_price=max_val,
-                        modal_price=current_val,
-                        previous_price=prev_val,
-                        current_price=current_val,
-                        price_date=price_date,
-                        updated_at=datetime.combine(price_date, datetime.min.time()) + timedelta(hours=random.randint(8, 17)),
-                        unit='₹/quintal' if 'sugar' not in crop.crop_name.lower() else '₹/ton'
-                    ))
-        db.session.commit()
-
-    db.session.commit()
+                    prices_to_insert.append({
+                        'mandi_id': mandi.id,
+                        'crop_id': crop.id,
+                        'minimum_price': min_val,
+                        'maximum_price': max_val,
+                        'modal_price': current_val,
+                        'previous_price': prev_val,
+                        'current_price': current_val,
+                        'price_date': price_date,
+                        'updated_at': datetime.combine(price_date, datetime.min.time()) + timedelta(hours=random.randint(8, 17)),
+                        'unit': '₹/quintal' if 'sugar' not in crop.crop_name.lower() else '₹/ton'
+                    })
+        
+        if prices_to_insert:
+            db.session.bulk_insert_mappings(MarketPrice, prices_to_insert)
+            db.session.commit()
 
 
 @app.route('/api/health', methods=['GET'])
