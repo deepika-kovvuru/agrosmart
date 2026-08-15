@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Bot } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -73,6 +74,17 @@ const MainAppContent = () => {
           {renderActiveScreen()}
         </main>
       </div>
+
+      {/* Floating AI Assistant FAB (Matching Mobile Floating Action Button) */}
+      {activeTab !== 'ai' && (
+        <button
+          onClick={() => setActiveTab('ai')}
+          className="floating-ai-fab"
+          title="AgroSmart Voice AI Assistant"
+        >
+          <Bot size={28} />
+        </button>
+      )}
 
       {/* Mobile Bottom Navigation */}
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />

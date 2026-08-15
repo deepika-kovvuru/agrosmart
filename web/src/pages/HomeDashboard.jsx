@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  TrendingUp, 
-  Scan, 
-  Bot, 
-  Bug, 
+  Sprout, 
   CloudSun, 
+  Bug, 
+  TrendingUp, 
   Newspaper, 
+  User, 
   ArrowRight, 
-  CheckCircle2, 
   AlertTriangle,
-  RefreshCw
+  Scan,
+  Bot
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -35,7 +35,7 @@ export const HomeDashboard = ({ setActiveTab }) => {
           getLiveNews('All', 3),
         ]);
         setWeather(weatherData);
-        setPrices(priceData.slice(0, 3));
+        setPrices(priceData.slice(0, 4));
         setNews(newsData.slice(0, 3));
       } catch (e) {
         console.error(e);
@@ -46,6 +46,16 @@ export const HomeDashboard = ({ setActiveTab }) => {
 
     loadDashboard();
   }, [user]);
+
+  // Exact 6 Quick Actions matching mobile application
+  const quickActions = [
+    { id: 'advisory', label: 'Crop Advisory', icon: Sprout, color: '#2D6A4F', bg: 'rgba(45, 106, 79, 0.15)' },
+    { id: 'weather', label: 'Weather Forecast', icon: CloudSun, color: '#0288D1', bg: 'rgba(76, 201, 240, 0.15)' },
+    { id: 'pest', label: 'Pest & Disease', icon: Bug, color: '#E63946', bg: 'rgba(230, 57, 70, 0.15)' },
+    { id: 'prices', label: 'Market Prices', icon: TrendingUp, color: '#E07B39', bg: 'rgba(244, 162, 97, 0.15)' },
+    { id: 'news', label: 'Farming Tips', icon: Newspaper, color: '#9B59B6', bg: 'rgba(155, 89, 182, 0.15)' },
+    { id: 'profile', label: 'My Profile', icon: User, color: '#1ABC9C', bg: 'rgba(26, 188, 156, 0.15)' },
+  ];
 
   return (
     <div className="dashboard-container">
@@ -62,57 +72,46 @@ export const HomeDashboard = ({ setActiveTab }) => {
         </div>
       </div>
 
-      {/* Quick Action Grid */}
-      <div className="quick-actions-grid grid-4 mb-4">
-        <div className="action-card card" onClick={() => setActiveTab('scanner')}>
-          <div className="action-icon bg-mint">
-            <Scan size={26} color="#2D6A4F" />
-          </div>
-          <div className="action-info">
-            <h3>{t('smartScanner')}</h3>
-            <p>Scan crop or soil for Instant AI diagnosis</p>
-          </div>
-          <ArrowRight size={18} className="action-arrow" />
+      {/* Scanner Banner CTA */}
+      <div className="scanner-cta-card card mb-4" onClick={() => setActiveTab('scanner')}>
+        <div className="scanner-cta-icon">📷</div>
+        <div className="scanner-cta-info">
+          <h3>Smart AI Crop & Soil Scanner</h3>
+          <p>Scan your crop leaf, pest, or soil sample for instant AI diagnosis and care recommendations.</p>
         </div>
-
-        <div className="action-card card" onClick={() => setActiveTab('prices')}>
-          <div className="action-icon bg-orange">
-            <TrendingUp size={26} color="#E07B39" />
-          </div>
-          <div className="action-info">
-            <h3>{t('marketPrices')}</h3>
-            <p>Check 37 Mandis & live crop price trends</p>
-          </div>
-          <ArrowRight size={18} className="action-arrow" />
-        </div>
-
-        <div className="action-card card" onClick={() => setActiveTab('ai')}>
-          <div className="action-icon bg-blue">
-            <Bot size={26} color="#2196F3" />
-          </div>
-          <div className="action-info">
-            <h3>{t('aiAssistant')}</h3>
-            <p>Voice & text advisor for instant solutions</p>
-          </div>
-          <ArrowRight size={18} className="action-arrow" />
-        </div>
-
-        <div className="action-card card" onClick={() => setActiveTab('pest')}>
-          <div className="action-icon bg-red">
-            <Bug size={26} color="#E53935" />
-          </div>
-          <div className="action-info">
-            <h3>{t('pestManagement')}</h3>
-            <p>Regional pest alerts & organic control</p>
-          </div>
-          <ArrowRight size={18} className="action-arrow" />
-        </div>
+        <button className="btn btn-primary">
+          <Scan size={18} /> Open Scanner
+        </button>
       </div>
 
+      {/* Mobile-Matching 6 Quick Actions Grid */}
+      <h3 className="section-title mb-3">Quick Services</h3>
+      <div className="quick-actions-grid grid-4 mb-4">
+        {quickActions.map((action) => {
+          const Icon = action.icon;
+          return (
+            <div
+              key={action.id}
+              className="action-card card"
+              onClick={() => setActiveTab(action.id)}
+            >
+              <div className="action-icon" style={{ background: action.bg }}>
+                <Icon size={26} color={action.color} />
+              </div>
+              <div className="action-info">
+                <h3>{action.label}</h3>
+                <p>Access {action.label.toLowerCase()} details</p>
+              </div>
+              <ArrowRight size={18} className="action-arrow" />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Dashboard Columns */}
       <div className="dashboard-columns">
-        {/* Left Column: Weather & Active Crops */}
+        {/* Left Column: Weather & Mandi Prices */}
         <div className="dash-col-left">
-          {/* Weather Widget */}
           {weather && (
             <div className="weather-card card mb-4">
               <div className="weather-header">
@@ -146,10 +145,10 @@ export const HomeDashboard = ({ setActiveTab }) => {
             </div>
           )}
 
-          {/* Live Market Price Preview */}
+          {/* Mandi Market Price List */}
           <div className="card mb-4">
             <div className="card-header">
-              <h3>📈 {t('marketPrices')} Highlights</h3>
+              <h3>📈 Market Prices Highlights</h3>
               <button onClick={() => setActiveTab('prices')} className="view-all-btn">
                 View All <ArrowRight size={14} />
               </button>
@@ -157,15 +156,15 @@ export const HomeDashboard = ({ setActiveTab }) => {
 
             <div className="price-list">
               {prices.map((p) => (
-                <div key={p.id} className="price-row">
+                <div key={p.id || p.crop} className="price-row">
                   <div className="price-crop-info">
                     <span className="crop-name">{p.crop}</span>
                     <span className="mandi-name">{p.mandi}</span>
                   </div>
                   <div className="price-values">
                     <span className="price-num">₹{p.modal_price} / Qtl</span>
-                    <span className={`trend-tag ${p.trend === 'Rising' ? 'rising' : 'falling'}`}>
-                      {p.trend === 'Rising' ? '▲' : '▼'} {p.percentage_change}%
+                    <span className={`trend-tag ${p.trend === 'Rising' || p.price_change > 0 ? 'rising' : 'falling'}`}>
+                      {p.trend === 'Rising' || p.price_change > 0 ? '▲' : '▼'} {p.percentage_change}%
                     </span>
                   </div>
                 </div>
@@ -174,9 +173,8 @@ export const HomeDashboard = ({ setActiveTab }) => {
           </div>
         </div>
 
-        {/* Right Column: Live News & Pest Alerts */}
+        {/* Right Column: Live News & AI Assistant Banner */}
         <div className="dash-col-right">
-          {/* Live News Ticker */}
           <div className="card mb-4">
             <div className="card-header">
               <div className="flex-align gap-2">
@@ -204,14 +202,13 @@ export const HomeDashboard = ({ setActiveTab }) => {
             </div>
           </div>
 
-          {/* Quick AI Tip Banner */}
           <div className="ai-cta-card card">
             <div className="ai-cta-icon">🤖</div>
             <div className="ai-cta-info">
-              <h4>Need specific advice for your crop?</h4>
-              <p>Ask AgroSmart AI voice assistant for custom solutions.</p>
+              <h4>AgroSmart Voice AI Assistant</h4>
+              <p>Have questions about your crop? Ask our AI assistant by voice or text.</p>
               <button onClick={() => setActiveTab('ai')} className="btn btn-primary mt-2">
-                Talk to AI Assistant
+                <Bot size={18} /> Talk to AI Assistant
               </button>
             </div>
           </div>
@@ -219,8 +216,34 @@ export const HomeDashboard = ({ setActiveTab }) => {
       </div>
 
       <style>{`
-        .dashboard-container {
-          width: 100%;
+        .section-title {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+
+        .scanner-cta-card {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          background: linear-gradient(135deg, var(--brand-mint) 0%, var(--bg-surface) 100%);
+          border-color: var(--brand-light);
+          cursor: pointer;
+        }
+
+        .scanner-cta-icon {
+          font-size: 2.8rem;
+        }
+
+        .scanner-cta-info h3 {
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: var(--brand-primary);
+        }
+
+        .scanner-cta-info p {
+          font-size: 0.85rem;
+          color: var(--text-secondary);
         }
 
         .quick-actions-grid {
@@ -250,21 +273,15 @@ export const HomeDashboard = ({ setActiveTab }) => {
           flex-shrink: 0;
         }
 
-        .bg-mint { background: rgba(82, 183, 136, 0.15); }
-        .bg-orange { background: rgba(224, 123, 57, 0.15); }
-        .bg-blue { background: rgba(33, 150, 243, 0.15); }
-        .bg-red { background: rgba(229, 57, 53, 0.15); }
-
         .action-info h3 {
-          font-size: 0.95rem;
+          font-size: 0.925rem;
           font-weight: 700;
           color: var(--text-primary);
         }
 
         .action-info p {
-          font-size: 0.78rem;
+          font-size: 0.75rem;
           color: var(--text-secondary);
-          line-height: 1.3;
         }
 
         .action-arrow {
@@ -501,6 +518,7 @@ export const HomeDashboard = ({ setActiveTab }) => {
 
         .gap-2 { gap: 8px; }
         .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 12px; }
         .mb-4 { margin-bottom: 24px; }
         .mt-2 { margin-top: 8px; }
       `}</style>
