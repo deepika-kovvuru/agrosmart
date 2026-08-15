@@ -1155,18 +1155,6 @@ def health():
     return jsonify({'status': 'ok', 'service': 'AGROSMART API'}), 200
 
 
-@app.route('/migrate_db_force', methods=['GET'])
-def migrate_db_force():
-    try:
-        db.drop_all()
-        db.create_all()
-        _seed_static_data()
-        return "Database successfully migrated and re-seeded!", 200
-    except Exception as e:
-        return f"Migration failed: {str(e)}", 500
-
-
-
 
 # ─────────────────────────────────────────
 # DATABASE INITIALIZATION (Runs in Gunicorn & Dev)
