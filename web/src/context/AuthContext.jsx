@@ -29,15 +29,15 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (username, password) => {
+  const login = async (emailOrPhone, password) => {
     setLoading(true);
     try {
       const res = await apiFetch('/login', {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email: emailOrPhone, password }),
       });
       
-      const userData = res.user || { username, id: res.user_id || 1 };
+      const userData = res.user || { name: emailOrPhone, email: emailOrPhone, id: res.user_id || 1 };
       setUser(userData);
       localStorage.setItem('agrosmart_user', JSON.stringify(userData));
       if (res.token) {
@@ -54,11 +54,20 @@ export const AuthProvider = ({ children }) => {
   const signup = async (formData) => {
     setLoading(true);
     try {
+      const payload = {
+        name: formData.username || formData.name,
+        email: formData.email || `${formData.username || 'farmer'}@agrosmart.com`,
+        phone: formData.phone,
+        password: formData.password,
+        confirm_password: formData.confirm_password || formData.password,
+        state: formData.state,
+      };
+
       const res = await apiFetch('/signup', {
         method: 'POST',
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
-      return { success: true, message: res.message || 'Account created successfully!' };
+      return { success: true, message: res.message || 'User registered successfully!' };
     } catch (err) {
       return { success: false, error: err.message };
     } finally {

@@ -39,13 +39,13 @@ export const Login = ({ onSwitchToSignup }) => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label className="form-label">{t('login')} Username</label>
+            <label className="form-label">Email or Mobile Number</label>
             <div className="input-icon-wrap">
               <User size={18} className="input-icon" />
               <input
                 type="text"
                 className="form-input"
-                placeholder="Enter username"
+                placeholder="Enter email or mobile number"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
