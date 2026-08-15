@@ -525,4 +525,21 @@ class ApiService {
     } catch (_) {}
     return [];
   }
+
+  static Future<Map<String, dynamic>> askAI(String message) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/api/ask-ai'),
+        headers: _headers,
+        body: jsonEncode({'message': message}),
+      );
+      final decoded = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return {'success': true, 'response': decoded['response']};
+      }
+      return {'success': false, 'error': decoded['error'] ?? 'AI request failed'};
+    } catch (e) {
+      return {'success': false, 'error': 'Connection failed: $e'};
+    }
+  }
 }

@@ -221,4 +221,51 @@ class OfflineApiService {
 
   static Future<Map<String, dynamic>> getCurrentUser() async =>
       getCached('/get_current_user', 'current_user');
+
+  static Future<Map<String, dynamic>> askAI(String message) async {
+    if (ConnectivityService.instance.isOnlineNow) {
+      try {
+        final res = await http
+            .post(
+              Uri.parse('${ApiConfig.baseUrl}/api/ask-ai'),
+              headers: _headers,
+              body: jsonEncode({'message': message}),
+            )
+            .timeout(_timeout);
+        final decoded = jsonDecode(res.body);
+        if (res.statusCode == 200) {
+          return {'success': true, 'response': decoded['response'], 'offline': false};
+        }
+      } catch (_) {}
+    }
+
+    // Offline fallback expert responses
+    final msg = message.toLowerCase();
+    String responseText = "";
+    if (msg.contains("chilli") || msg.contains("pepper")) {
+      if (msg.contains("pest") || msg.contains("insect") || msg.contains("disease") || msg.contains("control")) {
+        responseText = "For red chilli, common pests are thrips, mites, and pod borers. I recommend spraying Neem Oil 10,000 PPM @ 2ml/L, or Fipronil 5% SC @ 2ml/L for thrips control. Ensure yellow and blue sticky traps are installed in your field.";
+      } else {
+        responseText = "Red chilli grows best in well-drained loamy soil with a pH of 6.0-7.0. Popular high-yielding varieties include Teja, Guntur Sannam, and Byadagi. Keep the soil moist but avoid logging.";
+      }
+    } else if (msg.contains("paddy") || msg.contains("rice")) {
+      if (msg.contains("pest") || msg.contains("insect") || msg.contains("disease") || msg.contains("control")) {
+        responseText = "In paddy fields, watch out for Brown Planthopper (BPH) and Stem Borer. Spray Imidacloprid 17.8% SL @ 0.3ml/L water for BPH, or apply Cartap Hydrochloride 4G granules @ 10kg/acre to control stem borers.";
+      } else {
+        responseText = "Paddy thrives in clayey loam soils that retain moisture. High-yielding varieties include Swarna, Samba Mahsuri, and IR64. Maintain shallow standing water during early growth.";
+      }
+    } else if (msg.contains("cotton")) {
+      responseText = "For cotton crops, major threats are Whiteflies and Pink Bollworm. Spray Acetamiprid 20% SP @ 0.2g/L or use pheromone traps (5 per acre) for Pink Bollworms.";
+    } else if (msg.contains("hello") || msg.contains("hi") || msg.contains("hey")) {
+      responseText = "Hello! I am your Agrosmart AI Assistant. How can I help you with your crop health, fertilizer scheduling, irrigation, or pest protection today?";
+    } else {
+      responseText = "I am currently offline. I can provide general advice on Paddy, Cotton, or Chilli, but for custom queries, please connect to the internet.";
+    }
+
+    return {
+      'success': true,
+      'response': responseText + "\n\n*(Showing cached/offline advisory recommendation)*",
+      'offline': true
+    };
+  }
 }

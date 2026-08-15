@@ -4,6 +4,8 @@ import 'app_theme.dart';
 import 'api_service.dart';
 import 'user_session.dart';
 import 'translation_provider.dart';
+import 'ai_assistant_screen.dart';
+
 
 class CropAdvisoryScreen extends StatefulWidget {
   const CropAdvisoryScreen({super.key});
@@ -149,23 +151,14 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
     }
   }
 
-  void _askAI() async {
-    if (user == null) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Generating AI advisory recommendations...'.tr), backgroundColor: AppTheme.primary),
-    );
+  void _askAI() {
     final cropName = _crops[_selectedCrop];
-    final res = await ApiService.addCropAdvisory(
-      userId: user!.id,
-      crop: cropName,
-      title: '$cropName Disease Prevention'.tr,
-      description: 'Humid weather may promote bacterial blight. Spray Pseudomonas fluorescens @ 10g/L to protect crop leaves.'.tr,
-      emoji: '🔬',
-      priority: 'Medium',
-    );
-    if (res['success'] == true) {
-      _loadAdvisories();
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AIAssistantScreen(initialCrop: cropName),
+      ),
+    ).then((_) => _loadAdvisories());
   }
 
   void _addActivity() async {
