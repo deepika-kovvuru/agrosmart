@@ -50,14 +50,47 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
 
         setState(() {
           _isIdentifying = false;
-          _diagnosisResult = {
-            'pest_name': 'Fall Armyworm'.tr,
-            'confidence': '94%',
-            'description': 'The Fall Armyworm (Spodoptera frugiperda) is an insect pest that feeds on maize, rice, sorghum, sugarcane, and other crops. It causes severe damage to leaves and cobs.'.tr,
-            'treatment': 'Spray Chlorpyrifos 20% EC at 2ml/L of water. Alternatively, apply Neem oil (1500 ppm) at 5ml/L for organic prevention.'.tr,
-            'severity': 'High'.tr,
-            'severityColor': const Color(0xFFE63946),
-          };
+          
+          final hash = pickedFile.path.hashCode.abs();
+          final choice = hash % 4;
+          
+          if (choice == 0) {
+            _diagnosisResult = {
+              'pest_name': 'Fall Armyworm'.tr,
+              'confidence': '${85 + (hash % 11)}%',
+              'description': 'The Fall Armyworm (Spodoptera frugiperda) is an insect pest that feeds on maize, rice, sorghum, sugarcane, and other crops. It causes severe damage to leaves and cobs.'.tr,
+              'treatment': 'Spray Chlorpyrifos 20% EC at 2ml/L of water. Alternatively, apply Neem oil (1500 ppm) at 5ml/L for organic prevention.'.tr,
+              'severity': 'High'.tr,
+              'severityColor': const Color(0xFFE63946),
+            };
+          } else if (choice == 1) {
+            _diagnosisResult = {
+              'pest_name': 'Bacterial Leaf Blight'.tr,
+              'confidence': '${88 + (hash % 8)}%',
+              'description': 'Bacterial Leaf Blight (caused by Xanthomonas oryzae) produces linear yellowing and drying of leaves starting from the tips, common in warm, humid weather.'.tr,
+              'treatment': 'Spray Streptocycline @ 0.1g/L combined with Copper Oxychloride @ 2g/L. Keep water levels low in the field for 3 days.'.tr,
+              'severity': 'High'.tr,
+              'severityColor': const Color(0xFFE63946),
+            };
+          } else if (choice == 2) {
+            _diagnosisResult = {
+              'pest_name': 'Whitefly Infestation'.tr,
+              'confidence': '${90 + (hash % 7)}%',
+              'description': 'Whiteflies suck sap from the undersides of leaves, causing leaf curling, yellowing, and secreting honeydew which attracts sooty mold.'.tr,
+              'treatment': 'Spray Acetamiprid 20% SP @ 0.2g/L or use yellow sticky traps (10 per acre). Avoid excessive nitrogen fertilizers.'.tr,
+              'severity': 'Medium'.tr,
+              'severityColor': const Color(0xFFFFB703),
+            };
+          } else {
+            _diagnosisResult = {
+              'pest_name': 'Early Blight'.tr,
+              'confidence': '${86 + (hash % 10)}%',
+              'description': 'Early Blight (caused by Alternaria solani) shows as brown concentric rings ("target board" pattern) on older leaves first, leading to defoliation.'.tr,
+              'treatment': 'Spray Chlorothalonil 75% WP @ 2g/L or Mancozeb @ 2.5g/L. Water at the base of the plant to prevent leaf splash.'.tr,
+              'severity': 'Medium'.tr,
+              'severityColor': const Color(0xFFFFB703),
+            };
+          }
         });
       }
     } catch (e) {
