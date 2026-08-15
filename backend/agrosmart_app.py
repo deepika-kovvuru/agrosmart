@@ -1155,17 +1155,23 @@ def health():
     return jsonify({'status': 'ok', 'service': 'AGROSMART API'}), 200
 
 
+@app.route('/migrate_db_force', methods=['GET'])
+def migrate_db_force():
+    try:
+        db.drop_all()
+        db.create_all()
+        _seed_static_data()
+        return "Database successfully migrated and re-seeded!", 200
+    except Exception as e:
+        return f"Migration failed: {str(e)}", 500
+
+
+
 
 # ─────────────────────────────────────────
 # DATABASE INITIALIZATION (Runs in Gunicorn & Dev)
 # ─────────────────────────────────────────
 with app.app_context():
-    try:
-        if State.query.count() > 0 and Mandi.query.count() < 30:
-            print("Incomplete states/mandis list detected. Dropping and reseeding...")
-            db.drop_all()
-    except Exception as e:
-        print("Database not initialized yet:", e)
     db.create_all()
     _seed_static_data()
 
