@@ -1390,3 +1390,42 @@ body {
     color: white;
     border-color: #52b788;
 }
+
+/* Responsive adjustments for real mobile screens */
+@media (max-width: 480px) {
+    body {
+        background-color: var(--bg-main);
+        overflow-y: auto;
+    }
+    
+    .device-wrapper {
+        padding: 0;
+        width: 100%;
+        height: 100vh;
+    }
+    
+    .phone-frame {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+        padding: 0;
+        box-shadow: none;
+    }
+    
+    .phone-viewport {
+        border-radius: 0;
+    }
+    
+    .phone-status-bar {
+        display: none; /* Hide status bar since the phone browser already has one */
+    }
+    
+    .screen-view {
+        padding-top: 20px; /* reduce padding since status bar is hidden */
+    }
+    
+    .sliding-overlay {
+        padding-top: 20px;
+    }
+}

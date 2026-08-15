@@ -1,6 +1,6 @@
 // app.js - Same to Same Connected Mobile Clone Logic
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://agrosmart-app-service.onrender.com';
 
 // Global State
 let currentUser = null;
