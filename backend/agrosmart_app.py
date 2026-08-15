@@ -1155,6 +1155,70 @@ def health():
     return jsonify({'status': 'ok', 'service': 'AGROSMART API'}), 200
 
 
+@app.route('/api/ask-ai', methods=['POST'])
+def ask_ai():
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({'error': 'Message required'}), 400
+            
+        msg = data['message'].lower().strip()
+        
+        response_text = ""
+        if "chilli" in msg or "pepper" in msg:
+            if "pest" in msg or "insect" in msg or "disease" in msg or "control" in msg:
+                response_text = "For red chilli, common pests are thrips, mites, and pod borers. I recommend spraying Neem Oil 10,000 PPM @ 2ml/L, or Fipronil 5% SC @ 2ml/L for thrips control. Ensure yellow and blue sticky traps are installed in your field."
+            elif "fertilizer" in msg or "npk" in msg or "nutri" in msg:
+                response_text = "Chilli crop requires 120:60:60 kg/ha of N:P:K. Apply the full dose of P and half dose of N and K at planting. Top dress the remaining N and K in two equal splits at 30 and 60 days after transplanting."
+            elif "irrigation" in msg or "water" in msg:
+                response_text = "Chilli is sensitive to waterlogging. Maintain moisture using drip irrigation (irrigate for 1-2 hours daily or every alternate day depending on soil dryness). Suspend irrigation during harvest intervals."
+            else:
+                response_text = "Red chilli grows best in well-drained loamy soil with a pH of 6.0-7.0. Popular high-yielding varieties include Teja, Guntur Sannam, and Byadagi. Keep the soil moist but avoid logging."
+        elif "paddy" in msg or "rice" in msg:
+            if "pest" in msg or "insect" in msg or "disease" in msg or "control" in msg:
+                response_text = "In paddy fields, watch out for Brown Planthopper (BPH) and Stem Borer. Spray Imidacloprid 17.8% SL @ 0.3ml/L water for BPH, or apply Cartap Hydrochloride 4G granules @ 10kg/acre to control stem borers."
+            elif "fertilizer" in msg or "npk" in msg or "nutri" in msg:
+                response_text = "Recommended NPK for Paddy is 120:40:40 kg/ha. Apply nitrogen in three equal splits: at transplanting, active tillering (30 days), and panicle initiation (60 days) to boost grain yield."
+            elif "irrigation" in msg or "water" in msg:
+                response_text = "Paddy needs continuous shallow submergence (2-5 cm of standing water) during vegetative and flowering stages. Drain the water fully 10-15 days before harvesting to allow drying."
+            else:
+                response_text = "Paddy thrives in clayey loam soils that retain moisture. High-yielding varieties include Swarna, Samba Mahsuri, and IR64. Maintain shallow standing water during early growth."
+        elif "cotton" in msg:
+            if "pest" in msg or "insect" in msg or "disease" in msg or "control" in msg:
+                response_text = "For cotton crops, major threats are Whiteflies and Pink Bollworm. Spray Acetamiprid 20% SP @ 0.2g/L or use pheromone traps (5 per acre) for Pink Bollworms. Avoid excessive nitrogen which attracts whiteflies."
+            elif "fertilizer" in msg or "npk" in msg or "nutri" in msg:
+                response_text = "Apply 100:50:50 kg/ha N:P:K for cotton. Apply half nitrogen and full phosphorus/potash at sowing, and top-dress the remaining nitrogen in splits during squaring and flowering stages."
+            elif "irrigation" in msg or "water" in msg:
+                response_text = "Cotton is deep-rooted and drought-tolerant but needs irrigation during flowering and boll development. Drip irrigation is highly recommended to prevent boll shedding."
+            else:
+                response_text = "Cotton grows best in black cotton soil (regur) which has high water-retaining capacity. Keep the field free of weeds during the first 60 days of growth."
+        elif "maize" in msg or "corn" in msg:
+            if "pest" in msg or "insect" in msg or "disease" in msg or "control" in msg:
+                response_text = "Fall Armyworm is the most critical pest for Maize. Spray Chlorpyrifos 20% EC @ 2ml/L water or apply Emamectin Benzoate 5% SG @ 0.4g/L directly into the leaf whorls at early infestation."
+            else:
+                response_text = "Maize requires well-drained fertile loam soils. Keep soil moist during tasseling and silking stages, as water stress then can reduce yield by up to 50%."
+        elif "tomato" in msg:
+            if "pest" in msg or "insect" in msg or "disease" in msg or "control" in msg:
+                response_text = "For tomato plants, watch for Leaf Miners and Early Blight. Spray Chlorothalonil 75% WP @ 2g/L for blight, and use yellow sticky cards to capture leaf miners."
+            else:
+                response_text = "Tomatoes need warm weather and structured staking. Water at the base of the plant rather than on leaves to prevent fungal infections."
+        elif "weather" in msg or "rain" in msg:
+            response_text = "Please visit the Weather Forecast section from the home dashboard. I recommend checking daily rain probability to schedule your sprays and fertilizer applications."
+        elif "hello" in msg or "hi" in msg or "hey" in msg:
+            response_text = "Hello! I am your Agrosmart AI Assistant. How can I help you with your crop health, fertilizer scheduling, irrigation, or pest protection today?"
+        else:
+            response_text = "To help you best, could you please specify the crop you are cultivating (e.g. Paddy, Cotton, Chilli, Maize, Groundnut) and the issue (irrigation, fertilizer, or pest control)?"
+
+        return jsonify({
+            'query': data['message'],
+            'response': response_text,
+            'timestamp': datetime.utcnow().isoformat() + 'Z'
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
 
 # ─────────────────────────────────────────
 # DATABASE INITIALIZATION (Runs in Gunicorn & Dev)
