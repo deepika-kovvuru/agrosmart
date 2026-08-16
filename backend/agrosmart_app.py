@@ -1149,6 +1149,27 @@ def _seed_static_data():
     """Seed treatments, tips, news if tables are empty"""
 
 
+    # Seed Default Users
+    if User.query.filter_by(email='deep@gmail.com').first() is None:
+        deep_user = User(
+            name='Farmer Deepika',
+            email='deep@gmail.com',
+            phone='9876543210',
+            password=generate_password_hash('12345678'),
+            state='Andhra Pradesh'
+        )
+        db.session.add(deep_user)
+
+    if User.query.filter_by(email='demo@agrosmart.com').first() is None:
+        demo_user = User(
+            name='Agro Farmer',
+            email='demo@agrosmart.com',
+            phone='9999999999',
+            password=generate_password_hash('12345678'),
+            state='Telangana'
+        )
+        db.session.add(demo_user)
+
     # Treatments
     if Treatment.query.count() == 0:
         treatments = [
