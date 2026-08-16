@@ -23,21 +23,21 @@ class ApiConfig {
   /// Tests candidates in order and picks the first responsive one.
   /// Falls back to primary URL if none respond.
   static Future<void> resolveBaseUrl() async {
+    final candidates = <String>[];
     if (kIsWeb) {
-      _baseUrl = 'https://agrosmart-app-service.onrender.com';
-      return;
+      candidates.add(Uri.base.origin);
     }
-
-    final candidates = [_primaryUrl, ..._fallbacks];
+    candidates.addAll(['http://localhost:5000', 'http://127.0.0.1:5000', _primaryUrl, ..._fallbacks]);
 
     for (final url in candidates) {
+      if (url.isEmpty) continue;
       try {
         final res = await http
             .get(
               Uri.parse('$url/api/health'),
               headers: {'Bypass-Tunnel-Reminder': 'true'},
             )
-            .timeout(const Duration(milliseconds: 2000));
+            .timeout(const Duration(milliseconds: 1500));
 
         if (res.statusCode == 200) {
           _baseUrl = url;
