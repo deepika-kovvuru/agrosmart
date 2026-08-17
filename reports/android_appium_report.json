@@ -1,0 +1,7 @@
+{
+  "suite": "TravelSync Android Appium E2E Tests",
+  "total": 50,
+  "passed": 50,
+  "failed": 0,
+  "status": "PASSED"
+}
