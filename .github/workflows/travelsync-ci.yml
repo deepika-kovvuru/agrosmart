@@ -140,13 +140,18 @@ jobs:
           python-version: '3.11'
 
       - name: Run Load & Performance Stress Test Suite (300 Scenarios)
-        run: python tests/test_load.py
+        run: |
+          python tests/test_load.py
+          python tests/make_excel.py
 
       - name: Upload Load Test Metrics Artifact
         uses: actions/upload-artifact@v4
         with:
           name: travelsync-load-test-metrics
-          path: reports/load_report.json
+          path: |
+            reports/load_report.xlsx
+            reports/load_report.csv
+            reports/load_report.json
 
 
   # 7. Verify Live Web Deployment
@@ -177,13 +182,18 @@ jobs:
           python-version: '3.11'
 
       - name: Run Web E2E Tests
-        run: python tests/test_web_e2e.py
+        run: |
+          python tests/test_web_e2e.py
+          python tests/make_excel.py
 
       - name: Upload Web E2E Artifact
         uses: actions/upload-artifact@v4
         with:
           name: travelsync-web-e2e-report
-          path: reports/web_e2e_report.json
+          path: |
+            reports/web_e2e_report.xlsx
+            reports/web_e2e_report.csv
+            reports/web_e2e_report.json
 
 
   # 9. Android Appium Mobile E2E Tests
