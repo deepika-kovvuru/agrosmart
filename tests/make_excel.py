@@ -150,6 +150,12 @@ def generate_all_excel_reports():
         create_simple_xlsx("reports/web_e2e_report.xlsx", "Web E2E Results", ["Metric", "Value"], rows)
         write_csv("reports/web_e2e_report.csv", ["Metric", "Value"], rows)
 
+    # 3. Android Appium E2E Test Excel & CSV
+    if mob_e2e_data:
+        rows = [[k, mob_e2e_data[k]] for k in mob_e2e_data]
+        create_simple_xlsx("reports/android_appium_report.xlsx", "Android Appium Results", ["Metric", "Value"], rows)
+        write_csv("reports/android_appium_report.csv", ["Metric", "Value"], rows)
+
     # 3. Unified All Test Suites Excel Sheet & CSV
     summary_rows = [
         ["Functional Testing", 300, func_data.get("passed", 300), func_data.get("failed", 0), "PASSED"],
