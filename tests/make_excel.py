@@ -76,7 +76,7 @@ def create_simple_xlsx(filename, sheet_name, headers, rows):
     for col_idx, h in enumerate(headers):
         cell_ref = "{}{}".format(get_col_letter(col_idx), 1)
         h_str = str(h).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
-        row_xml.append('<c r="{}" t="inlineStr" s="1"><is><t>{}</t></is></c>'.format(cell_ref, h_str))
+        row_xml.append('<c r="{}" t="str" s="1"><v>{}</v></c>'.format(cell_ref, h_str))
     row_xml.append('</row>')
     sheet_data.append("".join(row_xml))
 
@@ -90,7 +90,7 @@ def create_simple_xlsx(filename, sheet_name, headers, rows):
             if isinstance(val, (int, float)) and not isinstance(val, bool):
                 row_xml.append('<c r="{}" t="n"><v>{}</v></c>'.format(cell_ref, val))
             else:
-                row_xml.append('<c r="{}" t="inlineStr"><is><t>{}</t></is></c>'.format(cell_ref, val_str))
+                row_xml.append('<c r="{}" t="str"><v>{}</v></c>'.format(cell_ref, val_str))
         row_xml.append('</row>')
         sheet_data.append("".join(row_xml))
 
@@ -130,17 +130,27 @@ def generate_all_excel_reports():
     mob_e2e_data = load_json("android_appium_report.json")
     unified_data = load_json("unified_report.json")
 
-    # 1. Load Test Excel
+    import csv
+    def write_csv(filepath, headers, rows):
+        with open(filepath, "w") if not hasattr(bytes, "decode") else open(filepath, "w") as f:
+            writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+            writer.writerow(headers)
+            for r in rows:
+                writer.writerow([str(item) for item in r])
+
+    # 1. Load Test Excel & CSV
     if load_data:
         rows = [[k, load_data[k]] for k in load_data]
         create_simple_xlsx("reports/load_report.xlsx", "Load Test Metrics", ["Metric", "Value"], rows)
+        write_csv("reports/load_report.csv", ["Metric", "Value"], rows)
 
-    # 2. Web E2E Test Excel
+    # 2. Web E2E Test Excel & CSV
     if web_e2e_data:
         rows = [[k, web_e2e_data[k]] for k in web_e2e_data]
         create_simple_xlsx("reports/web_e2e_report.xlsx", "Web E2E Results", ["Metric", "Value"], rows)
+        write_csv("reports/web_e2e_report.csv", ["Metric", "Value"], rows)
 
-    # 3. Unified All Test Suites Excel Sheet
+    # 3. Unified All Test Suites Excel Sheet & CSV
     summary_rows = [
         ["Functional Testing", 300, func_data.get("passed", 300), func_data.get("failed", 0), "PASSED"],
         ["Load & Stress Testing", 300, load_data.get("passed", 300), load_data.get("failed", 0), "PASSED"],
@@ -152,6 +162,8 @@ def generate_all_excel_reports():
     ]
     create_simple_xlsx("reports/travelsync_unified_report.xlsx", "CI-CD Test Summary", 
                       ["Test Domain", "Total Cases", "Passed", "Failed", "Status"], summary_rows)
+    write_csv("reports/travelsync_unified_report.csv",
+              ["Test Domain", "Total Cases", "Passed", "Failed", "Status"], summary_rows)
 
     print("[EXCEL GENERATOR] Successfully created native .xlsx files in reports/")
 
