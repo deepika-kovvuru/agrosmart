@@ -1,13 +1,13 @@
 {
-  "project": "TravelSync",
-  "timestamp": "2026-08-17 06:06:31 UTC",
-  "status": "PASSED",
-  "total_tests": 1050,
-  "total_failed": 0,
-  "functional_passed": 300,
-  "load_passed": 300,
-  "vulnerability_passed": 300,
-  "web_unit_passed": 50,
-  "web_e2e_passed": 50,
+  "status": "PASSED", 
+  "web_unit_passed": 50, 
+  "timestamp": "2026-08-18 04:09:11 UTC", 
+  "vulnerability_passed": 300, 
+  "total_failed": 0, 
+  "web_e2e_passed": 50, 
+  "functional_passed": 300, 
+  "project": "TravelSync", 
+  "total_tests": 1050, 
+  "load_passed": 300, 
   "mobile_e2e_passed": 50
 }

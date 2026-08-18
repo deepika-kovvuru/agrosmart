@@ -12,7 +12,7 @@ import time
 class TravelSyncLoadTestBase(unittest.TestCase):
     def simulate_load_scenario(self, scenario_name, virtual_users, duration_ms, latency_ms):
         # Simulate high concurrency execution
-        self.assertTrue(latency_ms < 200, f"Latency {latency_ms}ms exceeded 200ms threshold")
+        self.assertTrue(latency_ms < 200, "Latency {}ms exceeded 200ms threshold".format(latency_ms))
         return {
             "scenario": scenario_name,
             "virtual_users": virtual_users,
@@ -25,7 +25,7 @@ class TravelSyncLoadTestBase(unittest.TestCase):
 def make_load_test(scenario_id, module_name, vu_count):
     def test_func(self):
         res = self.simulate_load_scenario(
-            f"LOAD_{scenario_id:03d}_{module_name}",
+            "LOAD_{:03d}_{}".format(scenario_id, module_name),
             virtual_users=vu_count,
             duration_ms=100 + (scenario_id % 50),
             latency_ms=15 + (scenario_id % 35)
@@ -60,7 +60,7 @@ load_classes = [
 scenario_counter = 1
 for test_cls, name, base_vu in load_classes:
     for i in range(1, 31):
-        method_name = f"test_load_{scenario_counter:03d}_{name}_scenario_{i:02d}"
+        method_name = "test_load_{:03d}_{}_scenario_{:02d}".format(scenario_counter, name, i)
         setattr(test_cls, method_name, make_load_test(scenario_counter, name, base_vu + (i * 10)))
         scenario_counter += 1
 
@@ -85,8 +85,16 @@ if __name__ == "__main__":
         "status": "PASSED" if result.wasSuccessful() else "FAILED"
     }
     import os
-    os.makedirs("reports", exist_ok=True)
+    import csv
+    if not os.path.exists("reports"):
+        os.makedirs("reports")
     with open("reports/load_report.json", "w") as f:
         json.dump(report_data, f, indent=2)
         
-    print(f"\n[TRAVELSYNC LOAD TEST SUITE RESULTS] Total: {report_data['total_scenarios']}, Passed: {report_data['passed']}, Failed: {report_data['failed']}")
+    with open("reports/load_report.csv", "w") if not hasattr(bytes, "decode") else open("reports/load_report.csv", "w") as f:
+        writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+        writer.writerow(["Metric", "Value"])
+        for k, v in report_data.items():
+            writer.writerow([k, str(v)])
+        
+    print("\n[TRAVELSYNC LOAD TEST SUITE RESULTS] Total: {}, Passed: {}, Failed: {}".format(report_data['total_scenarios'], report_data['passed'], report_data['failed']))

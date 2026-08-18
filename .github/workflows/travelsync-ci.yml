@@ -233,6 +233,7 @@ jobs:
           python tests/test_web_e2e.py
           python tests/test_android_e2e.py
           python tests/generate_unified_report.py
+          python tests/make_excel.py
 
       - name: Publish Step Summary to GitHub Actions
         run: cat reports/unified_summary.md >> $GITHUB_STEP_SUMMARY
