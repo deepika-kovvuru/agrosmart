@@ -138,25 +138,43 @@ def generate_all_excel_reports():
             for r in rows:
                 writer.writerow([str(item) for item in r])
 
-    # 1. Load Test Excel & CSV
+    # 1. Functional Test Excel & CSV
+    if func_data:
+        rows = [[k, func_data[k]] for k in func_data]
+        create_simple_xlsx("reports/functional_report.xlsx", "Functional Test Results", ["Metric", "Value"], rows)
+        write_csv("reports/functional_report.csv", ["Metric", "Value"], rows)
+
+    # 2. Security Test Excel & CSV
+    if sec_data:
+        rows = [[k, sec_data[k]] for k in sec_data]
+        create_simple_xlsx("reports/security_report.xlsx", "Security Audit Results", ["Metric", "Value"], rows)
+        write_csv("reports/security_report.csv", ["Metric", "Value"], rows)
+
+    # 3. Web Unit Test Excel & CSV
+    if web_unit_data:
+        rows = [[k, web_unit_data[k]] for k in web_unit_data]
+        create_simple_xlsx("reports/web_unit_report.xlsx", "Web Unit Results", ["Metric", "Value"], rows)
+        write_csv("reports/web_unit_report.csv", ["Metric", "Value"], rows)
+
+    # 4. Load Test Excel & CSV
     if load_data:
         rows = [[k, load_data[k]] for k in load_data]
         create_simple_xlsx("reports/load_report.xlsx", "Load Test Metrics", ["Metric", "Value"], rows)
         write_csv("reports/load_report.csv", ["Metric", "Value"], rows)
 
-    # 2. Web E2E Test Excel & CSV
+    # 5. Web E2E Test Excel & CSV
     if web_e2e_data:
         rows = [[k, web_e2e_data[k]] for k in web_e2e_data]
         create_simple_xlsx("reports/web_e2e_report.xlsx", "Web E2E Results", ["Metric", "Value"], rows)
         write_csv("reports/web_e2e_report.csv", ["Metric", "Value"], rows)
 
-    # 3. Android Appium E2E Test Excel & CSV
+    # 6. Android Appium E2E Test Excel & CSV
     if mob_e2e_data:
         rows = [[k, mob_e2e_data[k]] for k in mob_e2e_data]
         create_simple_xlsx("reports/android_appium_report.xlsx", "Android Appium Results", ["Metric", "Value"], rows)
         write_csv("reports/android_appium_report.csv", ["Metric", "Value"], rows)
 
-    # 3. Unified All Test Suites Excel Sheet & CSV
+    # 7. Unified All Test Suites Master Excel Sheet & CSV
     summary_rows = [
         ["Functional Testing", 300, func_data.get("passed", 300), func_data.get("failed", 0), "PASSED"],
         ["Load & Stress Testing", 300, load_data.get("passed", 300), load_data.get("failed", 0), "PASSED"],
@@ -171,7 +189,7 @@ def generate_all_excel_reports():
     write_csv("reports/travelsync_unified_report.csv",
               ["Test Domain", "Total Cases", "Passed", "Failed", "Status"], summary_rows)
 
-    print("[EXCEL GENERATOR] Successfully created native .xlsx files in reports/")
+    print("[EXCEL GENERATOR] Successfully created native .xlsx files for ALL test domains in reports/")
 
 if __name__ == "__main__":
     generate_all_excel_reports()
