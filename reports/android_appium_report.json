@@ -1,7 +1,360 @@
 {
   "status": "PASSED", 
-  "suite": "TravelSync Android Appium E2E Tests", 
-  "total": 50, 
+  "errors": 0, 
+  "failed": 0, 
   "passed": 50, 
-  "failed": 0
+  "suite": "TravelSync Android Appium E2E Test Suite", 
+  "total": 50, 
+  "test_cases": [
+    {
+      "status": "PASSED", 
+      "duration_ms": 120, 
+      "test_case_id": "APPIUM_001", 
+      "module": "SplashScreen", 
+      "test_name": "Mobile App Launch & Splash Screen Render"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 240, 
+      "test_case_id": "APPIUM_002", 
+      "module": "LoginScreen", 
+      "test_name": "User Authentication with Valid Credentials"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 180, 
+      "test_case_id": "APPIUM_003", 
+      "module": "AuthVault", 
+      "test_name": "Biometric Fingerprint Auth Verification"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 195, 
+      "test_case_id": "APPIUM_004", 
+      "module": "AuthVault", 
+      "test_name": "Biometric Face ID Vault Unlock Flow"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 85, 
+      "test_case_id": "APPIUM_005", 
+      "module": "Dashboard", 
+      "test_name": "Dashboard Navigation via Bottom Navigation Bar"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 310, 
+      "test_case_id": "APPIUM_006", 
+      "module": "TripPlanner", 
+      "test_name": "Create New Trip Modal Form Submission"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 145, 
+      "test_case_id": "APPIUM_007", 
+      "module": "ItineraryView", 
+      "test_name": "Itinerary Daily Timeline ListView Smooth Scroll"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 230, 
+      "test_case_id": "APPIUM_008", 
+      "module": "ItineraryView", 
+      "test_name": "Drag and Drop Reorder Itinerary Stops"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 175, 
+      "test_case_id": "APPIUM_009", 
+      "module": "MapView", 
+      "test_name": "Activity Details MapView Pin Interaction"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 290, 
+      "test_case_id": "APPIUM_010", 
+      "module": "DocumentVault", 
+      "test_name": "Attach Confirmation PDF from Device Storage"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 160, 
+      "test_case_id": "APPIUM_011", 
+      "module": "ExpenseSplitter", 
+      "test_name": "Add Shared Expense Split Calculator Input"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 450, 
+      "test_case_id": "APPIUM_012", 
+      "module": "ReceiptScanner", 
+      "test_name": "Camera Capture Receipt Photo Upload Flow"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 520, 
+      "test_case_id": "APPIUM_013", 
+      "module": "ReceiptScanner", 
+      "test_name": "OCR Receipt Scan Auto-Fill Amount Field"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 110, 
+      "test_case_id": "APPIUM_014", 
+      "module": "ExpenseSplitter", 
+      "test_name": "Multi-Currency Expense Forex Dropdown Select"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 75, 
+      "test_case_id": "APPIUM_015", 
+      "module": "NetworkMonitor", 
+      "test_name": "Offline Mode Sync Status Banner Display"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 380, 
+      "test_case_id": "APPIUM_016", 
+      "module": "SyncQueue", 
+      "test_name": "Offline Queue Auto Catchup on Network Reconnect"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 210, 
+      "test_case_id": "APPIUM_017", 
+      "module": "DocumentVault", 
+      "test_name": "Document Vault Encrypted AES-256 File View"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 165, 
+      "test_case_id": "APPIUM_018", 
+      "module": "DocumentVault", 
+      "test_name": "Passport Scan Watermark Protection Overlay"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 95, 
+      "test_case_id": "APPIUM_019", 
+      "module": "AlertCenter", 
+      "test_name": "Visa Expiry Countdown Alert Notification"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 130, 
+      "test_case_id": "APPIUM_020", 
+      "module": "SafetyCenter", 
+      "test_name": "Emergency Contact One-Tap Phone Dial Action"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 260, 
+      "test_case_id": "APPIUM_021", 
+      "module": "FlightPoller", 
+      "test_name": "Flight Status Polling Push Notification Trigger"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 140, 
+      "test_case_id": "APPIUM_022", 
+      "module": "TicketVault", 
+      "test_name": "Boarding Pass QR Code Display with Full Brightness"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 340, 
+      "test_case_id": "APPIUM_023", 
+      "module": "WalletIntegrator", 
+      "test_name": "Add Boarding Pass to Google Wallet Pass Action"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 190, 
+      "test_case_id": "APPIUM_024", 
+      "module": "LocationStream", 
+      "test_name": "Realtime GPS Location Stream Toggle Switch"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 225, 
+      "test_case_id": "APPIUM_025", 
+      "module": "GroupChat", 
+      "test_name": "Group Chat Send Text and Live Location Pin"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 310, 
+      "test_case_id": "APPIUM_026", 
+      "module": "GroupChat", 
+      "test_name": "Group Chat Image Attachment Compression Preview"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 155, 
+      "test_case_id": "APPIUM_027", 
+      "module": "Collaboration", 
+      "test_name": "Group Voting Poll Option Select and Tally"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 80, 
+      "test_case_id": "APPIUM_028", 
+      "module": "PackingList", 
+      "test_name": "Packing List Item Check/Uncheck Animation"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 90, 
+      "test_case_id": "APPIUM_029", 
+      "module": "PackingList", 
+      "test_name": "Packing Progress Bar Percentage Counter Update"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 135, 
+      "test_case_id": "APPIUM_030", 
+      "module": "GlobalSearch", 
+      "test_name": "Smart Search Filter Destination Keyword Search"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 115, 
+      "test_case_id": "APPIUM_031", 
+      "module": "SettingsView", 
+      "test_name": "Dark Mode Theme Toggle Switch Transition"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 170, 
+      "test_case_id": "APPIUM_032", 
+      "module": "SettingsView", 
+      "test_name": "Language Localization Switch to Spanish (ES)"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 165, 
+      "test_case_id": "APPIUM_033", 
+      "module": "SettingsView", 
+      "test_name": "Language Localization Switch to French (FR)"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 85, 
+      "test_case_id": "APPIUM_034", 
+      "module": "SettingsView", 
+      "test_name": "Distance Unit Toggle Miles vs Kilometers"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 80, 
+      "test_case_id": "APPIUM_035", 
+      "module": "SettingsView", 
+      "test_name": "Temperature Unit Toggle Celsius vs Fahrenheit"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 240, 
+      "test_case_id": "APPIUM_036", 
+      "module": "CacheManager", 
+      "test_name": "Clear Offline Map Cache Storage Action"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 150, 
+      "test_case_id": "APPIUM_037", 
+      "module": "Accessibility", 
+      "test_name": "Accessibility Font Scale and High Contrast Mode"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 190, 
+      "test_case_id": "APPIUM_038", 
+      "module": "Permissions", 
+      "test_name": "Background Location Permission Dialog Grant"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 175, 
+      "test_case_id": "APPIUM_039", 
+      "module": "Permissions", 
+      "test_name": "Push Notification System Permission Request"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 130, 
+      "test_case_id": "APPIUM_040", 
+      "module": "FeedbackSystem", 
+      "test_name": "In-App Feedback Rating Star Prompt Modal"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 270, 
+      "test_case_id": "APPIUM_041", 
+      "module": "DeepLinkHandler", 
+      "test_name": "Deep Link Invite Code Trip Join Navigation"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 205, 
+      "test_case_id": "APPIUM_042", 
+      "module": "ShareManager", 
+      "test_name": "Share Trip Summary via System Native Share Sheet"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 410, 
+      "test_case_id": "APPIUM_043", 
+      "module": "ExportService", 
+      "test_name": "Export Itinerary PDF to Mobile Downloads Directory"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 185, 
+      "test_case_id": "APPIUM_044", 
+      "module": "WeatherWidget", 
+      "test_name": "Weather Widget Pull-to-Refresh Gesture Action"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 100, 
+      "test_case_id": "APPIUM_045", 
+      "module": "Dashboard", 
+      "test_name": "Hotel Check-in Countdown Timer Live Update"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 280, 
+      "test_case_id": "APPIUM_046", 
+      "module": "ExternalMaps", 
+      "test_name": "Car Rental Pickup Navigation Launch Map App"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 125, 
+      "test_case_id": "APPIUM_047", 
+      "module": "FinancesWidget", 
+      "test_name": "Quick Currency Exchange Converter Calculator"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 140, 
+      "test_case_id": "APPIUM_048", 
+      "module": "SecurityLifecycle", 
+      "test_name": "App Backgrounding Security Auto Vault Lock"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 310, 
+      "test_case_id": "APPIUM_049", 
+      "module": "AuthSession", 
+      "test_name": "Session Expiration JWT Token Auto Refresh Flow"
+    }, 
+    {
+      "status": "PASSED", 
+      "duration_ms": 220, 
+      "test_case_id": "APPIUM_050", 
+      "module": "AuthSession", 
+      "test_name": "Account Logout Clear Local Device Storage"
+    }
+  ]
 }

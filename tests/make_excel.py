@@ -168,11 +168,20 @@ def generate_all_excel_reports():
         create_simple_xlsx("reports/web_e2e_report.xlsx", "Web E2E Results", ["Metric", "Value"], rows)
         write_csv("reports/web_e2e_report.csv", ["Metric", "Value"], rows)
 
-    # 6. Android Appium E2E Test Excel & CSV
+    # 6. Android Appium E2E Test Excel & CSV (Detailed 50 Test Cases)
     if mob_e2e_data:
-        rows = [[k, mob_e2e_data[k]] for k in mob_e2e_data]
-        create_simple_xlsx("reports/android_appium_report.xlsx", "Android Appium Results", ["Metric", "Value"], rows)
-        write_csv("reports/android_appium_report.csv", ["Metric", "Value"], rows)
+        headers = ["Test Case ID", "Test Case Name", "Target Module / Screen", "Status", "Duration (ms)"]
+        if "test_cases" in mob_e2e_data:
+            rows = [
+                [tc["test_case_id"], tc["test_name"], tc["module"], tc["status"], tc["duration_ms"]]
+                for tc in mob_e2e_data["test_cases"]
+            ]
+        else:
+            headers = ["Metric", "Value"]
+            rows = [[k, mob_e2e_data[k]] for k in mob_e2e_data]
+            
+        create_simple_xlsx("reports/android_appium_report.xlsx", "Appium E2E Test Cases", headers, rows)
+        write_csv("reports/android_appium_report.csv", headers, rows)
 
     # 7. Unified All Test Suites Master Excel Sheet & CSV
     summary_rows = [
