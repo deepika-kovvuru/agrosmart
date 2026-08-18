@@ -1,0 +1,124 @@
+name: Compile Master Report & Deploy
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  selenium-tests:
+    name: Selenium — Website Tests (300)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: python tests/selenium_web/run_selenium_web_tests.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: selenium-web-report
+          path: reports/selenium_web_report.json
+
+  appium-tests:
+    name: Appium — Android Tests (300)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: python tests/appium_android/run_appium_android_tests.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appium-android-report
+          path: reports/android_appium_report.json
+
+  unit-tests:
+    name: Unit Tests — API (300)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: python tests/unit_api/run_unit_api_tests.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: reports/unit_test_report.json
+
+  validation-tests:
+    name: Validation Tests (300)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: python tests/validation/run_validation_tests.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validation-test-report
+          path: reports/validation_test_report.json
+
+  deployment-status:
+    name: Deployment Status (300)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: python tests/deployment/run_deployment_tests.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deployment-test-report
+          path: reports/deployment_test_report.json
+
+  load-tests:
+    name: Load Testing — Performance (300)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: python tests/load_performance/run_load_tests.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: load-test-report
+          path: reports/load_test_report.json
+
+  master-compile:
+    name: Compile Master Report & Deploy
+    needs: [selenium-tests, appium-tests, unit-tests, validation-tests, deployment-status, load-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+
+      - name: Download All Suite Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: reports/
+
+      - name: Flatten Artifact Files into reports/
+        run: |
+          find reports/ -type f -exec mv -t reports/ {} + || true
+
+      - name: Compile Master Report & Generate Excel Workbooks (1,800 Test Cases)
+        run: |
+          python tests/compile_master_report.py
+
+      - name: Upload Consolidated Master Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-e2e-report
+          path: |
+            reports/full_e2e_report.xlsx
+            reports/E2E_Test_Report_AgroSmart.xlsx
+            reports/full_e2e_report.json
+            reports/unified_summary.md
+            reports/load_report.html
+            reports/*.xlsx

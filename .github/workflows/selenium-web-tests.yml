@@ -1,0 +1,44 @@
+name: Selenium — Website Tests (300)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  selenium-web-suite:
+    name: Selenium — Website Tests (300)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node & Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f tests/selenium_web/package.json ]; then cd tests/selenium_web && npm install && cd ../..; fi
+
+      - name: Run Selenium Website E2E Test Suite (300 Cases)
+        run: |
+          python tests/selenium_web/run_selenium_web_tests.py
+          python tests/make_excel.py
+
+      - name: Upload Selenium Web Report Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-web-report
+          path: |
+            reports/selenium_web_report.json
+            reports/selenium_web_report.xlsx

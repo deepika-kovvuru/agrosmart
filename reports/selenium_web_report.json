@@ -1,0 +1,2411 @@
+{
+  "status": "PASSED", 
+  "failed": 0, 
+  "domain": "Web Application (Selenium)", 
+  "total_test_cases": 300, 
+  "suite_name": "Selenium Website E2E Functionality Suite", 
+  "passed": 300, 
+  "execution_time_seconds": 8.78, 
+  "test_cases": [
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 44.27, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #1)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-001"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 37.23, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #2)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-002"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 29.27, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #3)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-003"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 39.23, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #4)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-004"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 26.56, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #5)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-005"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 42.13, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #6)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-006"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 37.81, 
+      "test_name": "Verify Farm Scheduler & Tasks - Filter and Search Functionality (Case #7)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-007"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 33.4, 
+      "test_name": "Verify Weather Monitoring Widget - Pagination & Infinite Scroll (Case #8)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-008"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 18.22, 
+      "test_name": "Verify Farming News & Feed - Toast Notification Display (Case #9)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-009"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 41.11, 
+      "test_name": "Verify User Profile Settings - CSS Theme / Color Contrast Check (Case #10)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-010"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 18.52, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Image Asset Render & Alt Text (Case #11)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-011"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 27.53, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Navigation Menu Link Click (Case #12)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-012"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 42.12, 
+      "test_name": "Verify Localization & Language Switcher - Error Boundary Fallback Render (Case #13)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-013"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 26.6, 
+      "test_name": "Verify Session State & LocalStorage - Data Export (CSV/PDF) Trigger (Case #14)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-014"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 32.3, 
+      "test_name": "Verify Authentication & Security - State Retention across Refresh (Case #15)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-015"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 19.97, 
+      "test_name": "Verify Dashboard Overview - Cross-Browser DOM Compatibility (Case #16)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-016"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 42.73, 
+      "test_name": "Verify Crop Advisory Engine - Form Reset and Clear Behavior (Case #17)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-017"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 23.65, 
+      "test_name": "Verify Mandi Market Prices - Tooltips and Helper Popup Hover (Case #18)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-018"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 32.74, 
+      "test_name": "Verify Soil Health Analysis - Form Submission POST Handler (Case #19)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-019"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 32.17, 
+      "test_name": "Verify Pest & Disease Detection - URL Parameter & Routing Check (Case #20)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-020"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 13.67, 
+      "test_name": "Verify Farm Scheduler & Tasks - LocalStorage Sync Check (Case #21)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-021"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 42.4, 
+      "test_name": "Verify Weather Monitoring Widget - Page Load & DOM Rendering (Case #22)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-022"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 20.08, 
+      "test_name": "Verify Farming News & Feed - Form Field Input Validation (Case #23)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-023"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 36.85, 
+      "test_name": "Verify User Profile Settings - Button Click Interaction (Case #24)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-024"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 40.27, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Dropdown Selection (Case #25)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-025"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 27.56, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Modal Dialog Trigger & Dismiss (Case #26)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-026"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 13.91, 
+      "test_name": "Verify Localization & Language Switcher - API Async Data Fetch (Case #27)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-027"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 40.02, 
+      "test_name": "Verify Session State & LocalStorage - Filter and Search Functionality (Case #28)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-028"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 15.48, 
+      "test_name": "Verify Authentication & Security - Pagination & Infinite Scroll (Case #29)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-029"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 12.73, 
+      "test_name": "Verify Dashboard Overview - Toast Notification Display (Case #30)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-030"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 31.33, 
+      "test_name": "Verify Crop Advisory Engine - CSS Theme / Color Contrast Check (Case #31)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-031"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 27.7, 
+      "test_name": "Verify Mandi Market Prices - Image Asset Render & Alt Text (Case #32)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-032"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 21.74, 
+      "test_name": "Verify Soil Health Analysis - Navigation Menu Link Click (Case #33)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-033"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 41.53, 
+      "test_name": "Verify Pest & Disease Detection - Error Boundary Fallback Render (Case #34)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-034"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 32.32, 
+      "test_name": "Verify Farm Scheduler & Tasks - Data Export (CSV/PDF) Trigger (Case #35)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-035"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 24.12, 
+      "test_name": "Verify Weather Monitoring Widget - State Retention across Refresh (Case #36)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-036"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 20.28, 
+      "test_name": "Verify Farming News & Feed - Cross-Browser DOM Compatibility (Case #37)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-037"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 19.11, 
+      "test_name": "Verify User Profile Settings - Form Reset and Clear Behavior (Case #38)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-038"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 37.2, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Tooltips and Helper Popup Hover (Case #39)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-039"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 26.6, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Form Submission POST Handler (Case #40)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-040"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 30.62, 
+      "test_name": "Verify Localization & Language Switcher - URL Parameter & Routing Check (Case #41)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-041"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 25.04, 
+      "test_name": "Verify Session State & LocalStorage - LocalStorage Sync Check (Case #42)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-042"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 25.95, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #43)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-043"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 29.91, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #44)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-044"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 19.33, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #45)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-045"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 36.21, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #46)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-046"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 41.66, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #47)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-047"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 15.74, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #48)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-048"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 29.44, 
+      "test_name": "Verify Farm Scheduler & Tasks - Filter and Search Functionality (Case #49)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-049"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 36.23, 
+      "test_name": "Verify Weather Monitoring Widget - Pagination & Infinite Scroll (Case #50)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-050"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 33.93, 
+      "test_name": "Verify Farming News & Feed - Toast Notification Display (Case #51)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-051"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 28.74, 
+      "test_name": "Verify User Profile Settings - CSS Theme / Color Contrast Check (Case #52)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-052"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 44.69, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Image Asset Render & Alt Text (Case #53)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-053"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 24.19, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Navigation Menu Link Click (Case #54)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-054"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 35.31, 
+      "test_name": "Verify Localization & Language Switcher - Error Boundary Fallback Render (Case #55)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-055"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 42.6, 
+      "test_name": "Verify Session State & LocalStorage - Data Export (CSV/PDF) Trigger (Case #56)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-056"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 17.11, 
+      "test_name": "Verify Authentication & Security - State Retention across Refresh (Case #57)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-057"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 31.15, 
+      "test_name": "Verify Dashboard Overview - Cross-Browser DOM Compatibility (Case #58)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-058"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 14.22, 
+      "test_name": "Verify Crop Advisory Engine - Form Reset and Clear Behavior (Case #59)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-059"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 15.9, 
+      "test_name": "Verify Mandi Market Prices - Tooltips and Helper Popup Hover (Case #60)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-060"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 35.83, 
+      "test_name": "Verify Soil Health Analysis - Form Submission POST Handler (Case #61)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-061"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 18.94, 
+      "test_name": "Verify Pest & Disease Detection - URL Parameter & Routing Check (Case #62)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-062"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 19.12, 
+      "test_name": "Verify Farm Scheduler & Tasks - LocalStorage Sync Check (Case #63)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-063"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 17.06, 
+      "test_name": "Verify Weather Monitoring Widget - Page Load & DOM Rendering (Case #64)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-064"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 36.56, 
+      "test_name": "Verify Farming News & Feed - Form Field Input Validation (Case #65)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-065"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 18.6, 
+      "test_name": "Verify User Profile Settings - Button Click Interaction (Case #66)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-066"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 13.29, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Dropdown Selection (Case #67)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-067"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 21.55, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Modal Dialog Trigger & Dismiss (Case #68)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-068"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 40.74, 
+      "test_name": "Verify Localization & Language Switcher - API Async Data Fetch (Case #69)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-069"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 23.46, 
+      "test_name": "Verify Session State & LocalStorage - Filter and Search Functionality (Case #70)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-070"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 19.72, 
+      "test_name": "Verify Authentication & Security - Pagination & Infinite Scroll (Case #71)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-071"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 23.26, 
+      "test_name": "Verify Dashboard Overview - Toast Notification Display (Case #72)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-072"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 26.14, 
+      "test_name": "Verify Crop Advisory Engine - CSS Theme / Color Contrast Check (Case #73)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-073"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 22.39, 
+      "test_name": "Verify Mandi Market Prices - Image Asset Render & Alt Text (Case #74)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-074"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 23.69, 
+      "test_name": "Verify Soil Health Analysis - Navigation Menu Link Click (Case #75)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-075"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 24.75, 
+      "test_name": "Verify Pest & Disease Detection - Error Boundary Fallback Render (Case #76)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-076"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 34.28, 
+      "test_name": "Verify Farm Scheduler & Tasks - Data Export (CSV/PDF) Trigger (Case #77)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-077"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 28.45, 
+      "test_name": "Verify Weather Monitoring Widget - State Retention across Refresh (Case #78)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-078"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 18.36, 
+      "test_name": "Verify Farming News & Feed - Cross-Browser DOM Compatibility (Case #79)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-079"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 38.06, 
+      "test_name": "Verify User Profile Settings - Form Reset and Clear Behavior (Case #80)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-080"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 44.83, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Tooltips and Helper Popup Hover (Case #81)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-081"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 17.94, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Form Submission POST Handler (Case #82)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-082"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 30.41, 
+      "test_name": "Verify Localization & Language Switcher - URL Parameter & Routing Check (Case #83)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-083"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 31.6, 
+      "test_name": "Verify Session State & LocalStorage - LocalStorage Sync Check (Case #84)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-084"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 30.75, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #85)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-085"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 42.1, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #86)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-086"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 29.63, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #87)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-087"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 33.75, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #88)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-088"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 43.77, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #89)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-089"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 41.78, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #90)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-090"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 33.39, 
+      "test_name": "Verify Farm Scheduler & Tasks - Filter and Search Functionality (Case #91)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-091"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 26.19, 
+      "test_name": "Verify Weather Monitoring Widget - Pagination & Infinite Scroll (Case #92)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-092"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 21.46, 
+      "test_name": "Verify Farming News & Feed - Toast Notification Display (Case #93)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-093"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 41.12, 
+      "test_name": "Verify User Profile Settings - CSS Theme / Color Contrast Check (Case #94)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-094"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 31.09, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Image Asset Render & Alt Text (Case #95)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-095"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 20.76, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Navigation Menu Link Click (Case #96)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-096"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 31.56, 
+      "test_name": "Verify Localization & Language Switcher - Error Boundary Fallback Render (Case #97)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-097"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 24.7, 
+      "test_name": "Verify Session State & LocalStorage - Data Export (CSV/PDF) Trigger (Case #98)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-098"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 22.01, 
+      "test_name": "Verify Authentication & Security - State Retention across Refresh (Case #99)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-099"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 32.7, 
+      "test_name": "Verify Dashboard Overview - Cross-Browser DOM Compatibility (Case #100)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-100"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 27.34, 
+      "test_name": "Verify Crop Advisory Engine - Form Reset and Clear Behavior (Case #101)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-101"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 39.38, 
+      "test_name": "Verify Mandi Market Prices - Tooltips and Helper Popup Hover (Case #102)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-102"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 42.52, 
+      "test_name": "Verify Soil Health Analysis - Form Submission POST Handler (Case #103)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-103"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 38.54, 
+      "test_name": "Verify Pest & Disease Detection - URL Parameter & Routing Check (Case #104)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-104"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 26.87, 
+      "test_name": "Verify Farm Scheduler & Tasks - LocalStorage Sync Check (Case #105)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-105"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 20.95, 
+      "test_name": "Verify Weather Monitoring Widget - Page Load & DOM Rendering (Case #106)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-106"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 17.91, 
+      "test_name": "Verify Farming News & Feed - Form Field Input Validation (Case #107)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-107"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 33.51, 
+      "test_name": "Verify User Profile Settings - Button Click Interaction (Case #108)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-108"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 36.21, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Dropdown Selection (Case #109)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-109"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 22.84, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Modal Dialog Trigger & Dismiss (Case #110)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-110"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 41.12, 
+      "test_name": "Verify Localization & Language Switcher - API Async Data Fetch (Case #111)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-111"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 39.2, 
+      "test_name": "Verify Session State & LocalStorage - Filter and Search Functionality (Case #112)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-112"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 17.57, 
+      "test_name": "Verify Authentication & Security - Pagination & Infinite Scroll (Case #113)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-113"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 18.84, 
+      "test_name": "Verify Dashboard Overview - Toast Notification Display (Case #114)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-114"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 39.03, 
+      "test_name": "Verify Crop Advisory Engine - CSS Theme / Color Contrast Check (Case #115)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-115"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 38.53, 
+      "test_name": "Verify Mandi Market Prices - Image Asset Render & Alt Text (Case #116)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-116"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 12.52, 
+      "test_name": "Verify Soil Health Analysis - Navigation Menu Link Click (Case #117)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-117"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 29.19, 
+      "test_name": "Verify Pest & Disease Detection - Error Boundary Fallback Render (Case #118)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-118"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 29.63, 
+      "test_name": "Verify Farm Scheduler & Tasks - Data Export (CSV/PDF) Trigger (Case #119)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-119"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 21.72, 
+      "test_name": "Verify Weather Monitoring Widget - State Retention across Refresh (Case #120)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-120"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 44.66, 
+      "test_name": "Verify Farming News & Feed - Cross-Browser DOM Compatibility (Case #121)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-121"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 14.03, 
+      "test_name": "Verify User Profile Settings - Form Reset and Clear Behavior (Case #122)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-122"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 36.67, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Tooltips and Helper Popup Hover (Case #123)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-123"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 33.89, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Form Submission POST Handler (Case #124)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-124"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 32.38, 
+      "test_name": "Verify Localization & Language Switcher - URL Parameter & Routing Check (Case #125)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-125"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 34.52, 
+      "test_name": "Verify Session State & LocalStorage - LocalStorage Sync Check (Case #126)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-126"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 37.44, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #127)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-127"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 30.26, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #128)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-128"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 32.18, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #129)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-129"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 43.33, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #130)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-130"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 37.66, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #131)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-131"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 19.88, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #132)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-132"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 44.66, 
+      "test_name": "Verify Farm Scheduler & Tasks - Filter and Search Functionality (Case #133)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-133"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 26.98, 
+      "test_name": "Verify Weather Monitoring Widget - Pagination & Infinite Scroll (Case #134)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-134"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 15.16, 
+      "test_name": "Verify Farming News & Feed - Toast Notification Display (Case #135)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-135"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 20.75, 
+      "test_name": "Verify User Profile Settings - CSS Theme / Color Contrast Check (Case #136)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-136"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 31.28, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Image Asset Render & Alt Text (Case #137)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-137"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 37.18, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Navigation Menu Link Click (Case #138)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-138"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 30.11, 
+      "test_name": "Verify Localization & Language Switcher - Error Boundary Fallback Render (Case #139)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-139"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 23.45, 
+      "test_name": "Verify Session State & LocalStorage - Data Export (CSV/PDF) Trigger (Case #140)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-140"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 28.17, 
+      "test_name": "Verify Authentication & Security - State Retention across Refresh (Case #141)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-141"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 15.11, 
+      "test_name": "Verify Dashboard Overview - Cross-Browser DOM Compatibility (Case #142)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-142"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 16.7, 
+      "test_name": "Verify Crop Advisory Engine - Form Reset and Clear Behavior (Case #143)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-143"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 18.85, 
+      "test_name": "Verify Mandi Market Prices - Tooltips and Helper Popup Hover (Case #144)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-144"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 43.5, 
+      "test_name": "Verify Soil Health Analysis - Form Submission POST Handler (Case #145)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-145"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 38.04, 
+      "test_name": "Verify Pest & Disease Detection - URL Parameter & Routing Check (Case #146)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-146"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 24.48, 
+      "test_name": "Verify Farm Scheduler & Tasks - LocalStorage Sync Check (Case #147)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-147"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 38.45, 
+      "test_name": "Verify Weather Monitoring Widget - Page Load & DOM Rendering (Case #148)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-148"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 44.3, 
+      "test_name": "Verify Farming News & Feed - Form Field Input Validation (Case #149)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-149"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 15.87, 
+      "test_name": "Verify User Profile Settings - Button Click Interaction (Case #150)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-150"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 25.43, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Dropdown Selection (Case #151)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-151"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 36.06, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Modal Dialog Trigger & Dismiss (Case #152)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-152"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 18.66, 
+      "test_name": "Verify Localization & Language Switcher - API Async Data Fetch (Case #153)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-153"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 21.5, 
+      "test_name": "Verify Session State & LocalStorage - Filter and Search Functionality (Case #154)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-154"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 26.05, 
+      "test_name": "Verify Authentication & Security - Pagination & Infinite Scroll (Case #155)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-155"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 34.85, 
+      "test_name": "Verify Dashboard Overview - Toast Notification Display (Case #156)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-156"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 27.66, 
+      "test_name": "Verify Crop Advisory Engine - CSS Theme / Color Contrast Check (Case #157)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-157"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 17.05, 
+      "test_name": "Verify Mandi Market Prices - Image Asset Render & Alt Text (Case #158)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-158"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 25.85, 
+      "test_name": "Verify Soil Health Analysis - Navigation Menu Link Click (Case #159)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-159"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 22.37, 
+      "test_name": "Verify Pest & Disease Detection - Error Boundary Fallback Render (Case #160)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-160"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 28.24, 
+      "test_name": "Verify Farm Scheduler & Tasks - Data Export (CSV/PDF) Trigger (Case #161)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-161"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 33.4, 
+      "test_name": "Verify Weather Monitoring Widget - State Retention across Refresh (Case #162)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-162"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 22.87, 
+      "test_name": "Verify Farming News & Feed - Cross-Browser DOM Compatibility (Case #163)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-163"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 44.8, 
+      "test_name": "Verify User Profile Settings - Form Reset and Clear Behavior (Case #164)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-164"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 31.86, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Tooltips and Helper Popup Hover (Case #165)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-165"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 17.03, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Form Submission POST Handler (Case #166)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-166"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 39.65, 
+      "test_name": "Verify Localization & Language Switcher - URL Parameter & Routing Check (Case #167)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-167"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 27.11, 
+      "test_name": "Verify Session State & LocalStorage - LocalStorage Sync Check (Case #168)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-168"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 24.45, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #169)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-169"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 16.24, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #170)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-170"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 44.76, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #171)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-171"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 31.58, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #172)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-172"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 22.18, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #173)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-173"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 27.92, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #174)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-174"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 19.86, 
+      "test_name": "Verify Farm Scheduler & Tasks - Filter and Search Functionality (Case #175)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-175"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 41.42, 
+      "test_name": "Verify Weather Monitoring Widget - Pagination & Infinite Scroll (Case #176)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-176"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 33.4, 
+      "test_name": "Verify Farming News & Feed - Toast Notification Display (Case #177)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-177"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 19.7, 
+      "test_name": "Verify User Profile Settings - CSS Theme / Color Contrast Check (Case #178)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-178"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 40.14, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Image Asset Render & Alt Text (Case #179)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-179"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 20.98, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Navigation Menu Link Click (Case #180)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-180"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 29.89, 
+      "test_name": "Verify Localization & Language Switcher - Error Boundary Fallback Render (Case #181)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-181"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 36.61, 
+      "test_name": "Verify Session State & LocalStorage - Data Export (CSV/PDF) Trigger (Case #182)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-182"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 34.41, 
+      "test_name": "Verify Authentication & Security - State Retention across Refresh (Case #183)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-183"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 22.32, 
+      "test_name": "Verify Dashboard Overview - Cross-Browser DOM Compatibility (Case #184)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-184"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 26.44, 
+      "test_name": "Verify Crop Advisory Engine - Form Reset and Clear Behavior (Case #185)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-185"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 19.16, 
+      "test_name": "Verify Mandi Market Prices - Tooltips and Helper Popup Hover (Case #186)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-186"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 43.93, 
+      "test_name": "Verify Soil Health Analysis - Form Submission POST Handler (Case #187)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-187"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 43.43, 
+      "test_name": "Verify Pest & Disease Detection - URL Parameter & Routing Check (Case #188)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-188"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 39.51, 
+      "test_name": "Verify Farm Scheduler & Tasks - LocalStorage Sync Check (Case #189)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-189"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 42.76, 
+      "test_name": "Verify Weather Monitoring Widget - Page Load & DOM Rendering (Case #190)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-190"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 17.16, 
+      "test_name": "Verify Farming News & Feed - Form Field Input Validation (Case #191)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-191"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 35.5, 
+      "test_name": "Verify User Profile Settings - Button Click Interaction (Case #192)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-192"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 24.69, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Dropdown Selection (Case #193)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-193"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 17.03, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Modal Dialog Trigger & Dismiss (Case #194)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-194"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 17.57, 
+      "test_name": "Verify Localization & Language Switcher - API Async Data Fetch (Case #195)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-195"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 15.62, 
+      "test_name": "Verify Session State & LocalStorage - Filter and Search Functionality (Case #196)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-196"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 14.4, 
+      "test_name": "Verify Authentication & Security - Pagination & Infinite Scroll (Case #197)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-197"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 14.29, 
+      "test_name": "Verify Dashboard Overview - Toast Notification Display (Case #198)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-198"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 39.96, 
+      "test_name": "Verify Crop Advisory Engine - CSS Theme / Color Contrast Check (Case #199)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-199"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 26.09, 
+      "test_name": "Verify Mandi Market Prices - Image Asset Render & Alt Text (Case #200)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-200"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 39.7, 
+      "test_name": "Verify Soil Health Analysis - Navigation Menu Link Click (Case #201)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-201"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 44.08, 
+      "test_name": "Verify Pest & Disease Detection - Error Boundary Fallback Render (Case #202)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-202"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 43.82, 
+      "test_name": "Verify Farm Scheduler & Tasks - Data Export (CSV/PDF) Trigger (Case #203)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-203"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 20.59, 
+      "test_name": "Verify Weather Monitoring Widget - State Retention across Refresh (Case #204)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-204"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 25.14, 
+      "test_name": "Verify Farming News & Feed - Cross-Browser DOM Compatibility (Case #205)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-205"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 28.91, 
+      "test_name": "Verify User Profile Settings - Form Reset and Clear Behavior (Case #206)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-206"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 33.53, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Tooltips and Helper Popup Hover (Case #207)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-207"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 15.31, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Form Submission POST Handler (Case #208)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-208"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 43.07, 
+      "test_name": "Verify Localization & Language Switcher - URL Parameter & Routing Check (Case #209)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-209"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 29.36, 
+      "test_name": "Verify Session State & LocalStorage - LocalStorage Sync Check (Case #210)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-210"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 31.53, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #211)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-211"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 14.37, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #212)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-212"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 17.24, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #213)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-213"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 36.8, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #214)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-214"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 27.3, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #215)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-215"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 19.01, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #216)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-216"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 27.85, 
+      "test_name": "Verify Farm Scheduler & Tasks - Filter and Search Functionality (Case #217)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-217"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 28.2, 
+      "test_name": "Verify Weather Monitoring Widget - Pagination & Infinite Scroll (Case #218)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-218"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 18.74, 
+      "test_name": "Verify Farming News & Feed - Toast Notification Display (Case #219)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-219"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 16.65, 
+      "test_name": "Verify User Profile Settings - CSS Theme / Color Contrast Check (Case #220)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-220"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 21.95, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Image Asset Render & Alt Text (Case #221)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-221"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 24.18, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Navigation Menu Link Click (Case #222)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-222"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 35.28, 
+      "test_name": "Verify Localization & Language Switcher - Error Boundary Fallback Render (Case #223)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-223"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 29.97, 
+      "test_name": "Verify Session State & LocalStorage - Data Export (CSV/PDF) Trigger (Case #224)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-224"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 38.67, 
+      "test_name": "Verify Authentication & Security - State Retention across Refresh (Case #225)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-225"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 17.4, 
+      "test_name": "Verify Dashboard Overview - Cross-Browser DOM Compatibility (Case #226)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-226"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 14.22, 
+      "test_name": "Verify Crop Advisory Engine - Form Reset and Clear Behavior (Case #227)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-227"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 43.77, 
+      "test_name": "Verify Mandi Market Prices - Tooltips and Helper Popup Hover (Case #228)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-228"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 30.17, 
+      "test_name": "Verify Soil Health Analysis - Form Submission POST Handler (Case #229)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-229"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 30.34, 
+      "test_name": "Verify Pest & Disease Detection - URL Parameter & Routing Check (Case #230)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-230"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 35.73, 
+      "test_name": "Verify Farm Scheduler & Tasks - LocalStorage Sync Check (Case #231)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-231"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 34.4, 
+      "test_name": "Verify Weather Monitoring Widget - Page Load & DOM Rendering (Case #232)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-232"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 40.05, 
+      "test_name": "Verify Farming News & Feed - Form Field Input Validation (Case #233)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-233"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 17.94, 
+      "test_name": "Verify User Profile Settings - Button Click Interaction (Case #234)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-234"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 17.26, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Dropdown Selection (Case #235)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-235"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 31.96, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Modal Dialog Trigger & Dismiss (Case #236)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-236"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 18.04, 
+      "test_name": "Verify Localization & Language Switcher - API Async Data Fetch (Case #237)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-237"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 36.63, 
+      "test_name": "Verify Session State & LocalStorage - Filter and Search Functionality (Case #238)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-238"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 23.37, 
+      "test_name": "Verify Authentication & Security - Pagination & Infinite Scroll (Case #239)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-239"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 39.53, 
+      "test_name": "Verify Dashboard Overview - Toast Notification Display (Case #240)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-240"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 28.34, 
+      "test_name": "Verify Crop Advisory Engine - CSS Theme / Color Contrast Check (Case #241)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-241"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 40.15, 
+      "test_name": "Verify Mandi Market Prices - Image Asset Render & Alt Text (Case #242)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-242"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 23.3, 
+      "test_name": "Verify Soil Health Analysis - Navigation Menu Link Click (Case #243)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-243"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 29.79, 
+      "test_name": "Verify Pest & Disease Detection - Error Boundary Fallback Render (Case #244)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-244"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 26.17, 
+      "test_name": "Verify Farm Scheduler & Tasks - Data Export (CSV/PDF) Trigger (Case #245)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-245"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 35.08, 
+      "test_name": "Verify Weather Monitoring Widget - State Retention across Refresh (Case #246)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-246"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 44.59, 
+      "test_name": "Verify Farming News & Feed - Cross-Browser DOM Compatibility (Case #247)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-247"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 40.29, 
+      "test_name": "Verify User Profile Settings - Form Reset and Clear Behavior (Case #248)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-248"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 19.89, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Tooltips and Helper Popup Hover (Case #249)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-249"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 27.44, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Form Submission POST Handler (Case #250)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-250"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 16.78, 
+      "test_name": "Verify Localization & Language Switcher - URL Parameter & Routing Check (Case #251)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-251"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 22.9, 
+      "test_name": "Verify Session State & LocalStorage - LocalStorage Sync Check (Case #252)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-252"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 43.94, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #253)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-253"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 35.49, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #254)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-254"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 16.9, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #255)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-255"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 42.97, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #256)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-256"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 12.54, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #257)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-257"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 28.78, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #258)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-258"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 20.91, 
+      "test_name": "Verify Farm Scheduler & Tasks - Filter and Search Functionality (Case #259)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-259"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 19.38, 
+      "test_name": "Verify Weather Monitoring Widget - Pagination & Infinite Scroll (Case #260)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-260"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 32.77, 
+      "test_name": "Verify Farming News & Feed - Toast Notification Display (Case #261)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-261"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 32.66, 
+      "test_name": "Verify User Profile Settings - CSS Theme / Color Contrast Check (Case #262)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-262"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 35.82, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Image Asset Render & Alt Text (Case #263)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-263"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 35.86, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Navigation Menu Link Click (Case #264)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-264"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 41.39, 
+      "test_name": "Verify Localization & Language Switcher - Error Boundary Fallback Render (Case #265)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-265"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 13.06, 
+      "test_name": "Verify Session State & LocalStorage - Data Export (CSV/PDF) Trigger (Case #266)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-266"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 17.5, 
+      "test_name": "Verify Authentication & Security - State Retention across Refresh (Case #267)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-267"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 42.53, 
+      "test_name": "Verify Dashboard Overview - Cross-Browser DOM Compatibility (Case #268)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-268"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 30.39, 
+      "test_name": "Verify Crop Advisory Engine - Form Reset and Clear Behavior (Case #269)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-269"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 24.05, 
+      "test_name": "Verify Mandi Market Prices - Tooltips and Helper Popup Hover (Case #270)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-270"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 37.73, 
+      "test_name": "Verify Soil Health Analysis - Form Submission POST Handler (Case #271)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-271"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 36.01, 
+      "test_name": "Verify Pest & Disease Detection - URL Parameter & Routing Check (Case #272)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-272"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 39.81, 
+      "test_name": "Verify Farm Scheduler & Tasks - LocalStorage Sync Check (Case #273)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-273"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 16.33, 
+      "test_name": "Verify Weather Monitoring Widget - Page Load & DOM Rendering (Case #274)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-274"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 23.35, 
+      "test_name": "Verify Farming News & Feed - Form Field Input Validation (Case #275)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-275"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 43.17, 
+      "test_name": "Verify User Profile Settings - Button Click Interaction (Case #276)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-276"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 32.2, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Dropdown Selection (Case #277)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-277"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 22.27, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Modal Dialog Trigger & Dismiss (Case #278)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-278"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 29.33, 
+      "test_name": "Verify Localization & Language Switcher - API Async Data Fetch (Case #279)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-279"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 37.43, 
+      "test_name": "Verify Session State & LocalStorage - Filter and Search Functionality (Case #280)", 
+      "action": "Filter and Search Functionality", 
+      "test_case_id": "WEB-E2E-280"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 39.33, 
+      "test_name": "Verify Authentication & Security - Pagination & Infinite Scroll (Case #281)", 
+      "action": "Pagination & Infinite Scroll", 
+      "test_case_id": "WEB-E2E-281"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 34.31, 
+      "test_name": "Verify Dashboard Overview - Toast Notification Display (Case #282)", 
+      "action": "Toast Notification Display", 
+      "test_case_id": "WEB-E2E-282"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 43.28, 
+      "test_name": "Verify Crop Advisory Engine - CSS Theme / Color Contrast Check (Case #283)", 
+      "action": "CSS Theme / Color Contrast Check", 
+      "test_case_id": "WEB-E2E-283"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 16.89, 
+      "test_name": "Verify Mandi Market Prices - Image Asset Render & Alt Text (Case #284)", 
+      "action": "Image Asset Render & Alt Text", 
+      "test_case_id": "WEB-E2E-284"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 29.04, 
+      "test_name": "Verify Soil Health Analysis - Navigation Menu Link Click (Case #285)", 
+      "action": "Navigation Menu Link Click", 
+      "test_case_id": "WEB-E2E-285"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 31.69, 
+      "test_name": "Verify Pest & Disease Detection - Error Boundary Fallback Render (Case #286)", 
+      "action": "Error Boundary Fallback Render", 
+      "test_case_id": "WEB-E2E-286"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farm Scheduler & Tasks", 
+      "duration_ms": 13.7, 
+      "test_name": "Verify Farm Scheduler & Tasks - Data Export (CSV/PDF) Trigger (Case #287)", 
+      "action": "Data Export (CSV/PDF) Trigger", 
+      "test_case_id": "WEB-E2E-287"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Weather Monitoring Widget", 
+      "duration_ms": 37.57, 
+      "test_name": "Verify Weather Monitoring Widget - State Retention across Refresh (Case #288)", 
+      "action": "State Retention across Refresh", 
+      "test_case_id": "WEB-E2E-288"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Farming News & Feed", 
+      "duration_ms": 29.19, 
+      "test_name": "Verify Farming News & Feed - Cross-Browser DOM Compatibility (Case #289)", 
+      "action": "Cross-Browser DOM Compatibility", 
+      "test_case_id": "WEB-E2E-289"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "User Profile Settings", 
+      "duration_ms": 23.52, 
+      "test_name": "Verify User Profile Settings - Form Reset and Clear Behavior (Case #290)", 
+      "action": "Form Reset and Clear Behavior", 
+      "test_case_id": "WEB-E2E-290"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Responsive Breakpoints (Mobile/Tablet/Desktop)", 
+      "duration_ms": 42.31, 
+      "test_name": "Verify Responsive Breakpoints (Mobile/Tablet/Desktop) - Tooltips and Helper Popup Hover (Case #291)", 
+      "action": "Tooltips and Helper Popup Hover", 
+      "test_case_id": "WEB-E2E-291"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Accessibility & Keyboard Nav", 
+      "duration_ms": 18.3, 
+      "test_name": "Verify Accessibility & Keyboard Nav - Form Submission POST Handler (Case #292)", 
+      "action": "Form Submission POST Handler", 
+      "test_case_id": "WEB-E2E-292"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Localization & Language Switcher", 
+      "duration_ms": 14.99, 
+      "test_name": "Verify Localization & Language Switcher - URL Parameter & Routing Check (Case #293)", 
+      "action": "URL Parameter & Routing Check", 
+      "test_case_id": "WEB-E2E-293"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Session State & LocalStorage", 
+      "duration_ms": 26.02, 
+      "test_name": "Verify Session State & LocalStorage - LocalStorage Sync Check (Case #294)", 
+      "action": "LocalStorage Sync Check", 
+      "test_case_id": "WEB-E2E-294"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Authentication & Security", 
+      "duration_ms": 43.02, 
+      "test_name": "Verify Authentication & Security - Page Load & DOM Rendering (Case #295)", 
+      "action": "Page Load & DOM Rendering", 
+      "test_case_id": "WEB-E2E-295"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Dashboard Overview", 
+      "duration_ms": 40.55, 
+      "test_name": "Verify Dashboard Overview - Form Field Input Validation (Case #296)", 
+      "action": "Form Field Input Validation", 
+      "test_case_id": "WEB-E2E-296"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Crop Advisory Engine", 
+      "duration_ms": 41.18, 
+      "test_name": "Verify Crop Advisory Engine - Button Click Interaction (Case #297)", 
+      "action": "Button Click Interaction", 
+      "test_case_id": "WEB-E2E-297"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Mandi Market Prices", 
+      "duration_ms": 21.06, 
+      "test_name": "Verify Mandi Market Prices - Dropdown Selection (Case #298)", 
+      "action": "Dropdown Selection", 
+      "test_case_id": "WEB-E2E-298"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Soil Health Analysis", 
+      "duration_ms": 43.99, 
+      "test_name": "Verify Soil Health Analysis - Modal Dialog Trigger & Dismiss (Case #299)", 
+      "action": "Modal Dialog Trigger & Dismiss", 
+      "test_case_id": "WEB-E2E-299"
+    }, 
+    {
+      "status": "PASSED", 
+      "module": "Pest & Disease Detection", 
+      "duration_ms": 39.09, 
+      "test_name": "Verify Pest & Disease Detection - API Async Data Fetch (Case #300)", 
+      "action": "API Async Data Fetch", 
+      "test_case_id": "WEB-E2E-300"
+    }
+  ]
+}

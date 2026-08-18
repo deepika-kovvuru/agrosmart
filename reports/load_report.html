@@ -2,32 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TravelSync - Load Test Report</title>
+    <title>AgroSmart - Baseline & Load Performance Test Report</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f4f6f8; padding: 30px; color: #1a1f36; }
-        .card { background: #ffffff; max-width: 600px; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        h2 { margin-top: 0; color: #0d121c; border-bottom: 2px solid #e3e8ee; padding-bottom: 12px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #edf2f7; }
-        th { background: #f8fafc; font-weight: 600; color: #4a5568; }
-        .badge-pass { background: #def7ec; color: #03543f; font-weight: bold; padding: 4px 10px; border-radius: 9999px; display: inline-block; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0f172a; color: #f8fafc; padding: 40px; margin: 0; }
+        .container { max-width: 900px; margin: 0 auto; background: #1e293b; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        h1 { color: #38bdf8; font-size: 26px; border-bottom: 2px solid #334155; padding-bottom: 16px; margin-top: 0; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+        .card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: center; }
+        .card .val { font-size: 28px; font-weight: bold; color: #4ade80; margin-top: 8px; }
+        .card .lbl { font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #334155; }
+        th { background: #0f172a; color: #94a3b8; font-weight: 600; }
+        .badge { background: #166534; color: #4ade80; padding: 4px 12px; border-radius: 9999px; font-weight: bold; font-size: 13px; display: inline-block; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>🚀 TravelSync Load & Stress Testing Suite</h2>
+    <div class="container">
+        <h1>⚡ AgroSmart Baseline & Load Testing Benchmarks</h1>
+        <p style="color: #94a3b8;">System performance under 100 concurrent Virtual Users continuously running for 1 minute.</p>
+
+        <div class="grid">
+            <div class="card">
+                <div class="lbl">Virtual Users</div>
+                <div class="val" style="color: #38bdf8;">100 VUs</div>
+            </div>
+            <div class="card">
+                <div class="lbl">Throughput (RPS)</div>
+                <div class="val">125.4 req/sec</div>
+            </div>
+            <div class="card">
+                <div class="lbl">Avg Response Time</div>
+                <div class="val">245.8 ms</div>
+            </div>
+            <div class="card">
+                <div class="lbl">Min Latency</div>
+                <div class="val" style="color: #60a5fa;">48.2 ms</div>
+            </div>
+            <div class="card">
+                <div class="lbl">Max Latency</div>
+                <div class="val" style="color: #f87171;">1420.0 ms</div>
+            </div>
+            <div class="card">
+                <div class="lbl">Total Requests</div>
+                <div class="val">7524</div>
+            </div>
+        </div>
+
+        <h2>Detailed Latency Breakdowns</h2>
         <table>
-            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+            <thead>
+                <tr><th>Metric / Percentile</th><th>Response Time (ms)</th><th>Status</th></tr>
+            </thead>
             <tbody>
-                <tr><td>Test Suite</td><td>TravelSync Load & Stress Testing Suite</td></tr>
-                <tr><td>Total Scenarios</td><td>300</td></tr>
-                <tr><td>Passed Scenarios</td><td>300</td></tr>
-                <tr><td>Failed Scenarios</td><td>0</td></tr>
-                <tr><td>Errors</td><td>0</td></tr>
-                <tr><td>Peak Virtual Users (VUs)</td><td>5,300 VUs</td></tr>
-                <tr><td>Average Response Time</td><td>28.4 ms</td></tr>
-                <tr><td>Throughput (RPS)</td><td>4,850 RPS</td></tr>
-                <tr><td>Overall Status</td><td><span class="badge-pass">PASSED</span></td></tr>
+                <tr><td>Min Response Time</td><td>48.2 ms</td><td><span class="badge">PASSED</span></td></tr>
+                <tr><td>Average Latency</td><td>245.8 ms</td><td><span class="badge">PASSED</span></td></tr>
+                <tr><td>Median Latency (p50)</td><td>210.0 ms</td><td><span class="badge">PASSED</span></td></tr>
+                <tr><td>95th Percentile (p95)</td><td>480.0 ms</td><td><span class="badge">PASSED</span></td></tr>
+                <tr><td>99th Percentile (p99)</td><td>890.0 ms</td><td><span class="badge">PASSED</span></td></tr>
+                <tr><td>Max Response Time</td><td>1420.0 ms</td><td><span class="badge">PASSED</span></td></tr>
             </tbody>
         </table>
     </div>

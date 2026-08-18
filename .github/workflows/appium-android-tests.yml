@@ -1,0 +1,34 @@
+name: Appium — Android Tests (300)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  appium-android-suite:
+    name: Appium — Android Tests (300)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Appium Android Mobile E2E Test Suite (300 Cases)
+        run: |
+          python tests/appium_android/run_appium_android_tests.py
+          python tests/make_excel.py
+
+      - name: Upload Appium Android Report Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-android-report
+          path: |
+            reports/android_appium_report.json
+            reports/appium_android_report.xlsx

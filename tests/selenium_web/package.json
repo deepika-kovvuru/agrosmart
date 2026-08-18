@@ -1,0 +1,23 @@
+{
+  "name": "agrosmart-selenium-web-tests",
+  "version": "1.0.0",
+  "description": "Selenium E2E Web Automation Test Suite for AgroSmart (300 Test Cases)",
+  "main": "run_selenium_web_tests.py",
+  "scripts": {
+    "test:selenium": "python run_selenium_web_tests.py",
+    "test": "npm run test:selenium"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.18.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "selenium",
+    "e2e",
+    "agrosmart",
+    "testing",
+    "web"
+  ],
+  "author": "AgroSmart QA Team",
+  "license": "ISC"
+}
