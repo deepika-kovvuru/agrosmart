@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 import 'app_theme.dart';
 import 'api_service.dart';
 import 'offline_api_service.dart';

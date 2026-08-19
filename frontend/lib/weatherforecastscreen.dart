@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'translation_provider.dart';
 import 'api_service.dart';
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 
 
 class WeatherScreen extends StatefulWidget {

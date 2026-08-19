@@ -1,6 +1,6 @@
 // home_screen.dart
 import 'package:flutter/material.dart';
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 import 'app_theme.dart';
 import 'cropadvisoryscreen.dart';
 import 'weatherforecastscreen.dart';
