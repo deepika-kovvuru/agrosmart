@@ -1178,26 +1178,45 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        margin: const EdgeInsets.only(bottom: 14),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF10B981)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.my_location_rounded, color: Color(0xFF10B981), size: 18),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '📍 Your Current Location: $currentLocName',
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _showManualStatePickerDialog(context);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          margin: const EdgeInsets.only(bottom: 14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFF10B981)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.my_location_rounded, color: Color(0xFF10B981), size: 18),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  '📍 Location: $currentLocName',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                ),
                               ),
-                            ),
-                            const Text('LIVE GPS ACCESS', style: TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold, fontSize: 10)),
-                          ],
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF10B981),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.edit_location_alt_rounded, color: Colors.white, size: 12),
+                                    SizedBox(width: 4),
+                                    Text('CHANGE STATE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       Container(
@@ -1388,6 +1407,120 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     if (colorStr == 'orange') return Colors.orange;
     if (colorStr == 'amber') return Colors.amber;
     return Colors.green;
+  }
+
+  void _showManualStatePickerDialog(BuildContext parentContext) {
+    TextEditingController controller = TextEditingController();
+    List<String> statesList = [
+      'Andhra Pradesh', 'Tamil Nadu', 'Telangana', 'Karnataka', 'Kerala',
+      'Maharashtra', 'Gujarat', 'Punjab', 'Haryana', 'Uttar Pradesh',
+      'West Bengal', 'Bihar', 'Rajasthan', 'Madhya Pradesh', 'Odisha',
+      'Himachal Pradesh', 'Assam', 'Chhattisgarh', 'Jharkhand', 'Uttarakhand'
+    ];
+
+    showDialog(
+      context: parentContext,
+      builder: (dialogCtx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E293B),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(Icons.edit_location_alt_rounded, color: Color(0xFF10B981)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Select State / Enter Location'.tr,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Enter State or District Name:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: controller,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'e.g. Maharashtra, Punjab, Karnataka...',
+                    hintStyle: const TextStyle(color: Colors.white38),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.08),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    prefixIcon: const Icon(Icons.search_rounded, color: Colors.white54),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text('Or Select Indian State:', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: statesList.map((st) {
+                    bool isSel = _currentLocationName.toLowerCase().contains(st.toLowerCase());
+                    return InkWell(
+                      onTap: () {
+                        Navigator.pop(dialogCtx);
+                        _applyManualStateSelection(st);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isSel ? const Color(0xFF10B981) : Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: isSel ? const Color(0xFF10B981) : Colors.white24),
+                        ),
+                        child: Text(
+                          st,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11.5,
+                            fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogCtx);
+                _loadLiveGPSLocationForPests();
+              },
+              child: const Text('📍 Auto GPS', style: TextStyle(color: Color(0xFF10B981))),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+              onPressed: () {
+                if (controller.text.trim().isNotEmpty) {
+                  String entered = controller.text.trim();
+                  Navigator.pop(dialogCtx);
+                  _applyManualStateSelection(entered);
+                }
+              },
+              child: const Text('Apply Location', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _applyManualStateSelection(String stateOrLoc) {
+    setState(() {
+      _currentLocationName = stateOrLoc;
+      _isLoadingAlerts = false;
+    });
+    _showOutbreakMapDialog(context);
   }
 
   Widget _buildMapPin(String label, Color color, {bool isUser = false}) {
