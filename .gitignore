@@ -42,3 +42,6 @@ Thumbs.db
 
 # Backups
 frontend_backup/
+
+*.apk
+frontend/build/

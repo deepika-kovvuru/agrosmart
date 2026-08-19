@@ -1095,7 +1095,97 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     );
   }
 
-  Widget _buildTreatmentBox(String recommendation) {
+  Widget _buildTreatmentBox(dynamic recData) {
+    if (_diagnosisResult != null && _diagnosisResult!['analysis'] is Map) {
+      final analysisMap = _diagnosisResult!['analysis'] as Map<String, dynamic>;
+      final chem = analysisMap['chemical_treatments'] as List<dynamic>? ?? [];
+      final organic = analysisMap['organic_treatments'] as List<dynamic>? ?? [];
+
+      if (chem.isNotEmpty || organic.isNotEmpty) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (chem.isNotEmpty) ...[
+              const Text(
+                '🧪 Recommended Chemical Treatments:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
+              ),
+              const SizedBox(height: 6),
+              ...chem.map((t) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFCBD5E1)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '• ${t['name']}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A), fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '💧 Dosage: ${t['dosage']}',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF0284C7), fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '📋 Instructions: ${t['instructions']}',
+                        style: TextStyle(fontSize: 11.5, color: Colors.black.withValues(alpha: 0.7), fontFamily: 'Poppins'),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+            if (organic.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              const Text(
+                '🌿 Recommended Organic / Bio-Pesticides:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF2D6A4F), fontFamily: 'Poppins'),
+              ),
+              const SizedBox(height: 6),
+              ...organic.map((t) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFA5D6A7)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '• ${t['name']}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1B4332), fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '🌱 Dosage: ${t['dosage']}',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2D6A4F), fontFamily: 'Poppins'),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '📋 Instructions: ${t['instructions']}',
+                        style: TextStyle(fontSize: 11.5, color: Colors.black.withValues(alpha: 0.7), fontFamily: 'Poppins'),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ],
+        );
+      }
+    }
+
+    String recommendationText = recData?.toString() ?? 'Follow recommended agricultural safety guidelines.';
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -1122,7 +1212,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            recommendation.tr,
+            recommendationText.tr,
             style: const TextStyle(
               fontSize: 12.5,
               color: Color(0xFF1B5E20),
