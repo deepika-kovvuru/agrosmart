@@ -1127,6 +1127,8 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
 
   void _showOutbreakMapDialog(BuildContext context) {
     String currentLocName = _currentLocationName;
+    final stateDistricts = _getDistrictsForLocation(currentLocName);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1239,10 +1241,14 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                                     top: 16, left: 10,
                                     child: _buildMapPin('🎯 YOUR LOCATION ($currentLocName)', const Color(0xFF10B981), isUser: true),
                                   ),
-                                  Positioned(top: 65, left: 50, child: _buildMapPin('Kurnool (92%)', Colors.red)),
-                                  Positioned(top: 105, right: 40, child: _buildMapPin('Guntur (88%)', Colors.orange)),
-                                  Positioned(bottom: 40, left: 90, child: _buildMapPin('Anantapur (76%)', Colors.orange)),
-                                  Positioned(bottom: 30, right: 30, child: _buildMapPin('Vijayawada (65%)', Colors.amber)),
+                                  if (stateDistricts.isNotEmpty)
+                                    Positioned(top: 65, left: 50, child: _buildMapPin('${stateDistricts[0]['district']?.replaceAll(' District', '')} (${stateDistricts[0]['risk']?.split(' ')[0]})', _getRiskColor(stateDistricts[0]['color']))),
+                                  if (stateDistricts.length > 1)
+                                    Positioned(top: 105, right: 40, child: _buildMapPin('${stateDistricts[1]['district']?.replaceAll(' District', '')} (${stateDistricts[1]['risk']?.split(' ')[0]})', _getRiskColor(stateDistricts[1]['color']))),
+                                  if (stateDistricts.length > 2)
+                                    Positioned(bottom: 40, left: 90, child: _buildMapPin('${stateDistricts[2]['district']?.replaceAll(' District', '')} (${stateDistricts[2]['risk']?.split(' ')[0]})', _getRiskColor(stateDistricts[2]['color']))),
+                                  if (stateDistricts.length > 3)
+                                    Positioned(bottom: 30, right: 30, child: _buildMapPin('${stateDistricts[3]['district']?.replaceAll(' District', '')} (${stateDistricts[3]['risk']?.split(' ')[0]})', _getRiskColor(stateDistricts[3]['color']))),
                                 ],
                               ),
                             ),
@@ -1252,11 +1258,13 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                       const SizedBox(height: 16),
                       const Text('Regional District Threat Index', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
-                      _buildDistrictRiskRow('🎯 YOUR LOCATION ($currentLocName)', '92% - CRITICAL', 'Chilli Thrips & Fall Armyworm (Active Local Threat)', Colors.red, isUser: true),
-                      _buildDistrictRiskRow('Kurnool District', '92% - CRITICAL', 'Chilli Thrips & Fall Armyworm', Colors.red),
-                      _buildDistrictRiskRow('Guntur District', '88% - VERY HIGH', 'Pink Bollworm & Aphids', Colors.orange),
-                      _buildDistrictRiskRow('Anantapur District', '76% - HIGH', 'Groundnut Tikka Leaf Spot', Colors.orange),
-                      _buildDistrictRiskRow('Vijayawada District', '65% - MODERATE', 'Stem Borer & Leaf Blast', Colors.amber),
+                      _buildDistrictRiskRow('🎯 YOUR LOCATION ($currentLocName)', '88% - HIGH THREAT', 'Local State Active Pest Threat', Colors.red, isUser: true),
+                      ...stateDistricts.map((d) => _buildDistrictRiskRow(
+                        d['district']!,
+                        d['risk']!,
+                        d['pests']!,
+                        _getRiskColor(d['color']),
+                      )),
                     ],
                   ),
                 ),
@@ -1266,6 +1274,120 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
         );
       },
     );
+  }
+
+  List<Map<String, String>> _getDistrictsForLocation(String loc) {
+    String l = loc.toLowerCase();
+    if (l.contains('tamil nadu') || l.contains('kanchipuram') || l.contains('chennai') || l.contains('coimbatore') || l.contains('thanjavur')) {
+      return [
+        {'district': 'Kanchipuram District', 'risk': '85% - HIGH', 'pests': 'Rice Blast & Yellow Stem Borer', 'color': 'red'},
+        {'district': 'Thanjavur District', 'risk': '91% - CRITICAL', 'pests': 'Brown Planthopper & Leaf Folder', 'color': 'red'},
+        {'district': 'Coimbatore District', 'risk': '78% - HIGH', 'pests': 'Cotton Bollworm & Aphids', 'color': 'orange'},
+        {'district': 'Madurai District', 'risk': '68% - MODERATE', 'pests': 'Chilli Gall Midge & Whitefly', 'color': 'amber'},
+        {'district': 'Salem District', 'risk': '72% - HIGH', 'pests': 'Tapioca Mealybug & Rot', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('telangana') || l.contains('hyderabad') || l.contains('warangal') || l.contains('nalgonda')) {
+      return [
+        {'district': 'Hyderabad / Rangareddy', 'risk': '82% - HIGH', 'pests': 'Vegetable Fruit Borer & Thrips', 'color': 'orange'},
+        {'district': 'Warangal District', 'risk': '90% - CRITICAL', 'pests': 'Cotton Pink Bollworm & Chilli Wilt', 'color': 'red'},
+        {'district': 'Nalgonda District', 'risk': '84% - VERY HIGH', 'pests': 'Paddy Stem Borer & Gall Midge', 'color': 'orange'},
+        {'district': 'Nizamabad District', 'risk': '75% - HIGH', 'pests': 'Turmeric Leaf Spot & Maize FAW', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('karnataka') || l.contains('bengaluru') || l.contains('mandya') || l.contains('belagavi') || l.contains('mysuru')) {
+      return [
+        {'district': 'Bengaluru Rural District', 'risk': '70% - MODERATE', 'pests': 'Tomato Pinworm & Whitefly', 'color': 'amber'},
+        {'district': 'Mandya District', 'risk': '88% - VERY HIGH', 'pests': 'Sugarcane Woolly Aphid & Paddy BPH', 'color': 'red'},
+        {'district': 'Belagavi District', 'risk': '80% - HIGH', 'pests': 'Soybean Semilooper & Rust', 'color': 'orange'},
+        {'district': 'Dharwad District', 'risk': '74% - HIGH', 'pests': 'Cotton Helicoverpa & Wilt', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('kerala') || l.contains('palakkad') || l.contains('wayanad') || l.contains('idukki')) {
+      return [
+        {'district': 'Palakkad District', 'risk': '86% - VERY HIGH', 'pests': 'Rice Bug & Brown Planthopper', 'color': 'red'},
+        {'district': 'Wayanad District', 'risk': '79% - HIGH', 'pests': 'Coffee Berry Borer & Pepper Quick Wilt', 'color': 'orange'},
+        {'district': 'Idukki District', 'risk': '72% - HIGH', 'pests': 'Cardamom Thrips & Rhizome Rot', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('maharashtra') || l.contains('pune') || l.contains('nashik') || l.contains('nagpur')) {
+      return [
+        {'district': 'Nashik District', 'risk': '89% - VERY HIGH', 'pests': 'Grape Downy Mildew & Thrips', 'color': 'red'},
+        {'district': 'Pune District', 'risk': '77% - HIGH', 'pests': 'Onion Purple Blotch & Maggot', 'color': 'orange'},
+        {'district': 'Nagpur District', 'risk': '85% - HIGH', 'pests': 'Citrus Blackfly & Dieback', 'color': 'red'},
+        {'district': 'Ahmednagar District', 'risk': '81% - HIGH', 'pests': 'Sugarcane Pyrilla & White Grub', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('gujarat') || l.contains('rajkot') || l.contains('surat') || l.contains('ahmedabad')) {
+      return [
+        {'district': 'Rajkot / Saurashtra', 'risk': '87% - VERY HIGH', 'pests': 'Groundnut Stem Rot & Cotton Aphid', 'color': 'red'},
+        {'district': 'Anand District', 'risk': '75% - HIGH', 'pests': 'Tobacco Caterpillar & Damping Off', 'color': 'orange'},
+        {'district': 'Surat District', 'risk': '70% - MODERATE', 'pests': 'Sugarcane Top Borer', 'color': 'amber'},
+      ];
+    }
+    if (l.contains('punjab') || l.contains('ludhiana') || l.contains('bhatinda') || l.contains('amritsar')) {
+      return [
+        {'district': 'Ludhiana District', 'risk': '88% - VERY HIGH', 'pests': 'Wheat Yellow Rust & Paddy Borer', 'color': 'red'},
+        {'district': 'Bhatinda District', 'risk': '92% - CRITICAL', 'pests': 'Cotton Whitefly & Pink Bollworm', 'color': 'red'},
+      ];
+    }
+    if (l.contains('haryana') || l.contains('karnal') || l.contains('hisar') || l.contains('gurugram')) {
+      return [
+        {'district': 'Karnal District', 'risk': '84% - VERY HIGH', 'pests': 'Paddy Bacterial Leaf Blight & Rust', 'color': 'orange'},
+        {'district': 'Hisar District', 'risk': '80% - HIGH', 'pests': 'Mustard Aphid & Cotton Bollworm', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('uttar pradesh') || l.contains('lucknow') || l.contains('varanasi') || l.contains('kanpur')) {
+      return [
+        {'district': 'Varanasi District', 'risk': '82% - HIGH', 'pests': 'Paddy False Smut & Maize FAW', 'color': 'orange'},
+        {'district': 'Lakhimpur Kheri', 'risk': '89% - VERY HIGH', 'pests': 'Sugarcane Red Rot & Early Borer', 'color': 'red'},
+      ];
+    }
+    if (l.contains('west bengal') || l.contains('kolkata') || l.contains('burdwan') || l.contains('hooghly')) {
+      return [
+        {'district': 'Burdwan District', 'risk': '90% - CRITICAL', 'pests': 'Paddy Brown Planthopper & Sheath Blight', 'color': 'red'},
+        {'district': 'Hooghly District', 'risk': '78% - HIGH', 'pests': 'Potato Late Blight & Jute Stem Rot', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('bihar') || l.contains('patna') || l.contains('muzaffarpur')) {
+      return [
+        {'district': 'Muzaffarpur District', 'risk': '83% - HIGH', 'pests': 'Litchi Fruit Borer & Maize FAW', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('odisha') || l.contains('bhubaneswar') || l.contains('cuttack')) {
+      return [
+        {'district': 'Cuttack District', 'risk': '85% - HIGH', 'pests': 'Paddy Gall Midge & Swarming Caterpillar', 'color': 'red'},
+      ];
+    }
+    if (l.contains('rajasthan') || l.contains('jaipur') || l.contains('jodhpur') || l.contains('ganganagar')) {
+      return [
+        {'district': 'Sri Ganganagar District', 'risk': '86% - VERY HIGH', 'pests': 'Cotton Whitefly & Mustard Aphid', 'color': 'red'},
+      ];
+    }
+    if (l.contains('madhya pradesh') || l.contains('bhopal') || l.contains('indore') || l.contains('ujjain')) {
+      return [
+        {'district': 'Ujjain / Malwa District', 'risk': '84% - VERY HIGH', 'pests': 'Soybean Girdle Beetle & Pod Borer', 'color': 'orange'},
+      ];
+    }
+    if (l.contains('himachal') || l.contains('shimla') || l.contains('manali') || l.contains('dharamshala')) {
+      return [
+        {'district': 'Shimla District', 'risk': '78% - HIGH', 'pests': 'Apple Scab & Canker', 'color': 'orange'},
+      ];
+    }
+
+    return [
+      {'district': 'Kurnool District', 'risk': '92% - CRITICAL', 'pests': 'Chilli Thrips & Fall Armyworm', 'color': 'red'},
+      {'district': 'Guntur District', 'risk': '88% - VERY HIGH', 'pests': 'Pink Bollworm & Aphids', 'color': 'orange'},
+      {'district': 'Anantapur District', 'risk': '76% - HIGH', 'pests': 'Groundnut Tikka Leaf Spot', 'color': 'orange'},
+      {'district': 'Vijayawada District', 'risk': '65% - MODERATE', 'pests': 'Stem Borer & Leaf Blast', 'color': 'amber'},
+    ];
+  }
+
+  Color _getRiskColor(String? colorStr) {
+    if (colorStr == 'red') return Colors.red;
+    if (colorStr == 'orange') return Colors.orange;
+    if (colorStr == 'amber') return Colors.amber;
+    return Colors.green;
   }
 
   Widget _buildMapPin(String label, Color color, {bool isUser = false}) {
