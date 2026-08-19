@@ -185,15 +185,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
     setState(() => _isRefreshing = true);
     try {
       final data = await ApiService.getCombinedAlerts(
-        latitude: 15.8281,
-        longitude: 78.0373,
+        locationName: locationName,
         crops: ['Rice', 'Cotton', 'Maize', 'Tomato', 'Chilli'],
       );
       if (data != null && data['weather'] != null) {
         final w = data['weather'];
+        final loc = data['location'];
         if (mounted) {
           setState(() {
-            _locationName = locationName;
+            _locationName = (loc != null && loc['display_name'] != null)
+                ? loc['display_name']
+                : locationName;
             _temp = "${w['temperature']}°C";
             _condition = w['condition'] ?? "Partly Cloudy";
             _feelsLike = "${w['feels_like']}°C";

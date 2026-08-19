@@ -624,8 +624,9 @@ class ApiService {
   // ─────────────────────────────────────────
 
   static Future<Map<String, dynamic>> getCombinedAlerts({
-    required double latitude,
-    required double longitude,
+    double? latitude,
+    double? longitude,
+    String? locationName,
     List<String>? crops,
   }) async {
     try {
@@ -633,8 +634,15 @@ class ApiService {
           ? crops.map((c) => 'crops=${Uri.encodeComponent(c)}').join('&')
           : 'crops=Rice&crops=Cotton&crops=Maize&crops=Tomato&crops=Chilli';
 
+      String locQuery = '';
+      if (locationName != null && locationName.trim().isNotEmpty) {
+        locQuery = 'location_name=${Uri.encodeComponent(locationName.trim())}';
+      } else {
+        locQuery = 'lat=${latitude ?? 15.8281}&lon=${longitude ?? 78.0373}';
+      }
+
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/api/alerts?lat=$latitude&lon=$longitude&$queryCrops'),
+        Uri.parse('${ApiConfig.baseUrl}/api/alerts?$locQuery&$queryCrops'),
         headers: _headers,
       );
 
