@@ -381,10 +381,18 @@ class AgroSmartApi {
     return { success: true, answer: responseText };
   }
   // --- REAL-TIME GPS LOCATION, WEATHER & PEST ENGINES ---
-  async getCombinedAlerts(lat, lon, crops = []) {
+  async getCombinedAlerts(lat, lon, crops = [], locationName = '') {
     try {
       const queryCrops = crops.length ? crops.map(c => `crops=${encodeURIComponent(c)}`).join('&') : 'crops=Rice&crops=Cotton&crops=Maize&crops=Tomato&crops=Chilli';
-      const res = await fetch(`${this.baseUrl}/api/alerts?lat=${lat}&lon=${lon}&${queryCrops}`, {
+      let locQuery = '';
+      if (locationName) {
+        locQuery = `location_name=${encodeURIComponent(locationName)}`;
+      } else if (lat && lon) {
+        locQuery = `lat=${lat}&lon=${lon}`;
+      } else {
+        locQuery = `lat=15.8281&lon=78.0373`;
+      }
+      const res = await fetch(`${this.baseUrl}/api/alerts?${locQuery}&${queryCrops}`, {
         headers: this.getHeaders()
       });
       if (res.ok) return await res.json();

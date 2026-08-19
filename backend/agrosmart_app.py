@@ -1681,7 +1681,7 @@ def fetch_reverse_geocode(lat, lon):
         if res.status_code == 200:
             data = res.json()
             addr = data.get('address', {})
-            village = addr.get('village') or addr.get('town') or addr.get('suburb') or addr.get('city') or 'Local Farm Area'
+            village = addr.get('village') or addr.get('town') or addr.get('suburb') or addr.get('city') or addr.get('subdistrict') or 'Local Farm Area'
             district = addr.get('county') or addr.get('district') or addr.get('state_district') or addr.get('city') or 'District'
             state = addr.get('state') or 'State'
             country = addr.get('country') or 'India'
@@ -1705,6 +1705,35 @@ def fetch_reverse_geocode(lat, lon):
         'country': 'India',
         'display_name': 'Kurnool, Andhra Pradesh'
     }
+
+def fetch_forward_geocode(query):
+    """Geocodes a village, town, or city name into lat & lon"""
+    try:
+        url = f"https://nominatim.openstreetmap.org/search?format=json&q={req_lib.utils.quote(query)}&limit=1"
+        res = req_lib.get(url, headers={'User-Agent': 'AgroSmartApp/2.0'}, timeout=5)
+        if res.status_code == 200:
+            data = res.json()
+            if data:
+                lat = float(data[0]['lat'])
+                lon = float(data[0]['lon'])
+                display_name = data[0]['display_name']
+                parts = [p.strip() for p in display_name.split(',')]
+                village = parts[0]
+                district = parts[1] if len(parts) > 1 else parts[0]
+                state = parts[-2] if len(parts) > 2 else parts[-1]
+                country = parts[-1]
+                return {
+                    'latitude': lat,
+                    'longitude': lon,
+                    'village': village,
+                    'district': district,
+                    'state': state,
+                    'country': country,
+                    'display_name': display_name
+                }
+    except Exception as e:
+        print("Forward geocode error:", e)
+    return None
 
 def fetch_live_weather(lat, lon):
     try:
@@ -2130,9 +2159,19 @@ def get_diseases_risk_endpoint():
 def get_combined_alerts_endpoint():
     """Returns dynamic structured JSON payload matching prompt section 12 requirement"""
     data = request.get_json(silent=True) or {}
-    lat = request.args.get('latitude') or request.args.get('lat') or data.get('latitude') or '15.8281'
-    lon = request.args.get('longitude') or request.args.get('lon') or data.get('longitude') or '78.0373'
+    q = request.args.get('q') or request.args.get('location_name') or data.get('location_name')
+    lat = request.args.get('latitude') or request.args.get('lat') or data.get('latitude')
+    lon = request.args.get('longitude') or request.args.get('lon') or data.get('longitude')
     crops = request.args.getlist('crops') or data.get('crops') or ['Rice', 'Cotton', 'Maize', 'Tomato', 'Chilli', 'Groundnut']
+
+    if q and (not lat or not lon):
+        geocoded = fetch_forward_geocode(q)
+        if geocoded:
+            lat = geocoded['latitude']
+            lon = geocoded['longitude']
+
+    if not lat: lat = '15.8281'
+    if not lon: lon = '78.0373'
 
     loc = fetch_reverse_geocode(lat, lon)
     weather = fetch_live_weather(lat, lon)
