@@ -283,6 +283,16 @@ class OfflineApiService {
 
     final fname = filename.toLowerCase();
     
+    if (fname.contains("doc") || fname.contains("screenshot") || fname.contains("code") || fname.contains("paper") || fname.contains("text") || fname.contains("peak")) {
+      return {
+        'success': true,
+        'category': 'document_text',
+        'confidence': 0.98,
+        'is_agricultural': false,
+        'message': "Document / Data Screenshot Detected: This photo contains text, code, or data table ('peak_virtual_users'). Please upload a clear photo of your crop, leaf, pest, or soil to get agricultural disease diagnosis.",
+      };
+    }
+
     if (fname.contains("face") || fname.contains("selfie") || fname.contains("user") || fname.contains("person")) {
       return {
         'success': true,

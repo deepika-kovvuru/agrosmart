@@ -1,6 +1,7 @@
 // pest_disease_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:universal_html/html.dart' as html;
@@ -36,20 +37,53 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   Future<void> _pickImage(ImageSource source) async {
     try {
       XFile? pickedFile;
-      try {
-        pickedFile = await _picker.pickImage(
-          source: source,
-          maxWidth: 1080,
-          maxHeight: 1080,
-          imageQuality: 85,
-        );
-      } catch (pickErr) {
-        pickedFile = await _picker.pickImage(
-          source: ImageSource.gallery,
-          maxWidth: 1080,
-          maxHeight: 1080,
-          imageQuality: 85,
-        );
+
+      if (kIsWeb && source == ImageSource.camera) {
+        try {
+          final completer = Completer<XFile?>();
+          final uploadInput = html.FileUploadInputElement();
+          uploadInput.accept = 'image/*';
+          uploadInput.setAttribute('capture', 'environment');
+          uploadInput.click();
+
+          uploadInput.onChange.listen((e) async {
+            final files = uploadInput.files;
+            if (files != null && files.isNotEmpty) {
+              final file = files[0];
+              final reader = html.FileReader();
+              reader.readAsArrayBuffer(file);
+              reader.onLoadEnd.listen((e) {
+                final bytes = reader.result as Uint8List;
+                completer.complete(XFile.fromData(bytes, name: file.name));
+              });
+            } else {
+              completer.complete(null);
+            }
+          });
+
+          pickedFile = await completer.future.timeout(
+            const Duration(seconds: 45),
+            onTimeout: () => null,
+          );
+        } catch (_) {}
+      }
+
+      if (pickedFile == null) {
+        try {
+          pickedFile = await _picker.pickImage(
+            source: source,
+            maxWidth: 1080,
+            maxHeight: 1080,
+            imageQuality: 85,
+          );
+        } catch (pickErr) {
+          pickedFile = await _picker.pickImage(
+            source: ImageSource.gallery,
+            maxWidth: 1080,
+            maxHeight: 1080,
+            imageQuality: 85,
+          );
+        }
       }
 
       if (pickedFile != null) {
