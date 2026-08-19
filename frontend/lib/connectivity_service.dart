@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Singleton service that monitors network connectivity in real time.
@@ -22,10 +23,9 @@ class ConnectivityService {
   }
 
   bool _isConnected(List<ConnectivityResult> results) {
-    return results.any((r) =>
-        r == ConnectivityResult.mobile ||
-        r == ConnectivityResult.wifi ||
-        r == ConnectivityResult.ethernet);
+    if (kIsWeb) return true;
+    if (results.isEmpty) return true;
+    return !results.contains(ConnectivityResult.none);
   }
 
   bool get isOnlineNow => isOnline.value;

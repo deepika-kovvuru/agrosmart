@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:path/path.dart' as path;
+import 'package:flutter/foundation.dart';
 import 'api_config.dart';
 import 'user_session.dart';
 
@@ -584,8 +584,28 @@ class ApiService {
   static Future<Map<String, dynamic>> analyzeImageBytes(Uint8List bytes, String filename) async {
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}/api/analyze-image');
-      final request = http.MultipartRequest('POST', uri);
       
+      if (kIsWeb) {
+        final response = await http.post(
+          uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Bypass-Tunnel-Reminder': 'true',
+          },
+          body: jsonEncode({
+            'filename': filename.isEmpty ? 'upload.jpg' : filename,
+            'image_base64': base64Encode(bytes),
+          }),
+        );
+        final decoded = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          return decoded;
+        }
+        return {'success': false, 'message': decoded['message'] ?? 'Image upload failed'};
+      }
+
+      final request = http.MultipartRequest('POST', uri);
       request.headers.addAll({
         'Accept': 'application/json',
         'Bypass-Tunnel-Reminder': 'true',

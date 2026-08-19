@@ -23,11 +23,14 @@ class ApiConfig {
   /// Tests candidates in order and picks the first responsive one.
   /// Falls back to primary URL if none respond.
   static Future<void> resolveBaseUrl() async {
-    final candidates = <String>[];
+    final candidates = <String>[
+      'http://localhost:5000',
+      'http://127.0.0.1:5000',
+    ];
     if (kIsWeb) {
       candidates.add(Uri.base.origin);
     }
-    candidates.addAll(['http://localhost:5000', 'http://127.0.0.1:5000', _primaryUrl, ..._fallbacks]);
+    candidates.addAll([_primaryUrl, ..._fallbacks]);
 
     for (final url in candidates) {
       if (url.isEmpty) continue;
@@ -39,7 +42,7 @@ class ApiConfig {
             )
             .timeout(const Duration(milliseconds: 1500));
 
-        if (res.statusCode == 200) {
+        if (res.statusCode == 200 && res.body.contains('AGROSMART')) {
           _baseUrl = url;
           debugPrint('[ApiConfig] Connected to: $_baseUrl');
           return;

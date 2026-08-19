@@ -1,7 +1,6 @@
-// registration_screen.dart
 import 'package:flutter/material.dart';
 import 'app_theme.dart';
-import 'api_service.dart';
+import 'offline_api_service.dart';
 import 'translation_provider.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -70,22 +69,33 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   }
 
   void _register() async {
-    if (_formKey.currentState!.validate() && _agreed) {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill in all required fields (Full Name, Phone, Email, Password)'.tr),
+          backgroundColor: AppTheme.error,
+        ),
+      );
+      return;
+    }
+
+    if (isValid && _agreed) {
       setState(() => _isLoading = true);
-      
-      final result = await ApiService.signup(
-        name: _nameCtrl.text,
-        email: _emailCtrl.text,
-        phone: _phoneCtrl.text,
+
+      final result = await OfflineApiService.signup(
+        name: _nameCtrl.text.trim(),
+        email: _emailCtrl.text.trim(),
+        phone: _phoneCtrl.text.trim(),
         password: _passCtrl.text,
         confirmPassword: _confirmCtrl.text,
         state: _selectedState,
       );
-      
+
       if (mounted) {
         if (result['success'] == true) {
-          // Success! Now programmatically log in to get the session cookie/details
-          final loginResult = await ApiService.login(_emailCtrl.text, _passCtrl.text);
+          // Success! Now programmatically log in to get session details
+          final loginResult = await OfflineApiService.login(_emailCtrl.text.trim(), _passCtrl.text);
           if (mounted) {
             setState(() => _isLoading = false);
             if (loginResult['success'] == true) {
@@ -110,7 +120,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text((result['error'] ?? 'Registration failed').tr),
+              content: Text((result['error'] ?? 'Registration failed').toString().tr),
               backgroundColor: AppTheme.error,
             ),
           );

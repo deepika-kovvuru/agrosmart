@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:universal_html/html.dart' as html;
@@ -38,52 +39,22 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     try {
       XFile? pickedFile;
 
-      if (kIsWeb && source == ImageSource.camera) {
+      try {
+        pickedFile = await _picker.pickImage(
+          source: source,
+          maxWidth: 1080,
+          maxHeight: 1080,
+          imageQuality: 85,
+        );
+      } catch (pickErr) {
         try {
-          final completer = Completer<XFile?>();
-          final uploadInput = html.FileUploadInputElement();
-          uploadInput.accept = 'image/*';
-          uploadInput.setAttribute('capture', 'environment');
-          uploadInput.click();
-
-          uploadInput.onChange.listen((e) async {
-            final files = uploadInput.files;
-            if (files != null && files.isNotEmpty) {
-              final file = files[0];
-              final reader = html.FileReader();
-              reader.readAsArrayBuffer(file);
-              reader.onLoadEnd.listen((e) {
-                final bytes = reader.result as Uint8List;
-                completer.complete(XFile.fromData(bytes, name: file.name));
-              });
-            } else {
-              completer.complete(null);
-            }
-          });
-
-          pickedFile = await completer.future.timeout(
-            const Duration(seconds: 45),
-            onTimeout: () => null,
-          );
-        } catch (_) {}
-      }
-
-      if (pickedFile == null) {
-        try {
-          pickedFile = await _picker.pickImage(
-            source: source,
-            maxWidth: 1080,
-            maxHeight: 1080,
-            imageQuality: 85,
-          );
-        } catch (pickErr) {
           pickedFile = await _picker.pickImage(
             source: ImageSource.gallery,
             maxWidth: 1080,
             maxHeight: 1080,
             imageQuality: 85,
           );
-        }
+        } catch (_) {}
       }
 
       if (pickedFile != null) {
@@ -95,26 +66,19 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
           _diagnosisResult = null;
         });
 
-        final result = await OfflineApiService.analyzeImageBytes(bytes, pickedFile.name);
+        debugPrint('[FRONTEND SCAN] Uploading image: ${pickedFile.name} (${bytes.length} bytes)');
+        final result = await ApiService.analyzeImageBytes(bytes, pickedFile.name);
+        debugPrint('[FRONTEND SCAN RESULT] $result');
 
         if (mounted) {
           setState(() {
             _isIdentifying = false;
-            if (result['success'] == true) {
-              _diagnosisResult = result;
-            } else {
-              _diagnosisResult = {
-                'is_agricultural': false,
-                'category': 'unknown',
-                'confidence': 0.0,
-                'message': result['message'] ?? 'Image analysis failed.'.tr,
-              };
-            }
+            _diagnosisResult = result;
           });
         }
       }
     } catch (e) {
-      debugPrint('Error picking image: $e');
+      debugPrint('[CAMERA EXCEPTION] $e');
       if (mounted) {
         setState(() {
           _isIdentifying = false;
@@ -921,12 +885,15 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                   builder: (context) {
                     final category = _diagnosisResult!['category']?.toString() ?? 'crop_leaf';
                     final cropName = _diagnosisResult!['crop']?.toString() ?? 'Crop / Plant';
-                    final confidence = _diagnosisResult!['confidence'] != null ? (_diagnosisResult!['confidence'] * 100).round() : 94;
+                    num rawConf = _diagnosisResult!['confidence'] ?? (_diagnosisResult!['analysis'] is Map ? _diagnosisResult!['analysis']['confidence'] : null) ?? 0.94;
+                    final int confidence = (rawConf > 1.0) ? rawConf.round() : (rawConf * 100).round();
+                    
                     final analysisMap = (_diagnosisResult!['analysis'] is Map) ? (_diagnosisResult!['analysis'] as Map<String, dynamic>) : <String, dynamic>{};
-                    final severity = analysisMap['severity']?.toString() ?? 'High';
-                    final condition = analysisMap['condition']?.toString() ?? analysisMap['pest_name']?.toString() ?? 'Crop Disease / Pest Detection';
-                    final symptoms = (analysisMap['symptoms'] is List) ? (analysisMap['symptoms'] as List) : [];
+                    final severity = _diagnosisResult!['severity']?.toString() ?? analysisMap['severity']?.toString() ?? 'High';
+                    final condition = _diagnosisResult!['disease']?.toString() ?? analysisMap['condition']?.toString() ?? analysisMap['pest_name']?.toString() ?? 'Crop Disease / Pest Detection';
+                    final symptoms = (_diagnosisResult!['symptoms'] is List) ? (_diagnosisResult!['symptoms'] as List) : ((analysisMap['symptoms'] is List) ? (analysisMap['symptoms'] as List) : []);
                     final recommendation = analysisMap['recommendation']?.toString() ?? 'Apply recommended treatments and maintain clean field management.';
+                    final scanId = _diagnosisResult!['image_id']?.toString();
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -968,6 +935,29 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                           ],
                         ),
                         const Divider(height: 24),
+                        if (confidence < 70) ...[
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF3CD),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFFFEEBA)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.warning_amber_rounded, color: Color(0xFF856404), size: 18),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Low confidence — please upload a clearer image for better diagnosis.'.tr,
+                                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: Color(0xFF856404), fontFamily: 'Poppins'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                         Row(
                           children: [
                             Expanded(
@@ -984,10 +974,10 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                             const SizedBox(width: 8),
                             Text(
                               '($confidence%)',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.success,
+                                color: confidence >= 85 ? AppTheme.success : (confidence >= 70 ? const Color(0xFFFFB703) : const Color(0xFFE63946)),
                                 fontFamily: 'Poppins',
                               ),
                             ),
@@ -1017,6 +1007,13 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                         ],
                         const SizedBox(height: 16),
                         _buildTreatmentBox(analysisMap.isNotEmpty ? analysisMap : recommendation),
+                        if (scanId != null) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            'Scan ID: $scanId',
+                            style: TextStyle(fontSize: 10.5, color: Colors.grey.shade600, fontFamily: 'Poppins'),
+                          ),
+                        ],
                       ],
                     );
                   },
@@ -1036,93 +1033,133 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   }
 
   Widget _buildTreatmentBox(dynamic recData) {
-    if (_diagnosisResult != null && _diagnosisResult!['analysis'] is Map) {
-      final analysisMap = _diagnosisResult!['analysis'] as Map<String, dynamic>;
-      final chem = analysisMap['chemical_treatments'] as List<dynamic>? ?? [];
-      final organic = analysisMap['organic_treatments'] as List<dynamic>? ?? [];
+    List<dynamic> chem = [];
+    List<dynamic> organic = [];
+    List<dynamic> preventionList = [];
 
-      if (chem.isNotEmpty || organic.isNotEmpty) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (chem.isNotEmpty) ...[
-              const Text(
-                '🧪 Recommended Chemical Treatments:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
-              ),
-              const SizedBox(height: 6),
-              ...chem.map((t) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFCBD5E1)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '• ${t['name']}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A), fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '💧 Dosage: ${t['dosage']}',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF0284C7), fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '📋 Instructions: ${t['instructions']}',
-                        style: TextStyle(fontSize: 11.5, color: Colors.black.withValues(alpha: 0.7), fontFamily: 'Poppins'),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ],
-            if (organic.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              const Text(
-                '🌿 Recommended Organic / Bio-Pesticides:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF2D6A4F), fontFamily: 'Poppins'),
-              ),
-              const SizedBox(height: 6),
-              ...organic.map((t) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFA5D6A7)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '• ${t['name']}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1B4332), fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '🌱 Dosage: ${t['dosage']}',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2D6A4F), fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '📋 Instructions: ${t['instructions']}',
-                        style: TextStyle(fontSize: 11.5, color: Colors.black.withValues(alpha: 0.7), fontFamily: 'Poppins'),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ],
-          ],
-        );
+    if (_diagnosisResult != null) {
+      chem = _diagnosisResult!['chemical_treatments'] as List<dynamic>? ?? [];
+      organic = _diagnosisResult!['organic_treatments'] as List<dynamic>? ?? [];
+      preventionList = _diagnosisResult!['prevention'] as List<dynamic>? ?? [];
+      
+      if (_diagnosisResult!['analysis'] is Map) {
+        final analysisMap = _diagnosisResult!['analysis'] as Map<String, dynamic>;
+        if (chem.isEmpty) chem = analysisMap['chemical_treatments'] as List<dynamic>? ?? [];
+        if (organic.isEmpty) organic = analysisMap['organic_treatments'] as List<dynamic>? ?? [];
+        if (preventionList.isEmpty) preventionList = analysisMap['prevention'] as List<dynamic>? ?? [];
       }
+    }
+
+    final String condType = _diagnosisResult?['condition_type']?.toString() ?? '';
+    final String sev = _diagnosisResult?['severity']?.toString() ?? '';
+    final bool isHealthy = condType == 'healthy' || sev == 'Healthy';
+
+    if ((chem.isNotEmpty && !isHealthy) || organic.isNotEmpty || preventionList.isNotEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (chem.isNotEmpty && !isHealthy) ...[
+            const Text(
+              '🧪 Recommended Chemical Treatments:',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
+            ),
+            const SizedBox(height: 6),
+            ...chem.map((t) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFCBD5E1)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '• ${t['name']}',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A), fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '💧 Dosage: ${t['dosage']}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF0284C7), fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '📋 Instructions: ${t['instructions']}',
+                      style: TextStyle(fontSize: 11.5, color: Colors.black.withValues(alpha: 0.7), fontFamily: 'Poppins'),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+          if (organic.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            const Text(
+              '🌿 Recommended Organic / Bio-Pesticides:',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF2D6A4F), fontFamily: 'Poppins'),
+            ),
+            const SizedBox(height: 6),
+            ...organic.map((t) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFA5D6A7)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '• ${t['name']}',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1B4332), fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '🌱 Dosage: ${t['dosage']}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2D6A4F), fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '📋 Instructions: ${t['instructions']}',
+                      style: TextStyle(fontSize: 11.5, color: Colors.black.withValues(alpha: 0.7), fontFamily: 'Poppins'),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+          if (preventionList.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            const Text(
+              '🛡️ Prevention & Management Guidelines:',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
+            ),
+            const SizedBox(height: 6),
+            ...preventionList.map((p) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 4.0, bottom: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    Expanded(
+                      child: Text(
+                        p.toString().tr,
+                        style: const TextStyle(fontSize: 12, color: Color(0xFF334155), fontFamily: 'Poppins'),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ],
+      );
     }
 
     String recommendationText = recData?.toString() ?? 'Follow recommended agricultural safety guidelines.';

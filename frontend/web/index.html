@@ -33,6 +33,103 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+
+    window.openAgroSmartCamera = function() {
+      return new Promise((resolve, reject) => {
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
+        overlay.style.zIndex = '999999';
+        overlay.style.display = 'flex';
+        overlay.style.flexDirection = 'column';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+
+        const video = document.createElement('video');
+        video.style.width = '90%';
+        video.style.maxWidth = '520px';
+        video.style.borderRadius = '16px';
+        video.style.border = '3px solid #2D6A4F';
+        video.style.backgroundColor = '#000';
+        video.autoplay = true;
+        video.playsInline = true;
+
+        const btnContainer = document.createElement('div');
+        btnContainer.style.marginTop = '20px';
+        btnContainer.style.display = 'flex';
+        btnContainer.style.gap = '16px';
+
+        const snapBtn = document.createElement('button');
+        snapBtn.innerHTML = '📸 <b>Capture Photo</b>';
+        snapBtn.style.padding = '12px 28px';
+        snapBtn.style.fontSize = '15px';
+        snapBtn.style.color = '#ffffff';
+        snapBtn.style.backgroundColor = '#2D6A4F';
+        snapBtn.style.border = 'none';
+        snapBtn.style.borderRadius = '30px';
+        snapBtn.style.cursor = 'pointer';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.innerHTML = '❌ <b>Cancel</b>';
+        cancelBtn.style.padding = '12px 24px';
+        cancelBtn.style.fontSize = '15px';
+        cancelBtn.style.color = '#ffffff';
+        cancelBtn.style.backgroundColor = '#D90429';
+        cancelBtn.style.border = 'none';
+        cancelBtn.style.borderRadius = '30px';
+        cancelBtn.style.cursor = 'pointer';
+
+        btnContainer.appendChild(snapBtn);
+        btnContainer.appendChild(cancelBtn);
+        overlay.appendChild(video);
+        overlay.appendChild(btnContainer);
+        document.body.appendChild(overlay);
+
+        let stream = null;
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+          .catch(() => navigator.mediaDevices.getUserMedia({ video: true }))
+          .then(s => {
+            stream = s;
+            video.srcObject = stream;
+          })
+          .catch(err => {
+            if (document.body.contains(overlay)) document.body.removeChild(overlay);
+            resolve(null);
+          });
+
+        snapBtn.onclick = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 480;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+          if (stream) stream.getTracks().forEach(t => t.stop());
+          if (document.body.contains(overlay)) document.body.removeChild(overlay);
+          resolve(dataUrl);
+        };
+
+        cancelBtn.onclick = () => {
+          if (stream) stream.getTracks().forEach(t => t.stop());
+          if (document.body.contains(overlay)) document.body.removeChild(overlay);
+          resolve(null);
+        };
+      });
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
