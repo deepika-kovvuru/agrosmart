@@ -9,6 +9,7 @@ import 'farmingtipsandnewsscreen.dart';
 import 'pestanddisesasemanagementscreen.dart';
 import 'user_session.dart';
 import 'offline_api_service.dart';
+import 'api_service.dart';
 import 'connectivity_service.dart';
 import 'local_storage.dart';
 import 'translation_provider.dart';
@@ -26,6 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
   List<_AlertItem> _alerts = [];
   List<Map<String, dynamic>> _marketPrices = [];
 
+  String _homeLocationName = "Kurnool, Andhra Pradesh";
+  String _homeTemp = "28°C";
+  String _homeCondition = "Partly Cloudy";
+  String _homeHumidity = "68%";
+  String _homeWind = "12km/h";
+  bool _isWeatherLoading = false;
+
   final List<_QuickAction> _quickActions = const [
     _QuickAction('Crop\nAdvisory', Icons.agriculture_rounded, Color(0xFF2D6A4F), '/crop_advisory'),
     _QuickAction('Weather\nForecast', Icons.cloud_rounded, Color(0xFF4CC9F0), '/weather'),
@@ -41,6 +49,157 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadData();
+    _loadLiveHomeWeather();
+  }
+
+  Future<void> _loadLiveHomeWeather({String? locationName}) async {
+    setState(() => _isWeatherLoading = true);
+    try {
+      final data = await ApiService.getCombinedAlerts(
+        locationName: locationName,
+        latitude: 15.8281,
+        longitude: 78.0373,
+      );
+      if (data != null && data['weather'] != null) {
+        final w = data['weather'];
+        final loc = data['location'];
+        if (mounted) {
+          setState(() {
+            if (loc != null && loc['display_name'] != null) {
+              _homeLocationName = loc['display_name'];
+            } else if (locationName != null) {
+              _homeLocationName = locationName;
+            }
+            _homeTemp = "${w['temperature']}°C";
+            _homeCondition = w['condition'] ?? "Partly Cloudy";
+            _homeHumidity = "${w['humidity']}%";
+            _homeWind = "${w['wind_speed']}km/h";
+          });
+        }
+      }
+    } catch (e) {
+      print("Home weather load error: $e");
+    } finally {
+      if (mounted) setState(() => _isWeatherLoading = false);
+    }
+  }
+
+  void _showHomeLocationDialog(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
+    final List<String> popularCities = [
+      'Kurnool, Andhra Pradesh',
+      'Anantapur, Andhra Pradesh',
+      'Guntur, Andhra Pradesh',
+      'Vijayawada, Andhra Pradesh',
+      'Tirupati, Andhra Pradesh',
+      'Visakhapatnam, Andhra Pradesh',
+      'Hyderabad, Telangana',
+      'Warangal, Telangana',
+      'Ooty, Tamil Nadu',
+      'Bengaluru, Karnataka',
+      'Chennai, Tamil Nadu',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+              20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    '📍 Change My Location',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: searchController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Type your village, town, or city name...',
+                  hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
+                  prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onSubmitted: (val) {
+                  if (val.trim().isNotEmpty) {
+                    Navigator.pop(ctx);
+                    _loadLiveHomeWeather(locationName: val.trim());
+                  }
+                },
+              ),
+              const SizedBox(height: 14),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2D6A4F),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  icon: const Icon(Icons.my_location_rounded, color: Colors.white),
+                  label: const Text(
+                    '📍 Detect My Exact GPS Location',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _loadLiveHomeWeather();
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Popular Farming Districts',
+                style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: popularCities.map((city) {
+                  return ActionChip(
+                    backgroundColor: Colors.white.withOpacity(0.14),
+                    label: Text(city.split(',')[0], style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _loadLiveHomeWeather(locationName: city);
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _loadData() async {
@@ -399,61 +558,77 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildWeatherCard() {
     return Transform.translate(
       offset: const Offset(0, -16),
-      child: AppCard(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1565C0), Color(0xFF1E88E5), Color(0xFF42A5F5)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '28°C',
-                  style: TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    fontFamily: 'Poppins',
-                    height: 1,
-                  ),
-                ),
-                Text(
-                  'Partly Cloudy'.tr,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${user?.state ?? "Kurnool"} · Today'.tr,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.white.withValues(alpha: 0.75),
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Column(
-              children: [
-                Icon(Icons.cloud_rounded, color: Colors.white, size: 56),
-                const SizedBox(height: 8),
-                Row(
+      child: GestureDetector(
+        onTap: () => _showHomeLocationDialog(context),
+        child: AppCard(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1565C0), Color(0xFF1E88E5), Color(0xFF42A5F5)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _WeatherStat(Icons.water_drop_rounded, '68%'),
-                    SizedBox(width: 10),
-                    _WeatherStat(Icons.air_rounded, '12km/h'),
+                    Text(
+                      _homeTemp,
+                      style: const TextStyle(
+                        fontSize: 42,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        fontFamily: 'Poppins',
+                        height: 1,
+                      ),
+                    ),
+                    Text(
+                      _homeCondition.tr,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on_rounded, color: Colors.white70, size: 12),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            '$_homeLocationName · Today'.tr,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white.withValues(alpha: 0.85),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w500,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70, size: 16),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(width: 8),
+              Column(
+                children: [
+                  const Icon(Icons.cloud_rounded, color: Colors.white, size: 52),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _WeatherStat(Icons.water_drop_rounded, _homeHumidity),
+                      const SizedBox(width: 10),
+                      _WeatherStat(Icons.air_rounded, _homeWind),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
