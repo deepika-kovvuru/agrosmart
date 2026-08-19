@@ -263,63 +263,100 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _loadData() async {
-    setState(() => _isLoading = true);
+  void _updateLocationSpecificAlertsAndPrices() {
+    String loc = _homeLocationName;
+    String districtName = loc.split(',')[0].trim();
+    String l = loc.toLowerCase();
 
-    // Fetch live pest alerts (or cached)
-    final alertResult = await OfflineApiService.getPestAlerts();
-    final liveAlerts = alertResult['data'];
-    final fromCache = alertResult['fromCache'] == true;
-    if (mounted) {
-      setState(() {
-        if (liveAlerts != null && liveAlerts is List && liveAlerts.isNotEmpty) {
-          _alerts = (liveAlerts as List).map((a) {
-            String sev = a['severity']?.toString().toLowerCase() ?? 'warning';
-            String type = 'warning';
-            if (sev == 'high') type = 'error';
-            if (sev == 'low') type = 'success';
-            return _AlertItem(
-              '🐛',
-              '${a['pest_name']} alert in ${a['region']} for ${a['crop']} crop. severity: ${a['severity']}',
-              type,
-              a['reported_at'] ?? 'Today',
-            );
-          }).toList();
-        } else {
-          _alerts = const [
-            _AlertItem('🌧️', 'Heavy rain expected tomorrow. Cover your crops.', 'warning', '2h ago'),
-            _AlertItem('🐛', 'Fall Armyworm alert in your district — act now!', 'error', '5h ago'),
-            _AlertItem('💹', 'Paddy prices up ₹40/qtl in Kurnool mandi.', 'success', 'Today'),
-          ];
-        }
-      });
+    List<_AlertItem> locAlerts = [];
+    if (l.contains('tamil nadu') || l.contains('kanchipuram') || l.contains('thanjavur') || l.contains('chennai') || l.contains('coimbatore')) {
+      locAlerts = [
+        _AlertItem('🐛', 'Yellow Stem Borer alert in $districtName for Paddy crop. Severity: High', 'error', 'Just now'),
+        _AlertItem('🍄', 'Rice Blast fungal advisory in $districtName region. High moisture level.', 'warning', '2h ago'),
+        _AlertItem('🐛', 'Cotton Aphids & Thrips alert in $districtName farming zone.', 'warning', '4h ago'),
+      ];
+    } else if (l.contains('telangana') || l.contains('hyderabad') || l.contains('warangal') || l.contains('nalgonda')) {
+      locAlerts = [
+        _AlertItem('🐛', 'Pink Bollworm critical alert in $districtName for Cotton crop.', 'error', 'Just now'),
+        _AlertItem('🌽', 'Fall Armyworm (FAW) alert in $districtName for Maize crop.', 'error', '3h ago'),
+        _AlertItem('🦗', 'Brown Planthopper (BPH) alert in $districtName for Paddy.', 'warning', '5h ago'),
+      ];
+    } else if (l.contains('karnataka') || l.contains('bengaluru') || l.contains('mandya') || l.contains('belagavi')) {
+      locAlerts = [
+        _AlertItem('🐛', 'Sugarcane Woolly Aphid alert in $districtName district.', 'warning', 'Just now'),
+        _AlertItem('🍅', 'Tomato Pinworm & Whitefly risk in $districtName vegetable area.', 'error', '1h ago'),
+        _AlertItem('🦗', 'Paddy Brown Planthopper advisory in $districtName mandi zone.', 'warning', '4h ago'),
+      ];
+    } else if (l.contains('maharashtra') || l.contains('nashik') || l.contains('pune') || l.contains('nagpur')) {
+      locAlerts = [
+        _AlertItem('🍇', 'Grape Downy Mildew advisory in $districtName vineyard region.', 'error', 'Just now'),
+        _AlertItem('🧅', 'Onion Purple Blotch risk in $districtName district.', 'warning', '3h ago'),
+        _AlertItem('🍊', 'Citrus Blackfly alert in $districtName orchards.', 'warning', '5h ago'),
+      ];
+    } else if (l.contains('punjab') || l.contains('haryana') || l.contains('ludhiana') || l.contains('karnal') || l.contains('hisar')) {
+      locAlerts = [
+        _AlertItem('🌾', 'Wheat Yellow Rust disease warning in $districtName region.', 'error', 'Just now'),
+        _AlertItem('🐛', 'Paddy Stem Borer alert in $districtName mandi zone.', 'warning', '2h ago'),
+        _AlertItem('☁️', 'Cotton Whitefly advisory in $districtName district.', 'warning', '4h ago'),
+      ];
+    } else {
+      locAlerts = [
+        _AlertItem('🐛', 'Whitefly & Thrips alert in $districtName for Cotton crop. Severity: Medium', 'warning', 'Just now'),
+        _AlertItem('🐛', 'Fall Armyworm alert in $districtName for Maize crop. Severity: High', 'error', '2h ago'),
+        _AlertItem('🦗', 'Brown Planthopper alert in $districtName for Paddy crop. Severity: High', 'error', '4h ago'),
+      ];
     }
 
-    // Fetch live market prices (or cached)
-    final priceResult = await OfflineApiService.getMarketPrices();
-    final prices = priceResult['data'];
+    List<Map<String, dynamic>> locPrices = [];
+    if (l.contains('tamil nadu') || l.contains('kanchipuram') || l.contains('thanjavur') || l.contains('chennai') || l.contains('coimbatore')) {
+      locPrices = [
+        {'name': '🌾 Paddy (Samba)', 'price': '₹2,280', 'change': '+₹45', 'isUp': true},
+        {'name': '🌶️ Chilli (Teja)', 'price': '₹18,400', 'change': '+₹150', 'isUp': true},
+        {'name': '🍌 Banana (Grand Naine)', 'price': '₹1,850', 'change': '+₹30', 'isUp': true},
+        {'name': '🥥 Coconut (Dry)', 'price': '₹12,500', 'change': '-₹20', 'isUp': false},
+      ];
+    } else if (l.contains('telangana') || l.contains('hyderabad') || l.contains('warangal') || l.contains('nalgonda')) {
+      locPrices = [
+        {'name': '🌾 Paddy (BPT)', 'price': '₹2,200', 'change': '+₹35', 'isUp': true},
+        {'name': '☁️ Cotton (Kapas)', 'price': '₹7,250', 'change': '+₹90', 'isUp': true},
+        {'name': '🌽 Maize', 'price': '₹1,950', 'change': '-₹15', 'isUp': false},
+        {'name': '🫘 Red Gram (Toor)', 'price': '₹7,800', 'change': '+₹110', 'isUp': true},
+      ];
+    } else if (l.contains('punjab') || l.contains('haryana') || l.contains('ludhiana') || l.contains('karnal') || l.contains('hisar')) {
+      locPrices = [
+        {'name': '🌾 Wheat (Sharbati)', 'price': '₹2,350', 'change': '+₹50', 'isUp': true},
+        {'name': '🌾 Paddy (Basmati)', 'price': '₹3,850', 'change': '+₹120', 'isUp': true},
+        {'name': '🫘 Mustard', 'price': '₹5,450', 'change': '-₹40', 'isUp': false},
+        {'name': '🌽 Maize', 'price': '₹1,900', 'change': '+₹20', 'isUp': true},
+      ];
+    } else if (l.contains('maharashtra') || l.contains('nashik') || l.contains('pune') || l.contains('nagpur')) {
+      locPrices = [
+        {'name': '🍇 Grapes (Thompson)', 'price': '₹4,800', 'change': '+₹140', 'isUp': true},
+        {'name': '🧅 Onion (Red)', 'price': '₹2,150', 'change': '-₹60', 'isUp': false},
+        {'name': '🍊 Orange (Nagpur)', 'price': '₹3,400', 'change': '+₹75', 'isUp': true},
+        {'name': '🫘 Soybean', 'price': '₹4,250', 'change': '+₹30', 'isUp': true},
+      ];
+    } else {
+      locPrices = [
+        {'name': '🌾 Paddy (Sona Masoori)', 'price': '₹2,250', 'change': '+₹40', 'isUp': true},
+        {'name': '🌶️ Chilli (Guntur Red)', 'price': '₹19,200', 'change': '+₹220', 'isUp': true},
+        {'name': '🥜 Groundnut (Kurnool)', 'price': '₹5,850', 'change': '+₹85', 'isUp': true},
+        {'name': '☁️ Cotton (Kapas)', 'price': '₹7,100', 'change': '-₹35', 'isUp': false},
+      ];
+    }
+
     if (mounted) {
       setState(() {
-        if (prices != null && prices is List && prices.isNotEmpty) {
-          _marketPrices = (prices as List).take(4).map((p) {
-            return {
-              'name': '${p['commodity']}',
-              'price': '₹${p['price'].toString().split('.')[0]}',
-              'change': '${(p['change'] ?? 0) >= 0 ? '+' : ''}₹${(p['change'] ?? 0).toString().split('.')[0]}',
-              'isUp': p['is_up'] == true,
-            };
-          }).toList();
-        } else {
-          _marketPrices = [
-            {'name': '🌾 Paddy', 'price': '₹2,180', 'change': '+₹40', 'isUp': true},
-            {'name': '🌽 Maize', 'price': '₹1,820', 'change': '-₹15', 'isUp': false},
-            {'name': '🥜 Groundnut', 'price': '₹5,640', 'change': '+₹80', 'isUp': true},
-            {'name': '🫘 Soybean', 'price': '₹4,120', 'change': '+₹25', 'isUp': true},
-          ];
-        }
+        _alerts = locAlerts;
+        _marketPrices = locPrices;
         _isLoading = false;
       });
     }
+  }
+
+  void _loadData() async {
+    setState(() => _isLoading = true);
+    _updateLocationSpecificAlertsAndPrices();
   }
 
   @override
