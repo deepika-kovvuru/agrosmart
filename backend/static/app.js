@@ -553,6 +553,126 @@ const App = {
     }
   },
 
+  // --- LOCATION & REAL-TIME ALERTS CONTROLLER ---
+  currentLocationName: localStorage.getItem('agrosmart_loc_name') || 'Kurnool, Andhra Pradesh',
+  currentLat: localStorage.getItem('agrosmart_lat') || '15.8281',
+  currentLon: localStorage.getItem('agrosmart_lon') || '78.0373',
+
+  async autoDetectLocation() {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          this.currentLat = pos.coords.latitude;
+          this.currentLon = pos.coords.longitude;
+          localStorage.setItem('agrosmart_lat', this.currentLat);
+          localStorage.setItem('agrosmart_lon', this.currentLon);
+          const data = await window.api.getCombinedAlerts(this.currentLat, this.currentLon, window.api.getSelectedCrops());
+          if (data && data.location) {
+            this.currentLocationName = data.location.display_name;
+            localStorage.setItem('agrosmart_loc_name', this.currentLocationName);
+          }
+          this.renderLocationAndAlerts(data);
+        },
+        async (err) => {
+          console.warn('[AgroSmart] GPS denied. Using chosen location:', this.currentLocationName);
+          const data = await window.api.getCombinedAlerts(null, null, window.api.getSelectedCrops(), this.currentLocationName);
+          this.renderLocationAndAlerts(data);
+        },
+        { timeout: 7000, enableHighAccuracy: true }
+      );
+    } else {
+      const data = await window.api.getCombinedAlerts(null, null, window.api.getSelectedCrops(), this.currentLocationName);
+      this.renderLocationAndAlerts(data);
+    }
+  },
+
+  async updateLocationByName(locationName) {
+    if (!locationName) return;
+    this.currentLocationName = locationName;
+    localStorage.setItem('agrosmart_loc_name', locationName);
+    
+    const data = await window.api.getCombinedAlerts(null, null, window.api.getSelectedCrops(), locationName);
+    if (data && data.location) {
+      this.currentLat = data.location.latitude;
+      this.currentLon = data.location.longitude;
+      this.currentLocationName = data.location.display_name;
+      localStorage.setItem('agrosmart_lat', this.currentLat);
+      localStorage.setItem('agrosmart_lon', this.currentLon);
+      localStorage.setItem('agrosmart_loc_name', this.currentLocationName);
+    }
+    this.renderLocationAndAlerts(data);
+  },
+
+  renderLocationAndAlerts(data) {
+    if (!data) return;
+    const loc = data.location || {};
+    const w = data.weather || {};
+    const pests = data.pest_alerts || [];
+    const diseases = data.disease_alerts || [];
+
+    // Sidebar & Header location updates
+    const sidebarUserLoc = document.getElementById('sidebar-userloc');
+    if (sidebarUserLoc) {
+      sidebarUserLoc.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${loc.display_name || this.currentLocationName}`;
+    }
+
+    // Weather Hero Card Elements
+    const heroLoc = document.getElementById('weather-hero-location');
+    if (heroLoc) heroLoc.textContent = loc.display_name || this.currentLocationName;
+
+    const heroTemp = document.getElementById('weather-hero-temp');
+    if (heroTemp) heroTemp.textContent = `${w.temperature || 28}°C`;
+
+    const heroCond = document.getElementById('weather-hero-cond');
+    if (heroCond) heroCond.textContent = w.condition || 'Partly Cloudy';
+
+    const heroFeels = document.getElementById('weather-hero-feels');
+    if (heroFeels) heroFeels.textContent = `Feels like ${w.feels_like || 31}°C · H: ${w.high || 34}° L: ${w.low || 20}°`;
+
+    const heroWind = document.getElementById('weather-hero-wind');
+    if (heroWind) heroWind.textContent = `${w.wind_speed || 12} km/h`;
+
+    const heroPressure = document.getElementById('weather-hero-pressure');
+    if (heroPressure) heroPressure.textContent = `${w.pressure || 1012} hPa`;
+
+    const heroHumidity = document.getElementById('weather-hero-humidity');
+    if (heroHumidity) heroHumidity.textContent = `${w.humidity || 65}%`;
+
+    const heroRain = document.getElementById('weather-hero-rain');
+    if (heroRain) heroRain.textContent = `${w.rain_probability || 40}%`;
+
+    const heroUpdated = document.getElementById('weather-hero-updated');
+    if (heroUpdated) heroUpdated.textContent = 'Updated just now';
+
+    // Render Pest Alerts
+    const pestContainer = document.getElementById('home-pest-alerts');
+    if (pestContainer) {
+      if (pests.length === 0) {
+        pestContainer.innerHTML = `<div style="padding: 12px; color: var(--text-muted);">Insufficient local data to generate a reliable pest alert.</div>`;
+      } else {
+        pestContainer.innerHTML = pests.slice(0, 4).map(p => {
+          let badgeClass = 'badge-risk-moderate';
+          if (p.risk_level === 'CRITICAL') badgeClass = 'badge-risk-critical';
+          if (p.risk_level === 'VERY HIGH') badgeClass = 'badge-risk-very-high';
+          if (p.risk_level === 'HIGH') badgeClass = 'badge-risk-high';
+          if (p.risk_level === 'LOW') badgeClass = 'badge-risk-low';
+
+          return `
+            <div style="padding: 14px 16px; background: var(--bg-main); border-radius: var(--radius-md); border-left: 4px solid ${p.risk_level === 'CRITICAL' || p.risk_level === 'VERY HIGH' ? 'var(--danger)' : 'var(--accent)'}; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="font-weight: 800; font-size: 15px;">${p.name} (${p.risk_score}%)</div>
+                <span class="badge ${badgeClass}">${p.risk_level}</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Crop: ${p.crop} | Stage: ${p.stage || 'Vegetative'}</div>
+              <div style="font-size: 12px; white-space: pre-line; background: var(--bg-card); padding: 8px 10px; border-radius: var(--radius-sm); margin-bottom: 8px;">${p.reason}</div>
+              <div style="font-size: 12px; font-weight: 700; color: var(--primary);">💡 Action: ${p.recommended_action}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  },
+
   // --- MODAL HELPERS ---
   openModal(id) {
     document.getElementById(id).classList.add('active');
@@ -563,4 +683,8 @@ const App = {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => App.init());
+document.addEventListener('DOMContentLoaded', () => {
+  App.init();
+  App.autoDetectLocation();
+});
+
