@@ -2276,6 +2276,8 @@ def get_combined_alerts_endpoint():
             "uv_index": weather['uv_index'],
             "sunrise": weather['sunrise'],
             "sunset": weather['sunset'],
+            "hourly_forecast": weather.get('hourly_forecast', []),
+            "daily_forecast": weather.get('daily_forecast', []),
             "updated_at": weather['updated_at']
         },
         "pest_alerts": pest_alerts,
