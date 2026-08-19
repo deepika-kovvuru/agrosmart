@@ -22,6 +22,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   String _wind = "12 km/h";
   String _pressure = "1012 hPa";
   String _uvIndex = "UV 6.5";
+  String _sunriseSunset = "06:05 AM / 06:45 PM";
+  String _rainProbabilityDetail = "40% — 0mm";
   String _lastUpdated = "Updated just now";
   bool _isRefreshing = false;
 
@@ -52,6 +54,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
             _wind = "${w['wind_speed']} km/h";
             _pressure = "${w['pressure']} hPa";
             _uvIndex = "UV ${w['uv_index']}";
+            _sunriseSunset = "${w['sunrise'] ?? '06:05 AM'} / ${w['sunset'] ?? '06:45 PM'}";
+            _rainProbabilityDetail = "${w['rain_probability'] ?? 40}% — ${w['rainfall'] ?? 0}mm";
             _lastUpdated = "Updated just now";
 
             if (w['hourly_forecast'] is List) {
@@ -241,6 +245,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
             _wind = "${w['wind_speed']} km/h";
             _pressure = "${w['pressure']} hPa";
             _uvIndex = "UV ${w['uv_index']}";
+            _sunriseSunset = "${w['sunrise'] ?? '06:05 AM'} / ${w['sunset'] ?? '06:45 PM'}";
+            _rainProbabilityDetail = "${w['rain_probability'] ?? 40}% — ${w['rainfall'] ?? 0}mm";
             _lastUpdated = "Updated just now";
 
             if (w['hourly_forecast'] is List) {
@@ -541,7 +547,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           Expanded(
             child: _DetailCard(
               title: 'Sunrise / Sunset',
-              value: '6:04 AM / 6:48 PM',
+              value: _sunriseSunset,
               icon: Icons.wb_twilight_rounded,
               color: const Color(0xFFF4A261),
             ),
@@ -550,7 +556,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           Expanded(
             child: _DetailCard(
               title: 'Rain Probability',
-              value: '35% — 12mm',
+              value: _rainProbabilityDetail,
               icon: Icons.umbrella_rounded,
               color: const Color(0xFF4CC9F0),
             ),

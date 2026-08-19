@@ -29062,9 +29062,11 @@ _.y="65%"
 _.z="12 km/h"
 _.Q="1012 hPa"
 _.as="UV 6.5"
-_.ax=!1
-_.ay=a
-_.ch=b
+_.at="06:05 AM / 06:45 PM"
+_.ax="40% \u2014 0mm"
+_.ch=!1
+_.CW=a
+_.cx=b
 _.c=_.a=null},
 aE6:function aE6(a){this.a=a},
 aE7:function aE7(a,b,c){this.a=a
@@ -99028,7 +99030,7 @@ case 5:return A.x(null,r)
 case 1:return A.w(p.at(-1),r)}})
 return A.y($async$vm,r)},
 F(a){return new A.eQ($.ud(),new A.aEf(this),null,null,t.Id)},
-aaN(a){var s,r,q,p,o,n=this,m=null,l=A.a8(a,m,t.w).w,k=A.ck(m,B.rW,B.v,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,new A.aDY(a),m,m,m,m,m,m),j=A.p(A.r("Weather Forecast"),m,m,m,m,B.o9,m,m,m),i=n.ax?B.YA:B.NN,h=t.p
+aaN(a){var s,r,q,p,o,n=this,m=null,l=A.a8(a,m,t.w).w,k=A.ck(m,B.rW,B.v,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,new A.aDY(a),m,m,m,m,m,m),j=A.p(A.r("Weather Forecast"),m,m,m,m,B.o9,m,m,m),i=n.ch?B.YA:B.NN,h=t.p
 i=A.an(A.b([k,B.c2,j,B.bG,A.ck(m,i,B.v,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,n.gakt(),m,m,m,m,m,m)],h),B.l,B.h,B.i,0,m)
 j=A.ck(m,A.an(A.b([B.NG,B.c3,new A.h2(1,B.cq,A.p(A.r(n.d),m,B.ay,m,m,B.a1o,m,m,m),m),B.i2,B.Ny],h),B.l,B.ba,B.i,0,m),B.v,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,new A.aDZ(n,a),m,m,m,m,m,m)
 k=A.p(n.e,m,m,m,m,B.a_L,m,m,m)
@@ -99038,17 +99040,17 @@ q=B.e.a8(0.12)
 p=A.au(20)
 o=A.cH(B.e.a8(0.15),-1,1)
 return A.a6(m,A.aq(A.b([i,B.fz,j,B.ad,k,B.ar,s,B.b2,r,B.YD,A.a6(m,A.an(A.b([new A.u2(B.jp,n.y,"Humidity",m),B.oX,new A.u2(B.rD,n.z,"Wind",m),B.oX,new A.u2(B.MW,n.Q,"Pressure",m),B.oX,new A.u2(B.f9,n.as,"UV Index",m)],h),B.l,B.n6,B.i,0,m),B.k,m,m,new A.a5(q,m,o,p,m,m,B.q),m,m,m,B.LI,m,m,m)],h),B.l,B.h,B.i,0,B.o),B.k,m,m,B.G9,m,m,m,new A.X(24,l.r.b+16,24,36),m,m,1/0)},
-aaF(){var s=null,r=B.e.a8(0.08),q=A.au(20),p=A.cH(B.e.a8(0.1),-1,1),o=A.p(A.r("Today's Forecast"),s,s,s,s,B.ko,s,s,s),n=this.ay,m=A.a_(n).i("a4<1,tG>")
+aaF(){var s=null,r=B.e.a8(0.08),q=A.au(20),p=A.cH(B.e.a8(0.1),-1,1),o=A.p(A.r("Today's Forecast"),s,s,s,s,B.ko,s,s,s),n=this.CW,m=A.a_(n).i("a4<1,tG>")
 n=A.a2(new A.a4(n,new A.aDX(),m),m.i("ak.E"))
 return A.a6(s,A.aq(A.b([o,B.ad,A.wN(A.an(n,B.l,B.h,B.i,0,s),s,B.v,s,s,s,B.aY)],t.p),B.z,B.h,B.i,0,B.o),B.k,s,s,new A.a5(r,s,p,q,s,s,B.q),s,s,B.LA,B.bh,s,s,s)},
-aao(){var s=null,r=B.e.a8(0.08),q=A.au(20),p=A.cH(B.e.a8(0.1),-1,1),o=A.b([A.p(A.r("7-Day Forecast"),s,s,s,s,B.ko,s,s,s),B.bj],t.p),n=this.ch
+aao(){var s=null,r=B.e.a8(0.08),q=A.au(20),p=A.cH(B.e.a8(0.1),-1,1),o=A.b([A.p(A.r("7-Day Forecast"),s,s,s,s,B.ko,s,s,s),B.bj],t.p),n=this.cx
 B.b.R(o,new A.a4(n,new A.aDV(),A.a_(n).i("a4<1,e>")))
 return A.a6(s,A.aq(o,B.z,B.h,B.i,0,B.o),B.k,s,s,new A.a5(r,s,p,q,s,s,B.q),s,s,B.j3,B.bh,s,s,s)},
 aaA(){var s=null,r=A.b([A.p(A.r("Farming Weather Alerts"),s,s,s,s,B.a1O,s,s,s),B.bj],t.p)
 B.b.R(r,new A.a4(B.Rj,new A.aDW(),t.MW))
 return new A.ah(B.j3,A.aq(r,B.z,B.h,B.i,0,B.o),s)}}
 A.aE6.prototype={
-$0(){return this.a.ax=!0},
+$0(){return this.a.ch=!0},
 $S:0}
 A.aE7.prototype={
 $0(){var s,r,q,p,o=this,n="hourly_forecast",m="daily_forecast",l=o.b
@@ -99068,12 +99070,20 @@ l.y=A.j(r.h(s,"humidity"))+"%"
 l.z=A.j(r.h(s,"wind_speed"))+" km/h"
 l.Q=A.j(r.h(s,"pressure"))+" hPa"
 l.as="UV "+A.j(r.h(s,"uv_index"))
+q=r.h(s,"sunrise")
+q=A.j(q==null?"06:05 AM":q)
+p=r.h(s,"sunset")
+l.at=q+" / "+A.j(p==null?"06:45 PM":p)
+q=r.h(s,"rain_probability")
+q=A.j(q==null?40:q)
+p=r.h(s,"rainfall")
+l.ax=q+"% \u2014 "+A.j(p==null?0:p)+"mm"
 q=t.j
 if(q.b(r.h(s,n))){p=J.eY(q.a(r.h(s,n)),new A.aE4(),t.PH)
 p=A.a2(p,p.$ti.i("ak.E"))
-l.ay=p}if(q.b(r.h(s,m))){s=J.eY(q.a(r.h(s,m)),new A.aE5(),t.bh)
+l.CW=p}if(q.b(r.h(s,m))){s=J.eY(q.a(r.h(s,m)),new A.aE5(),t.bh)
 s=A.a2(s,s.$ti.i("ak.E"))
-l.ch=s}},
+l.cx=s}},
 $S:0}
 A.aE4.prototype={
 $1(a){var s,r,q="rain_prob",p=J.aM(a),o=p.h(a,"condition"),n=o==null?null:J.bn(o),m=n==null?"":n,l=B.d9
@@ -99108,7 +99118,7 @@ n=typeof n.h(a,o)=="number"?B.d.ey(A.da(n.h(a,o))):10
 return new A.fx(m,s,r,q,k,n)},
 $S:234}
 A.aE8.prototype={
-$0(){return this.a.ax=!1},
+$0(){return this.a.ch=!1},
 $S:0}
 A.aEe.prototype={
 $1(a){var s,r,q,p=null,o=A.a8(a,p,t.w).w,n=t.p,m=A.an(A.b([B.a3R,A.fI(p,p,B.rZ,p,p,new A.aEa(a),p,p,p)],n),B.l,B.bP,B.i,0,p),l=A.aI(31,B.e.B()>>>16&255,B.e.B()>>>8&255,B.e.B()&255),k=this.a
@@ -99141,7 +99151,7 @@ $0(){A.bW(this.b,!1).cU(null)
 this.a.vm(this.c)},
 $S:0}
 A.aE1.prototype={
-$0(){return this.a.ax=!0},
+$0(){return this.a.ch=!0},
 $S:0}
 A.aE2.prototype={
 $0(){var s,r,q,p=this,o="display_name",n="hourly_forecast",m="daily_forecast",l=p.a,k=p.b
@@ -99158,12 +99168,20 @@ l.y=A.j(s.h(k,"humidity"))+"%"
 l.z=A.j(s.h(k,"wind_speed"))+" km/h"
 l.Q=A.j(s.h(k,"pressure"))+" hPa"
 l.as="UV "+A.j(s.h(k,"uv_index"))
+r=s.h(k,"sunrise")
+r=A.j(r==null?"06:05 AM":r)
+q=s.h(k,"sunset")
+l.at=r+" / "+A.j(q==null?"06:45 PM":q)
+r=s.h(k,"rain_probability")
+r=A.j(r==null?40:r)
+q=s.h(k,"rainfall")
+l.ax=r+"% \u2014 "+A.j(q==null?0:q)+"mm"
 r=t.j
 if(r.b(s.h(k,n))){q=J.eY(r.a(s.h(k,n)),new A.aE_(),t.PH)
 q=A.a2(q,q.$ti.i("ak.E"))
-l.ay=q}if(r.b(s.h(k,m))){k=J.eY(r.a(s.h(k,m)),new A.aE0(),t.bh)
+l.CW=q}if(r.b(s.h(k,m))){k=J.eY(r.a(s.h(k,m)),new A.aE0(),t.bh)
 k=A.a2(k,k.$ti.i("ak.E"))
-l.ch=k}},
+l.cx=k}},
 $S:0}
 A.aE_.prototype={
 $1(a){var s,r,q="rain_prob",p=J.aM(a),o=p.h(a,"condition"),n=o==null?null:J.bn(o),m=n==null?"":n,l=B.d9
@@ -99198,11 +99216,11 @@ n=typeof n.h(a,o)=="number"?B.d.ey(A.da(n.h(a,o))):10
 return new A.fx(m,s,r,q,k,n)},
 $S:234}
 A.aE3.prototype={
-$0(){return this.a.ax=!1},
+$0(){return this.a.ch=!1},
 $S:0}
 A.aEf.prototype={
 $3(a,b,c){var s=null,r=this.a,q=t.p
-return A.hL(s,B.pI,A.AM(B.w,s,B.v,B.ai,s,s,!1,s,B.af,A.b([new A.c5(r.aaN(a),s),new A.c5(r.aaF(),s),new A.c5(new A.ah(B.j3,A.an(A.b([A.bk(new A.GN("Sunrise / Sunset","6:04 AM / 6:48 PM",B.Nq,B.bz,s),1),B.c2,A.bk(new A.GN("Rain Probability","35% \u2014 12mm",B.No,B.e1,s),1)],q),B.l,B.h,B.i,0,s),s),s),new A.c5(r.aao(),s),new A.c5(r.aaA(),s),B.nX],q)),s,s)},
+return A.hL(s,B.pI,A.AM(B.w,s,B.v,B.ai,s,s,!1,s,B.af,A.b([new A.c5(r.aaN(a),s),new A.c5(r.aaF(),s),new A.c5(new A.ah(B.j3,A.an(A.b([A.bk(new A.GN("Sunrise / Sunset",r.at,B.Nq,B.bz,s),1),B.c2,A.bk(new A.GN("Rain Probability",r.ax,B.No,B.e1,s),1)],q),B.l,B.h,B.i,0,s),s),s),new A.c5(r.aao(),s),new A.c5(r.aaA(),s),B.nX],q)),s,s)},
 $S:638}
 A.aDY.prototype={
 $0(){A.bW(this.a,!1).cU(null)
