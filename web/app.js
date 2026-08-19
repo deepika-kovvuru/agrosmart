@@ -644,6 +644,44 @@ const App = {
     const heroUpdated = document.getElementById('weather-hero-updated');
     if (heroUpdated) heroUpdated.textContent = 'Updated just now';
 
+    // Sunrise / Sunset & Rain Probability Details
+    const sunriseElem = document.getElementById('weather-sunrise-sunset');
+    if (sunriseElem) sunriseElem.textContent = `${w.sunrise || '06:05 AM'} / ${w.sunset || '06:45 PM'}`;
+
+    const rainProbElem = document.getElementById('weather-rain-prob-detail');
+    if (rainProbElem) rainProbElem.textContent = `${w.rain_probability || 40}% — ${w.rainfall || 0}mm`;
+
+    // Render Live Hourly Forecast Cards
+    const hourlyContainer = document.getElementById('weather-hourly-container');
+    if (hourlyContainer && w.hourly_forecast) {
+      hourlyContainer.innerHTML = w.hourly_forecast.map(h => `
+        <div style="background: rgba(255,255,255,0.06); padding: 12px 16px; border-radius: 14px; text-align: center; min-width: 70px;">
+          <div style="font-size: 11px; color: var(--text-muted);">${h.time}</div>
+          <div style="font-size: 18px; margin: 6px 0;">${h.condition && h.condition.includes('Rain') ? '🌧️' : (h.condition && h.condition.includes('Cloud') ? '⛅' : '☀️')}</div>
+          <div style="font-weight: 700; font-size: 15px;">${h.temp}</div>
+          <div style="font-size: 10px; color: #38bdf8;">${h.rain_prob}%</div>
+        </div>
+      `).join('');
+    }
+
+    // Render Live 7-Day Forecast List
+    const dailyContainer = document.getElementById('weather-daily-container');
+    if (dailyContainer && w.daily_forecast) {
+      dailyContainer.innerHTML = w.daily_forecast.map(d => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border-radius: 12px; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-weight: 700; width: 40px;">${d.day}</span>
+            <span style="font-size: 20px;">${d.condition && d.condition.includes('Rain') ? '🌧️' : (d.condition && d.condition.includes('Cloud') ? '⛅' : '☀️')}</span>
+            <span style="font-size: 13px; color: var(--text-muted);">${d.condition}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 11px; color: #38bdf8;">💧 ${d.rain_prob}%</span>
+            <span style="font-weight: 700;">${d.min_temp} — ${d.max_temp}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
     // Render Pest Alerts
     const pestContainer = document.getElementById('home-pest-alerts');
     if (pestContainer) {

@@ -53,6 +53,42 @@ class _WeatherScreenState extends State<WeatherScreen> {
             _pressure = "${w['pressure']} hPa";
             _uvIndex = "UV ${w['uv_index']}";
             _lastUpdated = "Updated just now";
+
+            if (w['hourly_forecast'] is List) {
+              _hourly = (w['hourly_forecast'] as List).map((h) {
+                String condStr = h['condition']?.toString() ?? '';
+                IconData icon = Icons.cloud_rounded;
+                if (condStr.contains('Clear') || condStr.contains('Sunny')) icon = Icons.wb_sunny_rounded;
+                if (condStr.contains('Rain') || condStr.contains('Drizzle')) icon = Icons.grain_rounded;
+                if (condStr.contains('Thunder')) icon = Icons.thunderstorm_rounded;
+
+                return _HourlyWeather(
+                  h['time']?.toString() ?? '12 PM',
+                  icon,
+                  h['temp']?.toString() ?? '25°',
+                  (h['rain_prob'] is num) ? (h['rain_prob'] as num).toInt() : 0,
+                );
+              }).toList();
+            }
+
+            if (w['daily_forecast'] is List) {
+              _daily = (w['daily_forecast'] as List).map((d) {
+                String condStr = d['condition']?.toString() ?? 'Partly Cloudy';
+                String emoji = '🌤️';
+                if (condStr.contains('Clear') || condStr.contains('Sunny')) emoji = '☀️';
+                if (condStr.contains('Rain') || condStr.contains('Shower')) emoji = '🌧️';
+                if (condStr.contains('Heavy Rain')) emoji = '⛈️';
+
+                return _DailyWeather(
+                  d['day']?.toString() ?? 'Mon',
+                  emoji,
+                  d['max_temp']?.toString() ?? '30°',
+                  d['min_temp']?.toString() ?? '20°',
+                  (d['rain_prob'] is num) ? (d['rain_prob'] as num).toInt() : 10,
+                  condStr,
+                );
+              }).toList();
+            }
           });
         }
       }
@@ -206,6 +242,42 @@ class _WeatherScreenState extends State<WeatherScreen> {
             _pressure = "${w['pressure']} hPa";
             _uvIndex = "UV ${w['uv_index']}";
             _lastUpdated = "Updated just now";
+
+            if (w['hourly_forecast'] is List) {
+              _hourly = (w['hourly_forecast'] as List).map((h) {
+                String condStr = h['condition']?.toString() ?? '';
+                IconData icon = Icons.cloud_rounded;
+                if (condStr.contains('Clear') || condStr.contains('Sunny')) icon = Icons.wb_sunny_rounded;
+                if (condStr.contains('Rain') || condStr.contains('Drizzle')) icon = Icons.grain_rounded;
+                if (condStr.contains('Thunder')) icon = Icons.thunderstorm_rounded;
+
+                return _HourlyWeather(
+                  h['time']?.toString() ?? '12 PM',
+                  icon,
+                  h['temp']?.toString() ?? '25°',
+                  (h['rain_prob'] is num) ? (h['rain_prob'] as num).toInt() : 0,
+                );
+              }).toList();
+            }
+
+            if (w['daily_forecast'] is List) {
+              _daily = (w['daily_forecast'] as List).map((d) {
+                String condStr = d['condition']?.toString() ?? 'Partly Cloudy';
+                String emoji = '🌤️';
+                if (condStr.contains('Clear') || condStr.contains('Sunny')) emoji = '☀️';
+                if (condStr.contains('Rain') || condStr.contains('Shower')) emoji = '🌧️';
+                if (condStr.contains('Heavy Rain')) emoji = '⛈️';
+
+                return _DailyWeather(
+                  d['day']?.toString() ?? 'Mon',
+                  emoji,
+                  d['max_temp']?.toString() ?? '30°',
+                  d['min_temp']?.toString() ?? '20°',
+                  (d['rain_prob'] is num) ? (d['rain_prob'] as num).toInt() : 10,
+                  condStr,
+                );
+              }).toList();
+            }
           });
         }
       }
@@ -216,7 +288,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     }
   }
 
-  final List<_HourlyWeather> _hourly = const [
+  List<_HourlyWeather> _hourly = const [
     _HourlyWeather('6 AM', Icons.wb_sunny_rounded, '24°', 0),
     _HourlyWeather('9 AM', Icons.wb_sunny_rounded, '27°', 0),
     _HourlyWeather('12 PM', Icons.cloud_rounded, '31°', 10),
@@ -225,7 +297,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     _HourlyWeather('9 PM', Icons.cloud_rounded, '23°', 20),
   ];
 
-  final List<_DailyWeather> _daily = const [
+  List<_DailyWeather> _daily = const [
     _DailyWeather('Thu', '🌤️', '32°', '22°', 10, 'Partly cloudy'),
     _DailyWeather('Fri', '⛈️', '28°', '20°', 85, 'Heavy rain likely'),
     _DailyWeather('Sat', '🌧️', '26°', '19°', 70, 'Moderate rain'),
