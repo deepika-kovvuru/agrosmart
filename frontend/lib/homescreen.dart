@@ -202,6 +202,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showGlobalSearchModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return _GlobalSearchWidget(
+          onNavigate: (index, target) {
+            Navigator.pop(ctx);
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        );
+      },
+    );
+  }
+
   void _loadData() async {
     setState(() => _isLoading = true);
 
@@ -469,12 +490,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontFamily: 'Poppins',
                     ),
                   ),
-                  Text(
-                    user?.state != null ? '${user!.state}'.tr : 'Location Unknown'.tr,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.7),
-                      fontFamily: 'Poppins',
+                  GestureDetector(
+                    onTap: () => _showHomeLocationDialog(context),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.location_on_rounded, color: Colors.white.withValues(alpha: 0.9), size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          _homeLocationName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -493,7 +526,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         border: Border.all(
                             color: Colors.white.withValues(alpha: 0.3), width: 1.5),
                       ),
-                      child: Icon(Icons.person_rounded,
+                      child: const Icon(Icons.person_rounded,
                           color: Colors.white, size: 26),
                     ),
                   ),
@@ -520,34 +553,38 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.white.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.notifications_rounded,
+                child: const Icon(Icons.notifications_rounded,
                     color: Colors.white, size: 22),
               ),
             ],
           ),
           const SizedBox(height: 16),
           // Search bar
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                const SizedBox(width: 12),
-                Icon(Icons.search_rounded,
-                    color: Colors.white.withValues(alpha: 0.7), size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Search crops, diseases, tips...'.tr,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
-                    fontSize: 13,
-                    fontFamily: 'Poppins',
+          GestureDetector(
+            onTap: () => _showGlobalSearchModal(context),
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Icon(Icons.search_rounded,
+                      color: Colors.white.withValues(alpha: 0.9), size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Search crops, diseases, tips...'.tr,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontSize: 13,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -1039,4 +1076,150 @@ class _AlertItem {
   final String type;
   final String time;
   const _AlertItem(this.emoji, this.message, this.type, this.time);
+}
+
+class _GlobalSearchWidget extends StatefulWidget {
+  final Function(int index, String? target) onNavigate;
+  const _GlobalSearchWidget({required this.onNavigate});
+
+  @override
+  State<_GlobalSearchWidget> createState() => _GlobalSearchWidgetState();
+}
+
+class _GlobalSearchWidgetState extends State<_GlobalSearchWidget> {
+  final TextEditingController _queryController = TextEditingController();
+  String _query = '';
+
+  final List<Map<String, dynamic>> _allItems = const [
+    {'title': 'Chilli Thrips (Risk: 92%)', 'category': '🐛 Pests & Diseases', 'tab': 0, 'desc': 'Critical threat in Andhra Pradesh & Tamil Nadu. High temp & low humidity trigger.'},
+    {'title': 'Fall Armyworm (FAW)', 'category': '🐛 Pests & Diseases', 'tab': 0, 'desc': 'Maize and Paddy pest. Spray Chlorpyrifos 20 EC or Neem Extract.'},
+    {'title': 'Brown Planthopper (BPH)', 'category': '🐛 Pests & Diseases', 'tab': 0, 'desc': 'Sucking pest in rice crop. Spray Imidacloprid 17.8 SL @ 0.5ml/L.'},
+    {'title': 'Rice Blast Disease', 'category': '🍄 Diseases', 'tab': 0, 'desc': 'Fungal blast in paddy. Spray Tricyclazole 75 WP @ 0.6g/L.'},
+    {'title': 'Rice (Paddy) Cultivation', 'category': '🌾 Crops', 'tab': 1, 'desc': 'Complete advisory: Nursery, transplantation, fertilizer & water management.'},
+    {'title': 'Chilli Crop Management', 'category': '🌾 Crops', 'tab': 1, 'desc': 'Best practices for chilli flowering, thrips protection, and yield boosting.'},
+    {'title': 'Cotton Crop Care', 'category': '🌾 Crops', 'tab': 1, 'desc': 'Pink bollworm monitoring, sticky trap installation, and picking guidelines.'},
+    {'title': 'Imidacloprid 17.8 SL', 'category': '🧪 Treatments', 'tab': 0, 'desc': 'Chemical spray for sucking pests, whitefly, thrips & aphids.'},
+    {'title': 'Neem Oil 5% NSKE', 'category': '🌿 Bio-Pesticide', 'tab': 0, 'desc': 'Eco-friendly organic spray for BPH, caterpillars & sucking pests.'},
+    {'title': 'Chlorpyrifos 20 EC', 'category': '🧪 Treatments', 'tab': 0, 'desc': 'Insecticide spray for Fall Armyworm and stem borer control.'},
+    {'title': 'Live Open-Meteo Weather Forecast', 'category': '⛅ Weather', 'tab': 2, 'desc': 'Hourly rain probability, 7-day daily forecast & farming weather alerts.'},
+    {'title': 'Market Mandi Prices (Paddy ₹2,180)', 'category': '📈 Market Prices', 'tab': 3, 'desc': 'Real-time APMC mandi prices for paddy, cotton, maize, groundnut.'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = _query.isEmpty
+        ? _allItems
+        : _allItems.where((item) =>
+            item['title'].toString().toLowerCase().contains(_query.toLowerCase()) ||
+            item['category'].toString().toLowerCase().contains(_query.toLowerCase()) ||
+            item['desc'].toString().toLowerCase().contains(_query.toLowerCase())).toList();
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.search_rounded, color: Color(0xFF10B981), size: 24),
+                const SizedBox(width: 10),
+                const Text(
+                  '🔍 Intelligence Search',
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _queryController,
+              autofocus: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Search crops, thrips, FAW, weather, prices...',
+                hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
+                prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
+                suffixIcon: _query.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear_rounded, color: Colors.white70),
+                        onPressed: () {
+                          _queryController.clear();
+                          setState(() => _query = '');
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.12),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+              ),
+              onChanged: (val) => setState(() => _query = val),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              _query.isEmpty ? '🔥 Popular Agricultural Searches:' : 'Found ${filtered.length} Matching Results:',
+              style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filtered.length,
+                itemBuilder: (ctx, i) {
+                  final item = filtered[i];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: ListTile(
+                      title: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item['title'],
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.5),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: const Color(0xFF10B981)),
+                            ),
+                            child: Text(
+                              item['category'],
+                              style: const TextStyle(color: Color(0xFF10B981), fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          item['desc'],
+                          style: const TextStyle(color: Colors.white60, fontSize: 11.5),
+                        ),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white54, size: 14),
+                      onTap: () {
+                        widget.onNavigate(item['tab'], item['title']);
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
