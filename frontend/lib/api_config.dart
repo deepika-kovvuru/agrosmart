@@ -4,33 +4,47 @@ import 'package:http/http.dart' as http;
 /// Central API configuration. All screens use [baseUrl] for backend requests.
 /// The URL is auto-resolved at app startup via [resolveBaseUrl].
 class ApiConfig {
-  // Primary: public localtunnel URL (update this when starting a new tunnel)
-  static const String _primaryUrl = 'https://agrosmart-app-service.onrender.com';
+  static const String _primaryUrl = 'http://127.0.0.1:5000';
 
-  // Fallback candidates for local development / BlueStacks
   static const List<String> _fallbacks = [
-    'http://172.20.10.2:5000',   // Host Wi-Fi IP (hotspot)
-    'http://172.23.23.155:5000', // Previous host Wi-Fi IP
-    'http://10.0.2.2:5000',      // Android emulator localhost
-    'http://localhost:5000',     // Web / desktop
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+    'http://172.20.10.2:5000',
+    'http://10.0.2.2:5000',
   ];
 
   static String _baseUrl = _primaryUrl;
 
   /// The resolved backend base URL. Use this in all API calls.
-  static String get baseUrl => _baseUrl;
+  static String get baseUrl {
+    if (kIsWeb) {
+      try {
+        final origin = Uri.base.origin;
+        if (origin.isNotEmpty && !origin.contains('null') && !origin.contains('file://')) {
+          return origin;
+        }
+      } catch (_) {}
+    }
+    return _baseUrl;
+  }
 
   /// Tests candidates in order and picks the first responsive one.
-  /// Falls back to primary URL if none respond.
   static Future<void> resolveBaseUrl() async {
-    final candidates = <String>[
-      'http://localhost:5000',
-      'http://127.0.0.1:5000',
-    ];
+    final candidates = <String>[];
     if (kIsWeb) {
-      candidates.add(Uri.base.origin);
+      try {
+        final origin = Uri.base.origin;
+        if (origin.isNotEmpty && !origin.contains('null') && !origin.contains('file://')) {
+          candidates.add(origin);
+        }
+      } catch (_) {}
     }
-    candidates.addAll([_primaryUrl, ..._fallbacks]);
+
+    candidates.addAll([
+      'http://127.0.0.1:5000',
+      'http://localhost:5000',
+      ..._fallbacks,
+    ]);
 
     for (final url in candidates) {
       if (url.isEmpty) continue;
@@ -52,6 +66,7 @@ class ApiConfig {
       }
     }
 
-    debugPrint('[ApiConfig] No backend reachable. Using default: $_baseUrl');
+    _baseUrl = 'http://127.0.0.1:5000';
+    debugPrint('[ApiConfig] Using fallback base URL: $_baseUrl');
   }
 }

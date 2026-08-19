@@ -33,6 +33,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   Uint8List? _imageBytes;
   bool _isIdentifying = false;
   Map<String, dynamic>? _diagnosisResult;
+  String? _currentScanId;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage(ImageSource source) async {
@@ -59,18 +60,20 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
 
       if (pickedFile != null) {
         final bytes = await pickedFile.readAsBytes();
+        final String scanId = 'scan_${DateTime.now().millisecondsSinceEpoch}_${bytes.length}';
         setState(() {
+          _currentScanId = scanId;
           _imageFile = pickedFile;
           _imageBytes = bytes;
           _isIdentifying = true;
           _diagnosisResult = null;
         });
 
-        debugPrint('[FRONTEND SCAN] Uploading image: ${pickedFile.name} (${bytes.length} bytes)');
+        debugPrint('[FRONTEND SCAN] Uploading image ($scanId): ${pickedFile.name} (${bytes.length} bytes)');
         final result = await ApiService.analyzeImageBytes(bytes, pickedFile.name);
         debugPrint('[FRONTEND SCAN RESULT] $result');
 
-        if (mounted) {
+        if (mounted && _currentScanId == scanId) {
           setState(() {
             _isIdentifying = false;
             _diagnosisResult = result;

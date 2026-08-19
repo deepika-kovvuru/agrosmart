@@ -1848,10 +1848,6 @@ def analyze_image():
         condition_cat = res_data["condition_type"]
         severity_level = res_data["severity"]
 
-        print(f"[AI] Disease/pest detected: {condition_name} (Category: {condition_cat})")
-        print(f"[AI] Confidence: {diag_conf}% | Severity: {severity_level}")
-        print(f"[API] Response generated successfully for scan ID: {scan_id}\n")
-
         if diag_conf < 70:
             res_data["status"] = "Uncertain"
 
@@ -1909,6 +1905,15 @@ def analyze_image():
             },
             'message': f"{plant_name} Diagnosis Complete"
         }
+
+        print(f"\n[SCAN] scan_id: {scan_id}")
+        print(f"[IMAGE] image_id: {image_id}")
+        print(f"[IMAGE] hash: {img_hash}")
+        print(f"[IMAGE] size: {len(file_bytes)} bytes ({width}x{height})")
+        print(f"[AI] predicted crop: {plant_name}")
+        print(f"[AI] predicted disease: {condition_name}")
+        print(f"[AI] confidence: {diag_conf}%")
+        print(f"[API] response: {response_json['message']}\n")
 
         return jsonify(response_json), 200
 
