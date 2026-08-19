@@ -353,20 +353,23 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'View Map'.tr,
-                    style: const TextStyle(
-                      color: Color(0xFFB71C1C),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Poppins',
+                GestureDetector(
+                  onTap: () => _showOutbreakMapDialog(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'View Map'.tr,
+                      style: const TextStyle(
+                        color: Color(0xFFB71C1C),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ),
                 ),
@@ -440,7 +443,10 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                   ),
                 ),
                 const SizedBox(height: 12),
-                ..._activeIssues.map((p) => _PestAlertCard(item: p)),
+                ..._activeIssues.map((p) => _PestAlertCard(
+                      item: p,
+                      onViewTreatment: () => _showTreatmentDetailModal(context, p),
+                    )),
               ],
             ),
           );
@@ -999,11 +1005,313 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     if (crop == null) return 'N/A';
     return crop.tr;
   }
+
+  void _showOutbreakMapDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(ctx).size.height * 0.85,
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E293B),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white10)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.map_rounded, color: Color(0xFFEF4444)),
+                        SizedBox(width: 10),
+                        Text(
+                          '🗺️ District Outbreak Heatmap',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: Column(
+                          children: [
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('📍 Live Outbreak Monitoring', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                Text('Updated Live', style: TextStyle(color: Color(0xFF10B981), fontSize: 11)),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              height: 200,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0F172A),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.white12),
+                              ),
+                              child: Stack(
+                                children: [
+                                  const Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.public_rounded, size: 48, color: Colors.white38),
+                                        SizedBox(height: 8),
+                                        Text('Regional Pest Risk Map Overlay', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(top: 30, left: 50, child: _buildMapPin('Kurnool (92%)', Colors.red)),
+                                  Positioned(top: 80, right: 60, child: _buildMapPin('Guntur (88%)', Colors.orange)),
+                                  Positioned(bottom: 40, left: 90, child: _buildMapPin('Anantapur (76%)', Colors.orange)),
+                                  Positioned(bottom: 50, right: 40, child: _buildMapPin('Vijayawada (65%)', Colors.amber)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Regional District Threat Index', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      _buildDistrictRiskRow('Kurnool District', '92% - CRITICAL', 'Chilli Thrips & Fall Armyworm', Colors.red),
+                      _buildDistrictRiskRow('Guntur District', '88% - VERY HIGH', 'Pink Bollworm & Aphids', Colors.orange),
+                      _buildDistrictRiskRow('Anantapur District', '76% - HIGH', 'Groundnut Tikka Leaf Spot', Colors.orange),
+                      _buildDistrictRiskRow('Vijayawada District', '65% - MODERATE', 'Stem Borer & Leaf Blast', Colors.amber),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMapPin(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.location_on_rounded, color: Colors.white, size: 12),
+          const SizedBox(width: 4),
+          Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDistrictRiskRow(String district, String risk, String pests, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(district, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              Text(pests, style: const TextStyle(color: Colors.white54, fontSize: 11)),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: color),
+            ),
+            child: Text(risk, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 11)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTreatmentDetailModal(BuildContext context, _PestAlert item) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(ctx).size.height * 0.85,
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E293B),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white10)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '💡 ${item.name} Treatment Protocol',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: item.priorityColor.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: item.priorityColor),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(item.emoji, style: const TextStyle(fontSize: 32)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(item.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                  Text('Target Crop: ${item.category} | Severity: ${item.priority}', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('🧪 Recommended Chemical Treatment', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: Text(
+                          item.description,
+                          style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('🌿 Organic & Bio-pesticide Control', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('• Spray 5% Neem Seed Kernel Extract (NSKE) @ 50ml/L water.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                            SizedBox(height: 6),
+                            Text('• Install Yellow/Blue Sticky Traps @ 10 traps/acre for adult monitoring.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                            SizedBox(height: 6),
+                            Text('• Deploy Pheromone Traps @ 5 traps/acre for early detection.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('🛡️ Preventive Cultural Measures', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: const Text(
+                          '1. Avoid excessive nitrogenous fertilizer applications.\n2. Maintain clean bunds and remove weed hosts.\n3. Ensure adequate water drainage after heavy rains.',
+                          style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _PestAlertCard extends StatelessWidget {
   final _PestAlert item;
-  const _PestAlertCard({required this.item});
+  final VoidCallback? onViewTreatment;
+  const _PestAlertCard({required this.item, this.onViewTreatment});
 
   @override
   Widget build(BuildContext context) {
@@ -1112,20 +1420,23 @@ class _PestAlertCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: item.priorityColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        'View Treatment'.tr + ' →',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: item.priorityColor,
-                          fontFamily: 'Poppins',
+                    GestureDetector(
+                      onTap: onViewTreatment,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: item.priorityColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'View Treatment'.tr + ' →',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: item.priorityColor,
+                            fontFamily: 'Poppins',
+                          ),
                         ),
                       ),
                     ),
