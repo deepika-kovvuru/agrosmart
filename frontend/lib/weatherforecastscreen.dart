@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'translation_provider.dart';
 import 'api_service.dart';
+import 'dart:html' as html;
 
 
 class WeatherScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLiveWeatherData();
+    _loadLiveGPSLocation();
   }
 
   Future<void> _loadLiveWeatherData() async {
@@ -192,7 +193,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                   onPressed: () {
                     Navigator.pop(ctx);
-                    _loadLiveWeatherData();
+                    _loadLiveGPSLocation();
                   },
                 ),
               ),
@@ -293,6 +294,91 @@ class _WeatherScreenState extends State<WeatherScreen> {
       }
     } catch (e) {
       print("Error updating location: $e");
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
+  }
+
+  Future<void> _loadLiveGPSLocation() async {
+    setState(() => _isRefreshing = true);
+    try {
+      if (html.window.navigator.geolocation != null) {
+        final pos = await html.window.navigator.geolocation.getCurrentPosition(
+          enableHighAccuracy: true,
+          timeout: const Duration(seconds: 10),
+        );
+        final double lat = pos.coords?.latitude?.toDouble() ?? 15.8281;
+        final double lon = pos.coords?.longitude?.toDouble() ?? 78.0373;
+        print("Flutter Web GPS detected: $lat, $lon");
+        
+        final data = await ApiService.getCombinedAlerts(latitude: lat, longitude: lon);
+        if (data != null && data['weather'] != null) {
+          final w = data['weather'];
+          final loc = data['location'];
+          if (mounted) {
+            setState(() {
+              if (loc != null && loc['display_name'] != null) {
+                _locationName = loc['display_name'];
+              }
+              _temp = "${w['temperature']}°C";
+              _condition = w['condition'] ?? "Partly Cloudy";
+              _feelsLike = "${w['feels_like']}°C";
+              _high = "${w['high']}°";
+              _low = "${w['low']}°";
+              _humidity = "${w['humidity']}%";
+              _wind = "${w['wind_speed']} km/h";
+              _pressure = "${w['pressure']} hPa";
+              _uvIndex = "UV ${w['uv_index']}";
+              _sunriseSunset = "${w['sunrise'] ?? '06:05 AM'} / ${w['sunset'] ?? '06:45 PM'}";
+              _rainProbabilityDetail = "${w['rain_probability'] ?? 40}% — ${w['rainfall'] ?? 0}mm";
+              _lastUpdated = "Updated just now";
+
+              if (w['hourly_forecast'] is List) {
+                _hourly = (w['hourly_forecast'] as List).map((h) {
+                  String condStr = h['condition']?.toString() ?? '';
+                  IconData icon = Icons.cloud_rounded;
+                  if (condStr.contains('Clear') || condStr.contains('Sunny')) icon = Icons.wb_sunny_rounded;
+                  if (condStr.contains('Rain') || condStr.contains('Drizzle')) icon = Icons.grain_rounded;
+                  if (condStr.contains('Thunder')) icon = Icons.thunderstorm_rounded;
+
+                  return _HourlyWeather(
+                    h['time']?.toString() ?? '12 PM',
+                    icon,
+                    h['temp']?.toString() ?? '25°',
+                    (h['rain_prob'] is num) ? (h['rain_prob'] as num).toInt() : 0,
+                  );
+                }).toList();
+              }
+
+              if (w['daily_forecast'] is List) {
+                _daily = (w['daily_forecast'] as List).map((d) {
+                  String condStr = d['condition']?.toString() ?? 'Partly Cloudy';
+                  String emoji = '🌤️';
+                  if (condStr.contains('Clear') || condStr.contains('Sunny')) emoji = '☀️';
+                  if (condStr.contains('Rain') || condStr.contains('Shower')) emoji = '🌧️';
+                  if (condStr.contains('Heavy Rain')) emoji = '⛈️';
+
+                  return _DailyWeather(
+                    d['day']?.toString() ?? 'Mon',
+                    emoji,
+                    d['max_temp']?.toString() ?? '30°',
+                    d['min_temp']?.toString() ?? '20°',
+                    (d['rain_prob'] is num) ? (d['rain_prob'] as num).toInt() : 10,
+                    condStr,
+                  );
+                }).toList();
+              }
+
+              _generateFarmingWeatherAlerts(w, _locationName);
+            });
+          }
+        }
+      } else {
+        await _loadLiveWeatherData();
+      }
+    } catch (e) {
+      print("GPS error in Flutter: $e");
+      await _loadLiveWeatherData();
     } finally {
       if (mounted) setState(() => _isRefreshing = false);
     }
