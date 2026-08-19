@@ -353,26 +353,12 @@ const App = {
   },
 
   // --- WEATHER VIEW ---
-  loadWeatherData() {
-    const days = [
-      { day: 'Thursday', temp: '34° / 20°', condition: 'Partly Cloudy', icon: 'fa-cloud-sun' },
-      { day: 'Friday', temp: '29° / 18°', condition: 'Heavy Rain Warning', icon: 'fa-cloud-showers-heavy' },
-      { day: 'Saturday', temp: '31° / 19°', condition: 'Moderate Rain', icon: 'fa-cloud-rain' },
-      { day: 'Sunday', temp: '33° / 21°', condition: 'Clear Sky', icon: 'fa-sun' },
-      { day: 'Monday', temp: '35° / 22°', condition: 'Heat Advisory', icon: 'fa-temperature-high' },
-      { day: 'Tuesday', temp: '34° / 21°', condition: 'Mostly Sunny', icon: 'fa-cloud-sun' },
-      { day: 'Wednesday', temp: '32° / 20°', condition: 'Scattered Showers', icon: 'fa-cloud-sun-rain' }
-    ];
-
-    const container = document.getElementById('weather-7day-container');
-    container.innerHTML = days.map(d => `
-      <div style="padding: 16px; background: var(--bg-main); border-radius: var(--radius-md); text-align: center;">
-        <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px;">${d.day}</div>
-        <i class="fa-solid ${d.icon}" style="font-size: 28px; color: var(--primary); margin-bottom: 8px;"></i>
-        <div style="font-weight: 800; font-size: 15px;">${d.temp}</div>
-        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${d.condition}</div>
-      </div>
-    `).join('');
+  async loadWeatherData() {
+    const locName = this.currentLocationName || 'Kurnool, Andhra Pradesh';
+    const data = await window.api.getCombinedAlerts(null, null, window.api.getSelectedCrops(), locName);
+    if (data) {
+      this.renderLocationAndAlerts(data);
+    }
   },
 
   // --- NEWS & TIPS ---
@@ -664,22 +650,25 @@ const App = {
       `).join('');
     }
 
-    // Render Live 7-Day Forecast List
-    const dailyContainer = document.getElementById('weather-daily-container');
-    if (dailyContainer && w.daily_forecast) {
-      dailyContainer.innerHTML = w.daily_forecast.map(d => `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border-radius: 12px; margin-bottom: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-weight: 700; width: 40px;">${d.day}</span>
+    // Render Live 7-Day Forecast List & Grid
+    const dailyContainer = document.getElementById('weather-daily-container') || document.getElementById('weather-7day-container');
+    const container7 = document.getElementById('weather-7day-container');
+    if (w.daily_forecast) {
+      const htmlContent = w.daily_forecast.map(d => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 12px; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-weight: 700; width: 45px;">${d.day}</span>
             <span style="font-size: 20px;">${d.condition && d.condition.includes('Rain') ? '🌧️' : (d.condition && d.condition.includes('Cloud') ? '⛅' : '☀️')}</span>
             <span style="font-size: 13px; color: var(--text-muted);">${d.condition}</span>
           </div>
-          <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
             <span style="font-size: 11px; color: #38bdf8;">💧 ${d.rain_prob}%</span>
             <span style="font-weight: 700;">${d.min_temp} — ${d.max_temp}</span>
           </div>
         </div>
       `).join('');
+      if (dailyContainer) dailyContainer.innerHTML = htmlContent;
+      if (container7 && container7 !== dailyContainer) container7.innerHTML = htmlContent;
     }
 
     // Render Pest Alerts
