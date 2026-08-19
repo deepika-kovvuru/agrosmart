@@ -1,5 +1,6 @@
 // home_screen.dart
 import 'package:flutter/material.dart';
+import 'dart:html' as html;
 import 'app_theme.dart';
 import 'cropadvisoryscreen.dart';
 import 'weatherforecastscreen.dart';
@@ -55,10 +56,28 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadLiveHomeWeather({String? locationName}) async {
     setState(() => _isWeatherLoading = true);
     try {
+      double lat = 15.8281;
+      double lon = 78.0373;
+
+      if (locationName == null) {
+        try {
+          if (html.window.navigator.geolocation != null) {
+            final pos = await html.window.navigator.geolocation.getCurrentPosition(
+              enableHighAccuracy: true,
+              timeout: const Duration(seconds: 8),
+            );
+            lat = pos.coords?.latitude?.toDouble() ?? 15.8281;
+            lon = pos.coords?.longitude?.toDouble() ?? 78.0373;
+          }
+        } catch (geoErr) {
+          print("GPS auto-detect fallback: $geoErr");
+        }
+      }
+
       final data = await ApiService.getCombinedAlerts(
         locationName: locationName,
-        latitude: 15.8281,
-        longitude: 78.0373,
+        latitude: lat,
+        longitude: lon,
       );
       if (data != null && data['weather'] != null) {
         final w = data['weather'];
@@ -134,26 +153,47 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              TextField(
-                controller: searchController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Type your village, town, or city name...',
-                  hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
-                  prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Type state, district, or village...',
+                        hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
+                        prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      onSubmitted: (val) {
+                        if (val.trim().isNotEmpty) {
+                          Navigator.pop(ctx);
+                          _loadLiveHomeWeather(locationName: val.trim());
+                        }
+                      },
+                    ),
                   ),
-                ),
-                onSubmitted: (val) {
-                  if (val.trim().isNotEmpty) {
-                    Navigator.pop(ctx);
-                    _loadLiveHomeWeather(locationName: val.trim());
-                  }
-                },
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () {
+                      if (searchController.text.trim().isNotEmpty) {
+                        Navigator.pop(ctx);
+                        _loadLiveHomeWeather(locationName: searchController.text.trim());
+                      }
+                    },
+                    child: const Text('Search', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ],
               ),
               const SizedBox(height: 14),
               SizedBox(
