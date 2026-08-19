@@ -95,6 +95,13 @@ const App = {
 
     // Advisory Search
     document.getElementById('advisory-search').addEventListener('input', (e) => this.filterAdvisories(e.target.value));
+
+    // Weather Hero Card Click for Location Access & Picker
+    const heroCard = document.getElementById('weather-hero-card');
+    if (heroCard) {
+      heroCard.addEventListener('click', () => this.autoDetectLocation(true));
+      heroCard.style.cursor = 'pointer';
+    }
   },
 
   updateUserUI() {
@@ -544,14 +551,16 @@ const App = {
   currentLat: localStorage.getItem('agrosmart_lat') || '15.8281',
   currentLon: localStorage.getItem('agrosmart_lon') || '78.0373',
 
-  async autoDetectLocation() {
+  async autoDetectLocation(forcePrompt = false) {
     if ('geolocation' in navigator) {
+      console.log('[AgroSmart] Requesting real-time device GPS location...');
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           this.currentLat = pos.coords.latitude;
           this.currentLon = pos.coords.longitude;
           localStorage.setItem('agrosmart_lat', this.currentLat);
           localStorage.setItem('agrosmart_lon', this.currentLon);
+          
           const data = await window.api.getCombinedAlerts(this.currentLat, this.currentLon, window.api.getSelectedCrops());
           if (data && data.location) {
             this.currentLocationName = data.location.display_name;
@@ -560,11 +569,21 @@ const App = {
           this.renderLocationAndAlerts(data);
         },
         async (err) => {
-          console.warn('[AgroSmart] GPS denied. Using chosen location:', this.currentLocationName);
+          console.warn('[AgroSmart] GPS permission denied or unavailable:', err ? err.message : '');
+          if (forcePrompt) {
+            const userChoice = confirm('Location access is blocked in your browser.\n\nClick OK to type/select a city manually, or click the 🔒 lock icon in your browser address bar to ALLOW location access.');
+            if (userChoice) {
+              const city = prompt('Enter your Village, Town, or City name (e.g. Vijayawada, Hyderabad, Guntur, Ooty):', this.currentLocationName);
+              if (city && city.trim()) {
+                this.updateLocationByName(city.trim());
+                return;
+              }
+            }
+          }
           const data = await window.api.getCombinedAlerts(null, null, window.api.getSelectedCrops(), this.currentLocationName);
           this.renderLocationAndAlerts(data);
         },
-        { timeout: 7000, enableHighAccuracy: true }
+        { timeout: 10000, enableHighAccuracy: true, maximumAge: 0 }
       );
     } else {
       const data = await window.api.getCombinedAlerts(null, null, window.api.getSelectedCrops(), this.currentLocationName);
