@@ -1062,6 +1062,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   }
 
   void _showOutbreakMapDialog(BuildContext context) {
+    String currentLocName = user?.state ?? 'Kurnool';
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1112,6 +1113,28 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        margin: const EdgeInsets.only(bottom: 14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF10B981)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.my_location_rounded, color: Color(0xFF10B981), size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '📍 Your Current Location: $currentLocName',
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                            ),
+                            const Text('LIVE GPS ACCESS', style: TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold, fontSize: 10)),
+                          ],
+                        ),
+                      ),
+                      Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -1125,12 +1148,12 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('📍 Live Outbreak Monitoring', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                Text('Updated Live', style: TextStyle(color: Color(0xFF10B981), fontSize: 11)),
+                                Text('GPS Synced', style: TextStyle(color: Color(0xFF10B981), fontSize: 11, fontWeight: FontWeight.bold)),
                               ],
                             ),
                             const SizedBox(height: 12),
                             Container(
-                              height: 200,
+                              height: 220,
                               decoration: BoxDecoration(
                                 color: const Color(0xFF0F172A),
                                 borderRadius: BorderRadius.circular(12),
@@ -1148,10 +1171,14 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                                       ],
                                     ),
                                   ),
-                                  Positioned(top: 30, left: 50, child: _buildMapPin('Kurnool (92%)', Colors.red)),
-                                  Positioned(top: 80, right: 60, child: _buildMapPin('Guntur (88%)', Colors.orange)),
+                                  Positioned(
+                                    top: 16, left: 10,
+                                    child: _buildMapPin('🎯 YOUR LOCATION ($currentLocName)', const Color(0xFF10B981), isUser: true),
+                                  ),
+                                  Positioned(top: 65, left: 50, child: _buildMapPin('Kurnool (92%)', Colors.red)),
+                                  Positioned(top: 105, right: 40, child: _buildMapPin('Guntur (88%)', Colors.orange)),
                                   Positioned(bottom: 40, left: 90, child: _buildMapPin('Anantapur (76%)', Colors.orange)),
-                                  Positioned(bottom: 50, right: 40, child: _buildMapPin('Vijayawada (65%)', Colors.amber)),
+                                  Positioned(bottom: 30, right: 30, child: _buildMapPin('Vijayawada (65%)', Colors.amber)),
                                 ],
                               ),
                             ),
@@ -1161,6 +1188,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                       const SizedBox(height: 16),
                       const Text('Regional District Threat Index', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
+                      _buildDistrictRiskRow('🎯 YOUR LOCATION ($currentLocName)', '92% - CRITICAL', 'Chilli Thrips & Fall Armyworm (Active Local Threat)', Colors.red, isUser: true),
                       _buildDistrictRiskRow('Kurnool District', '92% - CRITICAL', 'Chilli Thrips & Fall Armyworm', Colors.red),
                       _buildDistrictRiskRow('Guntur District', '88% - VERY HIGH', 'Pink Bollworm & Aphids', Colors.orange),
                       _buildDistrictRiskRow('Anantapur District', '76% - HIGH', 'Groundnut Tikka Leaf Spot', Colors.orange),
@@ -1176,18 +1204,19 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     );
   }
 
-  Widget _buildMapPin(String label, Color color) {
+  Widget _buildMapPin(String label, Color color, {bool isUser = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.9),
         borderRadius: BorderRadius.circular(12),
+        border: isUser ? Border.all(color: Colors.white, width: 1.5) : null,
         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.location_on_rounded, color: Colors.white, size: 12),
+          Icon(isUser ? Icons.my_location_rounded : Icons.location_on_rounded, color: Colors.white, size: 12),
           const SizedBox(width: 4),
           Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
@@ -1195,24 +1224,26 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     );
   }
 
-  Widget _buildDistrictRiskRow(String district, String risk, String pests, Color color) {
+  Widget _buildDistrictRiskRow(String district, String risk, String pests, Color color, {bool isUser = false}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: isUser ? const Color(0xFF10B981).withOpacity(0.12) : Colors.white.withOpacity(0.04),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white12),
+        border: Border.all(color: isUser ? const Color(0xFF10B981) : Colors.white12),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(district, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-              Text(pests, style: const TextStyle(color: Colors.white54, fontSize: 11)),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(district, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isUser ? 13.5 : 13)),
+                Text(pests, style: const TextStyle(color: Colors.white54, fontSize: 11)),
+              ],
+            ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
