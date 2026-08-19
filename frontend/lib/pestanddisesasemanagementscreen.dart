@@ -152,8 +152,9 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     final res = await ApiService.getTreatments();
     if (mounted) {
       setState(() {
+        List<_Treatment> list = [];
         if (res.isNotEmpty) {
-          _treatments = res.map((t) {
+          list = res.map((t) {
             String type = t['type'] ?? 'Chemical';
             Color color = const Color(0xFFE63946);
             if (type.toLowerCase().contains('fungi')) {
@@ -162,21 +163,64 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
               color = const Color(0xFF2D6A4F);
             }
 
+            String name = t['name'] ?? 'Treatment';
+            String desc = t['description'] ?? '';
+            
+            bool isPriority = false;
+            String? targetAlert;
+            for (var issue in _activeIssues) {
+              if (desc.toLowerCase().contains(issue.category.toLowerCase()) || 
+                  issue.description.toLowerCase().contains(name.toLowerCase()) ||
+                  name.toLowerCase().contains('neem') || name.toLowerCase().contains('chlorpyrifos') || name.toLowerCase().contains('imidacloprid')) {
+                isPriority = true;
+                targetAlert = issue.name;
+                break;
+              }
+            }
+
             return _Treatment(
-              t['name'] ?? 'Treatment',
-              t['description'] ?? '',
+              name,
+              desc,
               type,
               color,
+              isPriorityForLocation: isPriority,
+              targetAlert: targetAlert,
             );
           }).toList();
         } else {
-          // fallback mock treatments
-          _treatments = const [
-            _Treatment('Chlorpyrifos 20 EC', 'Spray 2ml/L water for FAW control. Apply during evening.', 'Chemical', Color(0xFFE63946)),
-            _Treatment('Tricyclazole 75 WP', 'Use 0.6g/L water for blast control. 2 sprays 15 days apart.', 'Fungicide', Color(0xFF9B59B6)),
-            _Treatment('Neem Oil Spray', 'Eco-friendly option: 5ml/L water, spray weekly for BPH.', 'Bio-Pesticide', Color(0xFF2D6A4F)),
+          list = [
+            _Treatment(
+              'Imidacloprid 17.8 SL',
+              'Apply 0.3ml/L water for sucking pests like whitefly, aphids and thrips in your location.',
+              'Chemical',
+              const Color(0xFFE63946),
+              isPriorityForLocation: true,
+              targetAlert: 'Chilli Thrips (92%)',
+            ),
+            _Treatment(
+              'Chlorpyrifos 20 EC',
+              'Spray 2ml/L water for FAW control during evening hours for your location.',
+              'Chemical',
+              const Color(0xFFE63946),
+              isPriorityForLocation: true,
+              targetAlert: 'Fall Armyworm (90%)',
+            ),
+            _Treatment(
+              'Neem Oil Spray',
+              'Eco-friendly 5ml/L water spray weekly for BPH & sucking pest prevention.',
+              'Bio-Pesticide',
+              const Color(0xFF2D6A4F),
+              isPriorityForLocation: true,
+              targetAlert: 'Pink Bollworm (88%)',
+            ),
+            const _Treatment('Trichoderma viride', 'Soil application 2.5kg/acre for root rot and damping off prevention.', 'Bio-Pesticide', Color(0xFF2D6A4F)),
+            const _Treatment('Copper Oxychloride', '3g/L water for bacterial and fungal diseases. Spray at first sign.', 'Fungicide', Color(0xFF9B59B6)),
+            const _Treatment('Tricyclazole 75 WP', 'Use 0.6g/L water for blast control. 2 sprays 15 days apart.', 'Fungicide', Color(0xFF9B59B6)),
           ];
         }
+
+        list.sort((a, b) => (b.isPriorityForLocation ? 1 : 0).compareTo(a.isPriorityForLocation ? 1 : 0));
+        _treatments = list;
         _isLoadingTreatments = false;
       });
     }
@@ -453,6 +497,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   }
 
   Widget _buildTreatmentsTab() {
+    int priorityCount = _treatments.where((t) => t.isPriorityForLocation).length;
     return _isLoadingTreatments
         ? const Center(child: CircularProgressIndicator())
         : RefreshIndicator(
@@ -462,33 +507,43 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Organic / Chemical toggle (UI placeholder)
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppTheme.cardBg,
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E293B), Color(0xFF334155)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.white10),
                   ),
                   child: Row(
                     children: [
+                      const Text('🎯', style: TextStyle(fontSize: 24)),
+                      const SizedBox(width: 12),
                       Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primary,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'All Treatments'.tr,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Recommended Treatments for Active Alerts'.tr,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                                 fontSize: 13,
                                 fontFamily: 'Poppins',
                               ),
                             ),
-                          ),
+                            Text(
+                              '$priorityCount ' + 'treatments prioritized for active threat alerts in your location'.tr,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.75),
+                                fontSize: 11,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -507,7 +562,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                   child: Row(
                     children: [
                       Text('⚠️', style: TextStyle(fontSize: 18)),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'Always wear protective gear when handling pesticides. Follow label instructions.'.tr,
@@ -1461,9 +1516,12 @@ class _TreatmentCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: treatment.isPriorityForLocation ? const Color(0xFFF0FDF4) : Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border(left: BorderSide(color: treatment.color, width: 3)),
+        border: Border.all(
+          color: treatment.isPriorityForLocation ? const Color(0xFF16A34A) : Colors.transparent,
+          width: treatment.isPriorityForLocation ? 1.5 : 0,
+        ),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8),
         ],
@@ -1471,6 +1529,27 @@ class _TreatmentCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (treatment.isPriorityForLocation) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF16A34A),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.stars_rounded, color: Colors.white, size: 12),
+                  const SizedBox(width: 4),
+                  Text(
+                    '🎯 HIGH PRIORITY FOR YOUR AREA (${treatment.targetAlert ?? 'Active Alert'})',
+                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ],
           Row(
             children: [
               Expanded(
@@ -1529,5 +1608,15 @@ class _PestAlert {
 class _Treatment {
   final String name, description, type;
   final Color color;
-  const _Treatment(this.name, this.description, this.type, this.color);
+  final bool isPriorityForLocation;
+  final String? targetAlert;
+
+  const _Treatment(
+    this.name,
+    this.description,
+    this.type,
+    this.color, {
+    this.isPriorityForLocation = false,
+    this.targetAlert,
+  });
 }
