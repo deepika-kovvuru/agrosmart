@@ -63,6 +63,157 @@ class _WeatherScreenState extends State<WeatherScreen> {
     }
   }
 
+  void _showLocationSelectorDialog(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
+    final List<String> popularCities = [
+      'Kurnool, Andhra Pradesh',
+      'Anantapur, Andhra Pradesh',
+      'Guntur, Andhra Pradesh',
+      'Vijayawada, Andhra Pradesh',
+      'Tirupati, Andhra Pradesh',
+      'Visakhapatnam, Andhra Pradesh',
+      'Hyderabad, Telangana',
+      'Warangal, Telangana',
+      'Nalgonda, Telangana',
+      'Bengaluru, Karnataka',
+      'Chennai, Tamil Nadu',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+              20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    '📍 Select Your Location',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: searchController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Type your village, town, or district...',
+                  hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
+                  prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onSubmitted: (val) {
+                  if (val.trim().isNotEmpty) {
+                    Navigator.pop(ctx);
+                    _loadLiveWeatherDataForLocation(val.trim());
+                  }
+                },
+              ),
+              const SizedBox(height: 14),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2D6A4F),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  icon: const Icon(Icons.my_location_rounded, color: Colors.white),
+                  label: const Text(
+                    '📍 Use My Exact GPS Location',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _loadLiveWeatherData();
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Popular Farming Districts',
+                style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: popularCities.map((city) {
+                  return ActionChip(
+                    backgroundColor: Colors.white.withOpacity(0.14),
+                    label: Text(city.split(',')[0], style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _loadLiveWeatherDataForLocation(city);
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _loadLiveWeatherDataForLocation(String locationName) async {
+    setState(() => _isRefreshing = true);
+    try {
+      final data = await ApiService.getCombinedAlerts(
+        latitude: 15.8281,
+        longitude: 78.0373,
+        crops: ['Rice', 'Cotton', 'Maize', 'Tomato', 'Chilli'],
+      );
+      if (data != null && data['weather'] != null) {
+        final w = data['weather'];
+        if (mounted) {
+          setState(() {
+            _locationName = locationName;
+            _temp = "${w['temperature']}°C";
+            _condition = w['condition'] ?? "Partly Cloudy";
+            _feelsLike = "${w['feels_like']}°C";
+            _high = "${w['high']}°";
+            _low = "${w['low']}°";
+            _humidity = "${w['humidity']}%";
+            _wind = "${w['wind_speed']} km/h";
+            _pressure = "${w['pressure']} hPa";
+            _uvIndex = "UV ${w['uv_index']}";
+            _lastUpdated = "Updated just now";
+          });
+        }
+      }
+    } catch (e) {
+      print("Error updating location: $e");
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
+  }
+
   final List<_HourlyWeather> _hourly = const [
     _HourlyWeather('6 AM', Icons.wb_sunny_rounded, '24°', 0),
     _HourlyWeather('9 AM', Icons.wb_sunny_rounded, '27°', 0),
@@ -174,24 +325,31 @@ class _WeatherScreenState extends State<WeatherScreen> {
           const SizedBox(height: 32),
 
           // Location
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.location_on_rounded,
-                  color: Colors.white70, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                _locationName.tr,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                  fontFamily: 'Poppins',
+          GestureDetector(
+            onTap: () => _showLocationSelectorDialog(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.location_on_rounded,
+                    color: Colors.white70, size: 16),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    _locationName.tr,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              const Icon(Icons.keyboard_arrow_down_rounded,
-                  color: Colors.white70, size: 18),
-            ],
+                const SizedBox(width: 6),
+                const Icon(Icons.keyboard_arrow_down_rounded,
+                    color: Colors.white70, size: 20),
+              ],
+            ),
           ),
 
           const SizedBox(height: 16),
