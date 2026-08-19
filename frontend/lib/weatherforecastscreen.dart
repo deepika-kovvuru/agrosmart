@@ -93,6 +93,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 );
               }).toList();
             }
+
+            _generateFarmingWeatherAlerts(w, _locationName);
           });
         }
       }
@@ -284,6 +286,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 );
               }).toList();
             }
+
+            _generateFarmingWeatherAlerts(w, _locationName);
           });
         }
       }
@@ -313,26 +317,95 @@ class _WeatherScreenState extends State<WeatherScreen> {
     _DailyWeather('Wed', '☀️', '35°', '24°', 5, 'Clear sky'),
   ];
 
-  final List<_FarmingAlert> _farmingAlerts = const [
-    _FarmingAlert(
+  List<_FarmingAlert> _farmingAlerts = [
+    const _FarmingAlert(
       '🌧️',
       'Rain Alert',
       'Heavy rainfall (40-60mm) expected Friday. Drain paddy fields to prevent waterlogging.',
       Color(0xFF1565C0),
     ),
-    _FarmingAlert(
+    const _FarmingAlert(
       '🌡️',
       'Heat Advisory',
       'Temperatures above 34°C on Mon-Wed. Irrigate crops in the early morning.',
       Color(0xFFE65100),
     ),
-    _FarmingAlert(
+    const _FarmingAlert(
       '💨',
       'Wind Warning',
       'Strong winds 25-35 km/h Thursday afternoon. Avoid spraying pesticides.',
-      Color(0xFF6A1B9A),
+      Color(0xFF4A148C),
     ),
   ];
+
+  void _generateFarmingWeatherAlerts(Map<String, dynamic> w, String locName) {
+    List<_FarmingAlert> alerts = [];
+    double temp = (w['temperature'] is num) ? (w['temperature'] as num).toDouble() : 28.0;
+    double wind = (w['wind_speed'] is num) ? (w['wind_speed'] as num).toDouble() : 12.0;
+    int humidity = (w['humidity'] is num) ? (w['humidity'] as num).toInt() : 60;
+    int rainProb = (w['rain_probability'] is num) ? (w['rain_probability'] as num).toInt() : 20;
+    double rainfall = (w['rainfall'] is num) ? (w['rainfall'] as num).toDouble() : 0.0;
+    String cond = w['condition']?.toString() ?? 'Partly Cloudy';
+
+    if (rainProb >= 50 || rainfall > 2.0 || cond.toLowerCase().contains('rain') || cond.toLowerCase().contains('drizzle')) {
+      alerts.add(_FarmingAlert(
+        '🌧️',
+        'Rain & Moisture Alert',
+        'High rain chance ($rainProb%) and rainfall ($rainfall mm) in $locName. Postpone pesticide sprays & ensure drainage.',
+        const Color(0xFF1565C0),
+      ));
+    } else {
+      alerts.add(_FarmingAlert(
+        '💧',
+        'Irrigation Advisory',
+        'Low rainfall chance ($rainProb%) in $locName. Maintain adequate soil moisture for active growing crops.',
+        const Color(0xFF0284C7),
+      ));
+    }
+
+    if (temp >= 32.0) {
+      alerts.add(_FarmingAlert(
+        '🌡️',
+        'High Temperature Advisory',
+        'Current temperature is $temp°C in $locName. Irrigate early in the morning or late evening to reduce crop heat stress.',
+        const Color(0xFFE65100),
+      ));
+    } else if (temp <= 18.0) {
+      alerts.add(_FarmingAlert(
+        '❄️',
+        'Cool Weather Advisory',
+        'Cool temperatures ($temp°C) in $locName. Protect sensitive nursery beds and seedling crops.',
+        const Color(0xFF0D9488),
+      ));
+    }
+
+    if (wind >= 20.0) {
+      alerts.add(_FarmingAlert(
+        '💨',
+        'High Wind Warning',
+        'Wind speed $wind km/h in $locName. Avoid foliar spray applications to prevent chemical drift.',
+        const Color(0xFF4A148C),
+      ));
+    } else {
+      alerts.add(_FarmingAlert(
+        '🍃',
+        'Favorable Spraying Window',
+        'Moderate wind speed ($wind km/h) in $locName. Favorable conditions for scheduled field inspection and spray tasks.',
+        const Color(0xFF2D6A4F),
+      ));
+    }
+
+    if (humidity >= 75) {
+      alerts.add(_FarmingAlert(
+        '🍄',
+        'High Humidity Disease Risk',
+        'Relative humidity is $humidity% in $locName. Favorable conditions for fungal leaf blast and rot. Inspect leaves.',
+        const Color(0xFFD97706),
+      ));
+    }
+
+    _farmingAlerts = alerts;
+  }
 
   @override
   Widget build(BuildContext context) {
