@@ -883,203 +883,109 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                   ],
                   border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+                child: Builder(
+                  builder: (context) {
+                    final category = _diagnosisResult!['category']?.toString() ?? 'crop_leaf';
+                    final cropName = _diagnosisResult!['crop']?.toString() ?? 'Crop / Plant';
+                    final confidence = _diagnosisResult!['confidence'] != null ? (_diagnosisResult!['confidence'] * 100).round() : 94;
+                    final analysisMap = (_diagnosisResult!['analysis'] is Map) ? (_diagnosisResult!['analysis'] as Map<String, dynamic>) : <String, dynamic>{};
+                    final severity = analysisMap['severity']?.toString() ?? 'High';
+                    final condition = analysisMap['condition']?.toString() ?? analysisMap['pest_name']?.toString() ?? 'Crop Disease / Pest Detection';
+                    final symptoms = (analysisMap['symptoms'] is List) ? (analysisMap['symptoms'] as List) : [];
+                    final recommendation = analysisMap['recommendation']?.toString() ?? 'Apply recommended treatments and maintain clean field management.';
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.psychology_rounded, color: AppTheme.primary, size: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          'AI Diagnosis Result'.tr,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppTheme.textPrimary,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: (_diagnosisResult!['category'] == 'soil' || _diagnosisResult!['category'] == 'farm_field')
-                                ? AppTheme.primary.withValues(alpha: 0.1)
-                                : (_diagnosisResult!['analysis']['severity'] == 'High' ? const Color(0xFFE63946).withValues(alpha: 0.1) : const Color(0xFFFFB703).withValues(alpha: 0.1)),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            ((_diagnosisResult!['category'] == 'soil' || _diagnosisResult!['category'] == 'farm_field')
-                                ? 'Healthy'.tr
-                                : _diagnosisResult!['analysis']['severity']).tr,
-                            style: TextStyle(
-                              color: (_diagnosisResult!['category'] == 'soil' || _diagnosisResult!['category'] == 'farm_field')
-                                  ? AppTheme.primary
-                                  : (_diagnosisResult!['analysis']['severity'] == 'High' ? const Color(0xFFE63946) : const Color(0xFFFFB703)),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 24),
-                    
-                    // Render details according to category
-                    if (_diagnosisResult!['category'] == 'crop_leaf') ...[
-                      Row(
-                        children: [
-                          Text(
-                            _diagnosisResult!['analysis']['condition'].toString().tr,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.textPrimary,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '(${(_diagnosisResult!['confidence'] * 100).round()}%)',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.success,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Crop: ${cropToFriendly(_diagnosisResult!['crop'])}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Visible Symptoms:'.tr,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5, fontFamily: 'Poppins'),
-                      ),
-                      ...(_diagnosisResult!['analysis']['symptoms'] as List<dynamic>).map((sym) => Padding(
-                        padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-                        child: Row(
+                        Row(
                           children: [
-                            const Icon(Icons.fiber_manual_record, size: 6, color: Colors.black54),
-                            const SizedBox(width: 6),
-                            Text(sym.toString().tr, style: const TextStyle(fontSize: 12, fontFamily: 'Poppins')),
-                          ],
-                        ),
-                      )),
-                      const SizedBox(height: 16),
-                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
-                    ]
-                    else if (_diagnosisResult!['category'] == 'pest_insect') ...[
-                      Row(
-                        children: [
-                          Text(
-                            _diagnosisResult!['analysis']['pest_name'].toString().tr,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.textPrimary,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '(${(_diagnosisResult!['confidence'] * 100).round()}%)',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.success,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Affected Crops: ${_diagnosisResult!['analysis']['affected_crops']}'.tr,
-                        style: const TextStyle(fontSize: 12.5, color: Colors.black87, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Characteristics: ${_diagnosisResult!['analysis']['characteristics']}'.tr,
-                        style: const TextStyle(fontSize: 12.5, color: Colors.black54, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
-                    ]
-                    else if (_diagnosisResult!['category'] == 'soil') ...[
-                      Text(
-                        'Soil Classification: ${_diagnosisResult!['analysis']['soil_type']}'.tr,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Estimated Condition: ${_diagnosisResult!['analysis']['condition']}'.tr,
-                        style: const TextStyle(fontSize: 12.5, color: Colors.black87, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF8E1), // warning yellow background
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFFFD54F)),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.info_outline, color: Color(0xFFF57F17), size: 16),
+                            const Icon(Icons.psychology_rounded, color: AppTheme.primary, size: 24),
                             const SizedBox(width: 8),
-                            Expanded(
+                            Text(
+                              'AI Diagnosis Result'.tr,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppTheme.textPrimary,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: (category == 'soil' || category == 'farm_field' || severity == 'Healthy')
+                                    ? AppTheme.primary.withValues(alpha: 0.1)
+                                    : (severity == 'High' || severity == 'Critical' ? const Color(0xFFE63946).withValues(alpha: 0.1) : const Color(0xFFFFB703).withValues(alpha: 0.1)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                               child: Text(
-                                _diagnosisResult!['analysis']['concerns'].toString().tr,
-                                style: const TextStyle(fontSize: 11, color: Color(0xFF5D4037), height: 1.4, fontFamily: 'Poppins'),
+                                severity.tr,
+                                style: TextStyle(
+                                  color: (category == 'soil' || category == 'farm_field' || severity == 'Healthy')
+                                      ? AppTheme.primary
+                                      : (severity == 'High' || severity == 'Critical' ? const Color(0xFFE63946) : const Color(0xFFFFB703)),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
-                    ]
-                    else if (_diagnosisResult!['category'] == 'farm_field') ...[
-                      Text(
-                        'Agricultural Field Analysis'.tr,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                          fontFamily: 'Poppins',
+                        const Divider(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                condition.tr,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.textPrimary,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '($confidence%)',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.success,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Canopy Coverage: ${_diagnosisResult!['analysis']['crop_coverage']}'.tr,
-                        style: const TextStyle(fontSize: 12.5, color: Colors.black87, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Health Observation: ${_diagnosisResult!['analysis']['health_observation']}'.tr,
-                        style: const TextStyle(fontSize: 12.5, color: Colors.black54, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Weed Presence: ${_diagnosisResult!['analysis']['weed_presence']}'.tr,
-                        style: const TextStyle(fontSize: 12.5, color: Colors.black54, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTreatmentBox(_diagnosisResult!['analysis']['recommendation']),
-                    ],
-                  ],
+                        const SizedBox(height: 8),
+                        Text(
+                          'Crop / Subject: ${cropToFriendly(cropName)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
+                        ),
+                        if (symptoms.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Text(
+                            'Visible Symptoms:'.tr,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5, fontFamily: 'Poppins'),
+                          ),
+                          ...symptoms.map((sym) => Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.fiber_manual_record, size: 6, color: Colors.black54),
+                                const SizedBox(width: 6),
+                                Expanded(child: Text(sym.toString().tr, style: const TextStyle(fontSize: 12, fontFamily: 'Poppins'))),
+                              ],
+                            ),
+                          )),
+                        ],
+                        const SizedBox(height: 16),
+                        _buildTreatmentBox(analysisMap.isNotEmpty ? analysisMap : recommendation),
+                      ],
+                    );
+                  },
                 ),
               ),
             const SizedBox(height: 20),
