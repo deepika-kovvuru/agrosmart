@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:html' as html;
 import 'app_theme.dart';
 import 'api_service.dart';
 import 'offline_api_service.dart';
@@ -22,6 +23,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   bool _isLoadingAlerts = true;
   bool _isLoadingTreatments = true;
 
+  String _currentLocationName = "Kurnool, Andhra Pradesh";
   List<_PestAlert> _activeIssues = [];
   List<_Treatment> _treatments = [];
 
@@ -99,16 +101,78 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   }
 
   void _loadData() {
-    _loadPestAlerts();
+    _loadLiveGPSLocationForPests();
     _loadTreatments();
+  }
+
+  Future<void> _loadLiveGPSLocationForPests() async {
+    setState(() => _isLoadingAlerts = true);
+    try {
+      if (html.window.navigator.geolocation != null) {
+        final pos = await html.window.navigator.geolocation.getCurrentPosition(
+          enableHighAccuracy: true,
+          timeout: const Duration(seconds: 10),
+        );
+        final double lat = pos.coords?.latitude?.toDouble() ?? 15.8281;
+        final double lon = pos.coords?.longitude?.toDouble() ?? 78.0373;
+        final resData = await ApiService.getCombinedAlerts(latitude: lat, longitude: lon);
+        final pestList = resData['pest_alerts'] ?? [];
+        final loc = resData['location'];
+        if (mounted) {
+          setState(() {
+            if (loc != null && loc['display_name'] != null) {
+              _currentLocationName = loc['display_name'];
+            }
+            if (pestList is List && pestList.isNotEmpty) {
+              _activeIssues = pestList.map((a) {
+                String level = a['risk_level']?.toString() ?? 'HIGH';
+                Color pc = const Color(0xFFF4A261);
+                if (level == 'CRITICAL' || level == 'VERY HIGH') pc = const Color(0xFFE63946);
+                if (level == 'HIGH') pc = const Color(0xFFF4A261);
+                if (level == 'MODERATE') pc = const Color(0xFF0284C7);
+                if (level == 'LOW') pc = const Color(0xFF2D6A4F);
+                
+                String name = "${a['name']} (${a['risk_score']}%)";
+                String emoji = '🐛';
+                if (name.toLowerCase().contains('hopper')) emoji = '🦗';
+                if (name.toLowerCase().contains('blast') || name.toLowerCase().contains('rot')) emoji = '🍄';
+
+                String desc = "${a['reason']}\n\n💡 Action: ${a['recommended_action']}";
+
+                return _PestAlert(
+                  name,
+                  a['crop'] ?? 'Rice',
+                  level,
+                  desc,
+                  level,
+                  pc,
+                  emoji,
+                  'Updated just now',
+                );
+              }).toList();
+            }
+            _isLoadingAlerts = false;
+          });
+        }
+      } else {
+        _loadPestAlerts();
+      }
+    } catch (e) {
+      print("GPS load error in pests: $e");
+      _loadPestAlerts();
+    }
   }
 
   void _loadPestAlerts() async {
     setState(() => _isLoadingAlerts = true);
     final resData = await ApiService.getCombinedAlerts(latitude: 15.8281, longitude: 78.0373);
     final pestList = resData['pest_alerts'] ?? [];
+    final loc = resData['location'];
     if (mounted) {
       setState(() {
+        if (loc != null && loc['display_name'] != null) {
+          _currentLocationName = loc['display_name'];
+        }
         if (pestList is List && pestList.isNotEmpty) {
           _activeIssues = pestList.map((a) {
             String level = a['risk_level']?.toString() ?? 'HIGH';
@@ -1062,7 +1126,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   }
 
   void _showOutbreakMapDialog(BuildContext context) {
-    String currentLocName = user?.state ?? 'Kurnool';
+    String currentLocName = _currentLocationName;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
