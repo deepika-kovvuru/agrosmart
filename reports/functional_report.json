@@ -1,8 +1,0 @@
-{
-  "suite": "TravelSync Functional Testing Suite",
-  "total_tests": 300,
-  "passed": 300,
-  "failed": 0,
-  "errors": 0,
-  "status": "PASSED"
-}

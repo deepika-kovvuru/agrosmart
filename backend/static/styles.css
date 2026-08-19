@@ -641,3 +641,107 @@ th {
   .content-area { padding: 16px; }
   .weather-stats-row { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ─────────────────────────────────────────
+   WEATHER HERO CARD & PEST/DISEASE RISK STYLING
+   ───────────────────────────────────────── */
+.weather-hero-card {
+  background: linear-gradient(135deg, #1565C0 0%, #1E88E5 50%, #0D47A1 100%);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.weather-location-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 12px;
+}
+
+.weather-temp-main {
+  font-size: 64px;
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.weather-cond-text {
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.weather-feels-row {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 20px;
+}
+
+.weather-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.weather-metric-item .val {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.weather-metric-item .lbl {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+}
+
+.crop-chips-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.crop-chip {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.crop-chip.selected {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.badge-risk-critical { background: #b91c1c; color: #ffffff; }
+.badge-risk-very-high { background: #ea580c; color: #ffffff; }
+.badge-risk-high { background: #f59e0b; color: #ffffff; }
+.badge-risk-moderate { background: #0284c7; color: #ffffff; }
+.badge-risk-low { background: #16a34a; color: #ffffff; }
+

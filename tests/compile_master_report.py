@@ -84,7 +84,7 @@ def compile_master_report():
 4. `validation_test_report.xlsx` (300 Validation & UI/UX Test Cases)
 5. `deployment_test_report.xlsx` (300 Build & Deployment Test Cases)
 6. `load_test_report.xlsx` (300 Load Testing Scenarios)
-7. **`full_e2e_report.xlsx` / `E2E_Test_Report_AgroSmart.xlsx`** (Master Workbook with Executive Summary Dashboard + 6 Dedicated Category Sheets)
+7. **`full_e2e_report.xlsx`** (Master Workbook with Executive Summary Dashboard + 6 Dedicated Category Sheets)
 """.format(timestamp, total_passed, total_cases)
 
     with open("reports/unified_summary.md", "w") as f:

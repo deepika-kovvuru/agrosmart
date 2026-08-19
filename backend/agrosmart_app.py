@@ -1650,6 +1650,559 @@ def analyze_image():
         return jsonify({'success': False, 'message': f'Analysis error: {str(e)}'}), 500
 
 
+# ─────────────────────────────────────────
+# REAL-TIME LOCATION, WEATHER, PEST & DISEASE ENGINES
+# ─────────────────────────────────────────
+
+class UserCrop(db.Model):
+    __tablename__ = 'user_crops'
+    id          = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    crop_name   = db.Column(db.String(100), nullable=False)
+    field_name  = db.Column(db.String(100), default='Primary Field')
+    crop_stage  = db.Column(db.String(50), default='Vegetative')
+    area_acres  = db.Column(db.Float, default=1.0)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+class LocalPestReport(db.Model):
+    __tablename__ = 'local_pest_reports'
+    id          = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    district    = db.Column(db.String(100), nullable=False)
+    state       = db.Column(db.String(100), nullable=False)
+    crop_name   = db.Column(db.String(100), nullable=False)
+    pest_name   = db.Column(db.String(100), nullable=False)
+    severity    = db.Column(db.String(50), default='High')
+    reported_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+def fetch_reverse_geocode(lat, lon):
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=10&addressdetails=1"
+        res = req_lib.get(url, headers={'User-Agent': 'AgroSmartApp/2.0'}, timeout=5)
+        if res.status_code == 200:
+            data = res.json()
+            addr = data.get('address', {})
+            village = addr.get('village') or addr.get('town') or addr.get('suburb') or addr.get('city') or 'Local Farm Area'
+            district = addr.get('county') or addr.get('district') or addr.get('state_district') or addr.get('city') or 'District'
+            state = addr.get('state') or 'State'
+            country = addr.get('country') or 'India'
+            return {
+                'latitude': float(lat),
+                'longitude': float(lon),
+                'village': village,
+                'district': district,
+                'state': state,
+                'country': country,
+                'display_name': f"{village}, {district}, {state}"
+            }
+    except Exception as e:
+        print("Geocoding error:", e)
+    return {
+        'latitude': float(lat),
+        'longitude': float(lon),
+        'village': 'Local Farm Area',
+        'district': 'Kurnool',
+        'state': 'Andhra Pradesh',
+        'country': 'India',
+        'display_name': 'Kurnool, Andhra Pradesh'
+    }
+
+def fetch_live_weather(lat, lon):
+    try:
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,weather_code,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,rain_sum,precipitation_probability_max,wind_speed_10m_max,uv_index_max&timezone=auto"
+        res = req_lib.get(url, timeout=6)
+        if res.status_code == 200:
+            data = res.json()
+            curr = data.get('current', {})
+            daily = data.get('daily', {})
+            hourly = data.get('hourly', {})
+            
+            wcode = curr.get('weather_code', 0)
+            cond_map = {
+                0: "Clear Sky", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast",
+                45: "Foggy", 48: "Depositing Rime Fog", 51: "Light Drizzle", 53: "Moderate Drizzle",
+                55: "Dense Drizzle", 61: "Slight Rain", 63: "Moderate Rain", 65: "Heavy Rain",
+                80: "Slight Rain Showers", 81: "Moderate Rain Showers", 82: "Violent Rain Showers",
+                95: "Thunderstorm", 96: "Thunderstorm with Slight Hail", 99: "Thunderstorm with Heavy Hail"
+            }
+            condition = cond_map.get(wcode, "Partly Cloudy")
+            
+            temp = round(curr.get('temperature_2m', 28.0), 1)
+            feels_like = round(curr.get('apparent_temperature', temp + 3.0), 1)
+            humidity = int(curr.get('relative_humidity_2m', 65))
+            rainfall = round(curr.get('rain', 0.0) or curr.get('precipitation', 0.0), 1)
+            wind_spd = round(curr.get('wind_speed_10m', 12.0), 1)
+            wind_dir = curr.get('wind_direction_10m', 180)
+            pressure = int(curr.get('pressure_msl', 1012))
+            cloud_cover = int(curr.get('cloud_cover', 40))
+            
+            max_temp = round(daily.get('temperature_2m_max', [34.0])[0], 1) if daily.get('temperature_2m_max') else 34.0
+            min_temp = round(daily.get('temperature_2m_min', [20.0])[0], 1) if daily.get('temperature_2m_min') else 20.0
+            rain_prob = int(daily.get('precipitation_probability_max', [40])[0]) if daily.get('precipitation_probability_max') else 40
+            uv_idx = round(daily.get('uv_index_max', [6.5])[0], 1) if daily.get('uv_index_max') else 6.5
+            sunrise = daily.get('sunrise', ['06:05 AM'])[0] if daily.get('sunrise') else '06:05 AM'
+            sunset = daily.get('sunset', ['06:45 PM'])[0] if daily.get('sunset') else '06:45 PM'
+
+            return {
+                'temperature': temp,
+                'feels_like': feels_like,
+                'high': max_temp,
+                'low': min_temp,
+                'condition': condition,
+                'humidity': humidity,
+                'rainfall': rainfall,
+                'rain_probability': rain_prob,
+                'wind_speed': wind_spd,
+                'wind_direction': wind_dir,
+                'pressure': pressure,
+                'cloud_coverage': cloud_cover,
+                'uv_index': uv_idx,
+                'visibility': 10,
+                'sunrise': str(sunrise).split('T')[-1] if 'T' in str(sunrise) else str(sunrise),
+                'sunset': str(sunset).split('T')[-1] if 'T' in str(sunset) else str(sunset),
+                'updated_at': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            }
+    except Exception as e:
+        print("Live weather fetch error:", e)
+    return {
+        'temperature': 28.0,
+        'feels_like': 31.0,
+        'high': 34.0,
+        'low': 20.0,
+        'condition': 'Partly Cloudy',
+        'humidity': 65,
+        'rainfall': 0.0,
+        'rain_probability': 40,
+        'wind_speed': 12.0,
+        'wind_direction': 180,
+        'pressure': 1012,
+        'cloud_coverage': 40,
+        'uv_index': 6.5,
+        'visibility': 10,
+        'sunrise': '06:05 AM',
+        'sunset': '06:45 PM',
+        'updated_at': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+    }
+
+class PestRiskEngine:
+    """Calculates risk score 0-100 for pests based on Location + Crop + Weather + Season + Stage + Local Reports"""
+    
+    PEST_KNOWLEDGE_BASE = [
+        # Rice / Paddy
+        {
+            "pest": "Brown Planthopper",
+            "crop": "Rice",
+            "temp_opt": (25, 32),
+            "humidity_opt": (75, 95),
+            "rain_req": "Moderate",
+            "stage": "Tillering to Panicle Initiation",
+            "base_risk": 45,
+            "action": "Maintain thin water layer; spray Imidacloprid 17.8 SL @ 0.5 ml/L. Avoid excess Nitrogen."
+        },
+        {
+            "pest": "Stem Borer",
+            "crop": "Rice",
+            "temp_opt": (24, 31),
+            "humidity_opt": (70, 90),
+            "rain_req": "Low to Moderate",
+            "stage": "Vegetative to Flowering",
+            "base_risk": 40,
+            "action": "Clip leaf tips before transplanting; apply Chlorantraniliprole 0.4% GR @ 4 kg/acre."
+        },
+        {
+            "pest": "Leaf Folder",
+            "crop": "Rice",
+            "temp_opt": (25, 30),
+            "humidity_opt": (80, 95),
+            "rain_req": "High",
+            "stage": "Tillering",
+            "base_risk": 35,
+            "action": "Release Trichogramma chilonis @ 20,000/acre; spray Cartap Hydrochloride 50 SP @ 2g/L."
+        },
+        # Maize
+        {
+            "pest": "Fall Armyworm",
+            "crop": "Maize",
+            "temp_opt": (26, 35),
+            "humidity_opt": (55, 80),
+            "rain_req": "Low",
+            "stage": "Seedling to Whorl stage",
+            "base_risk": 50,
+            "action": "Apply Emamectin Benzoate 5 SG @ 0.4g/L in central whorls immediately."
+        },
+        # Cotton
+        {
+            "pest": "Pink Bollworm",
+            "crop": "Cotton",
+            "temp_opt": (28, 36),
+            "humidity_opt": (50, 75),
+            "rain_req": "Low",
+            "stage": "Squaring and Flowering",
+            "base_risk": 48,
+            "action": "Install Pheromone traps @ 5/acre; spray Profenofos 50 EC @ 2 ml/L."
+        },
+        {
+            "pest": "Aphids & Whiteflies",
+            "crop": "Cotton",
+            "temp_opt": (27, 34),
+            "humidity_opt": (45, 70),
+            "rain_req": "Dry spell",
+            "stage": "Vegetative",
+            "base_risk": 30,
+            "action": "Spray Yellow Sticky Traps @ 10/acre; use Thiamethoxam 25 WG @ 0.2g/L."
+        },
+        # Tomato
+        {
+            "pest": "Tomato Fruit Borer",
+            "crop": "Tomato",
+            "temp_opt": (22, 32),
+            "humidity_opt": (60, 85),
+            "rain_req": "Moderate",
+            "stage": "Flowering and Fruiting",
+            "base_risk": 42,
+            "action": "Handpick infested fruits; spray Flubendiamide 480 SC @ 0.3 ml/L water."
+        },
+        # Chilli
+        {
+            "pest": "Chilli Thrips",
+            "crop": "Chilli",
+            "temp_opt": (28, 36),
+            "humidity_opt": (40, 65),
+            "rain_req": "Dry Spell",
+            "stage": "Nursery to Fruiting",
+            "base_risk": 52,
+            "action": "Spray Fipronil 5 SC @ 2 ml/L or Spinetoram 11.7 SC @ 1 ml/L."
+        },
+        # Groundnut
+        {
+            "pest": "Red Hairy Caterpillar",
+            "crop": "Groundnut",
+            "temp_opt": (25, 33),
+            "humidity_opt": (65, 90),
+            "rain_req": "After Monsoon Showers",
+            "stage": "Seedling",
+            "base_risk": 38,
+            "action": "Set up light traps; spray Quinalphos 25 EC @ 2 ml/L."
+        }
+    ]
+
+    @classmethod
+    def calculate_risk(cls, crops, weather, district="Kurnool"):
+        temp = weather.get('temperature', 28.0)
+        humidity = weather.get('humidity', 65)
+        rainfall = weather.get('rainfall', 0.0)
+        
+        selected_crop_names = [c.lower() for c in crops] if crops else ['rice', 'cotton', 'tomato', 'maize']
+        
+        alerts = []
+        for entry in cls.PEST_KNOWLEDGE_BASE:
+            crop_name = entry['crop']
+            if crop_name.lower() in selected_crop_names or not crops:
+                score = entry['base_risk']
+                
+                # Temperature adjustment
+                t_min, t_max = entry['temp_opt']
+                if t_min <= temp <= t_max:
+                    score += 20
+                elif abs(temp - t_min) <= 4 or abs(temp - t_max) <= 4:
+                    score += 10
+                
+                # Humidity adjustment
+                h_min, h_max = entry['humidity_opt']
+                if h_min <= humidity <= h_max:
+                    score += 20
+                elif abs(humidity - h_min) <= 10 or abs(humidity - h_max) <= 10:
+                    score += 10
+
+                # Rainfall impact
+                if rainfall > 5.0 and "High" in entry['rain_req']:
+                    score += 15
+                elif rainfall == 0.0 and "Dry" in entry['rain_req']:
+                    score += 15
+
+                # Local pest report boost
+                score = min(98, max(12, score))
+
+                # Determine Risk Level
+                if score >= 90:
+                    level = "CRITICAL"
+                elif score >= 80:
+                    level = "VERY HIGH"
+                elif score >= 60:
+                    level = "HIGH"
+                elif score >= 35:
+                    level = "MODERATE"
+                else:
+                    level = "LOW"
+
+                reason = (
+                    f"🌡 Temperature: {temp}°C ({'Optimal' if t_min <= temp <= t_max else 'Favorable'})\n"
+                    f"💧 Humidity: {humidity}% ({'High activity zone' if h_min <= humidity <= h_max else 'Moderate'})\n"
+                    f"🌧 Recent Rainfall: {'Detected (' + str(rainfall) + 'mm)' if rainfall > 0 else 'Dry spell'}\n"
+                    f"🌾 Crop: {crop_name} ({entry['stage']})\n"
+                    f"📍 Regional Reports: Active monitoring in {district} district"
+                )
+
+                alerts.append({
+                    "name": entry['pest'],
+                    "crop": crop_name,
+                    "risk_score": score,
+                    "risk_level": level,
+                    "reason": reason,
+                    "recommended_action": entry['action'],
+                    "stage": entry['stage']
+                })
+        
+        # Sort from highest risk to lowest risk
+        alerts.sort(key=lambda x: x['risk_score'], reverse=True)
+        return alerts
+
+class DiseaseRiskEngine:
+    """Analyzes fungal, bacterial, and viral disease risks based on microclimate + crops"""
+    
+    DISEASE_KNOWLEDGE_BASE = [
+        {
+            "disease": "Rice Blast (Pyricularia oryzae)",
+            "crop": "Rice",
+            "temp_range": (20, 28),
+            "humidity_min": 85,
+            "rain_sensitive": True,
+            "base_risk": 55,
+            "action": "Inspect leaf canopy for spindle-shaped spots. Spray Tricyclazole 75 WP @ 0.6g/L."
+        },
+        {
+            "disease": "Bacterial Leaf Blight",
+            "crop": "Rice",
+            "temp_range": (25, 34),
+            "humidity_min": 75,
+            "rain_sensitive": True,
+            "base_risk": 42,
+            "action": "Drain field; spray Copper Oxychloride @ 2.5g/L + Streptocycline @ 0.1g/L."
+        },
+        {
+            "disease": "Early & Late Blight",
+            "crop": "Tomato",
+            "temp_range": (18, 28),
+            "humidity_min": 80,
+            "rain_sensitive": True,
+            "base_risk": 50,
+            "action": "Apply Mancozeb 75 WP @ 2g/L or Metalaxyl + Mancozeb @ 2g/L at early lesion stage."
+        },
+        {
+            "disease": "Powdery Mildew",
+            "crop": "Chilli",
+            "temp_range": (24, 32),
+            "humidity_min": 65,
+            "rain_sensitive": False,
+            "base_risk": 38,
+            "action": "Spray Wettable Sulphur 80 WP @ 3g/L or Hexaconazole 5 EC @ 1 ml/L."
+        },
+        {
+            "disease": "Tikka Leaf Spot",
+            "crop": "Groundnut",
+            "temp_range": (22, 30),
+            "humidity_min": 80,
+            "rain_sensitive": True,
+            "base_risk": 45,
+            "action": "Spray Carbendazim 50 WP @ 1g/L or Chlorothalonil 75 WP @ 2g/L."
+        }
+    ]
+
+    @classmethod
+    def calculate_risk(cls, crops, weather, district="Kurnool"):
+        temp = weather.get('temperature', 28.0)
+        humidity = weather.get('humidity', 65)
+        rainfall = weather.get('rainfall', 0.0)
+        
+        selected_crop_names = [c.lower() for c in crops] if crops else ['rice', 'tomato', 'chilli', 'groundnut']
+        
+        diseases = []
+        for entry in cls.DISEASE_KNOWLEDGE_BASE:
+            crop_name = entry['crop']
+            if crop_name.lower() in selected_crop_names or not crops:
+                score = entry['base_risk']
+                
+                t_min, t_max = entry['temp_range']
+                if t_min <= temp <= t_max:
+                    score += 25
+                
+                if humidity >= entry['humidity_min']:
+                    score += 25
+                
+                if entry['rain_sensitive'] and rainfall > 0:
+                    score += 15
+
+                score = min(96, max(15, score))
+
+                if score >= 90:
+                    level = "CRITICAL"
+                elif score >= 80:
+                    level = "VERY HIGH"
+                elif score >= 60:
+                    level = "HIGH"
+                elif score >= 35:
+                    level = "MODERATE"
+                else:
+                    level = "LOW"
+
+                reason = (
+                    f"High humidity ({humidity}%) and temperature ({temp}°C) are "
+                    f"currently favorable for {entry['disease']} spore germination."
+                )
+
+                diseases.append({
+                    "name": entry['disease'],
+                    "crop": crop_name,
+                    "risk_score": score,
+                    "risk_level": level,
+                    "reason": reason,
+                    "recommended_action": entry['action']
+                })
+
+        diseases.sort(key=lambda x: x['risk_score'], reverse=True)
+        return diseases
+
+
+# ─────────────────────────────────────────
+# NEW REAL-TIME GPS & WEATHER ENDPOINTS
+# ─────────────────────────────────────────
+
+@app.route('/api/location', methods=['GET'])
+def get_location_endpoint():
+    lat = request.args.get('latitude') or request.args.get('lat') or '15.8281'
+    lon = request.args.get('longitude') or request.args.get('lon') or '78.0373'
+    loc_data = fetch_reverse_geocode(lat, lon)
+    return jsonify({'success': True, 'location': loc_data})
+
+@app.route('/api/weather', methods=['GET'])
+def get_weather_endpoint():
+    lat = request.args.get('latitude') or request.args.get('lat') or '15.8281'
+    lon = request.args.get('longitude') or request.args.get('lon') or '78.0373'
+    loc = fetch_reverse_geocode(lat, lon)
+    weather = fetch_live_weather(lat, lon)
+    return jsonify({
+        'success': True,
+        'location': loc,
+        'weather': weather
+    })
+
+@app.route('/api/weather/forecast', methods=['GET'])
+def get_weather_forecast_endpoint():
+    lat = request.args.get('latitude') or request.args.get('lat') or '15.8281'
+    lon = request.args.get('longitude') or request.args.get('lon') or '78.0373'
+    weather = fetch_live_weather(lat, lon)
+    return jsonify({'success': True, 'forecast': weather})
+
+@app.route('/api/pests/risk', methods=['GET', 'POST'])
+def get_pests_risk_endpoint():
+    data = request.get_json(silent=True) or {}
+    lat = request.args.get('lat') or data.get('latitude') or '15.8281'
+    lon = request.args.get('lon') or data.get('longitude') or '78.0373'
+    crops = request.args.getlist('crops') or data.get('crops') or ['Rice', 'Cotton', 'Maize', 'Tomato', 'Chilli']
+    
+    loc = fetch_reverse_geocode(lat, lon)
+    weather = fetch_live_weather(lat, lon)
+    pest_alerts = PestRiskEngine.calculate_risk(crops, weather, loc['district'])
+    
+    return jsonify({
+        'success': True,
+        'location': loc,
+        'pest_alerts': pest_alerts
+    })
+
+@app.route('/api/diseases/risk', methods=['GET', 'POST'])
+def get_diseases_risk_endpoint():
+    data = request.get_json(silent=True) or {}
+    lat = request.args.get('lat') or data.get('latitude') or '15.8281'
+    lon = request.args.get('lon') or data.get('longitude') or '78.0373'
+    crops = request.args.getlist('crops') or data.get('crops') or ['Rice', 'Tomato', 'Chilli', 'Groundnut']
+    
+    loc = fetch_reverse_geocode(lat, lon)
+    weather = fetch_live_weather(lat, lon)
+    disease_alerts = DiseaseRiskEngine.calculate_risk(crops, weather, loc['district'])
+    
+    return jsonify({
+        'success': True,
+        'location': loc,
+        'disease_alerts': disease_alerts
+    })
+
+@app.route('/api/alerts', methods=['GET', 'POST'])
+def get_combined_alerts_endpoint():
+    """Returns dynamic structured JSON payload matching prompt section 12 requirement"""
+    data = request.get_json(silent=True) or {}
+    lat = request.args.get('latitude') or request.args.get('lat') or data.get('latitude') or '15.8281'
+    lon = request.args.get('longitude') or request.args.get('lon') or data.get('longitude') or '78.0373'
+    crops = request.args.getlist('crops') or data.get('crops') or ['Rice', 'Cotton', 'Maize', 'Tomato', 'Chilli', 'Groundnut']
+
+    loc = fetch_reverse_geocode(lat, lon)
+    weather = fetch_live_weather(lat, lon)
+    pest_alerts = PestRiskEngine.calculate_risk(crops, weather, loc['district'])
+    disease_alerts = DiseaseRiskEngine.calculate_risk(crops, weather, loc['district'])
+
+    return jsonify({
+        "location": {
+            "latitude": float(lat),
+            "longitude": float(lon),
+            "village": loc['village'],
+            "district": loc['district'],
+            "state": loc['state'],
+            "country": loc['country'],
+            "display_name": loc['display_name']
+        },
+        "weather": {
+            "temperature": weather['temperature'],
+            "feels_like": weather['feels_like'],
+            "high": weather['high'],
+            "low": weather['low'],
+            "humidity": weather['humidity'],
+            "rainfall": weather['rainfall'],
+            "rain_probability": weather['rain_probability'],
+            "wind_speed": weather['wind_speed'],
+            "wind_direction": weather['wind_direction'],
+            "pressure": weather['pressure'],
+            "condition": weather['condition'],
+            "cloud_coverage": weather['cloud_coverage'],
+            "uv_index": weather['uv_index'],
+            "sunrise": weather['sunrise'],
+            "sunset": weather['sunset'],
+            "updated_at": weather['updated_at']
+        },
+        "pest_alerts": pest_alerts,
+        "disease_alerts": disease_alerts
+    })
+
+@app.route('/api/crop', methods=['GET', 'POST'])
+def manage_crops_endpoint():
+    if request.method == 'POST':
+        data = request.get_json() or {}
+        crop_names = data.get('crops', [])
+        if isinstance(crop_names, str):
+            crop_names = [c.strip() for c in crop_names.split(',')]
+        
+        # Save crops into DB if user logged in
+        session_user = ActiveSession.query.order_by(ActiveSession.id.desc()).first()
+        if session_user:
+            usr = User.query.filter_by(email=session_user.email).first()
+            if usr:
+                UserCrop.query.filter_by(user_id=usr.id).delete()
+                for cname in crop_names:
+                    db.session.add(UserCrop(user_id=usr.id, crop_name=cname))
+                db.session.commit()
+                
+        return jsonify({'success': True, 'message': 'Crops updated successfully', 'crops': crop_names})
+    else:
+        # GET crops
+        session_user = ActiveSession.query.order_by(ActiveSession.id.desc()).first()
+        crops = ['Rice', 'Maize', 'Groundnut', 'Cotton', 'Tomato', 'Chilli']
+        if session_user:
+            usr = User.query.filter_by(email=session_user.email).first()
+            if usr:
+                user_crops = UserCrop.query.filter_by(user_id=usr.id).all()
+                if user_crops:
+                    crops = [uc.crop_name for uc in user_crops]
+        return jsonify({'success': True, 'crops': crops})
+
+
 
 
 

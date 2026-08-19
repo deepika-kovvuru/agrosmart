@@ -207,7 +207,6 @@ def generate_all_excel_reports():
     }
 
     build_openxml_xlsx("reports/full_e2e_report.xlsx", master_sheets)
-    build_openxml_xlsx("reports/E2E_Test_Report_AgroSmart.xlsx", master_sheets)
 
     print("[EXCEL GENERATION COMPLETE] Generated 6 individual .xlsx reports + 1 Master Consolidated Workbook (1,800 Test Cases)")
 

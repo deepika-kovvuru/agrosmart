@@ -1,8 +1,0 @@
-"Test Domain","Total Cases","Passed","Failed","Status"
-"Functional Testing","300","300","0","PASSED"
-"Load & Stress Testing","300","300","0","PASSED"
-"Security & Vulnerability Audit","300","300","0","PASSED"
-"Web Unit Tests","50","50","0","PASSED"
-"Web E2E Browser Tests","50","50","0","PASSED"
-"Mobile Appium E2E Tests","50","50","0","PASSED"
-"Total Pipeline Summary","1050","1050","0","100% PASSED"

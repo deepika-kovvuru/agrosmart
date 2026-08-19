@@ -1,6 +1,7 @@
 // weather_screen.dart
 import 'package:flutter/material.dart';
 import 'translation_provider.dart';
+import 'api_service.dart';
 
 
 class WeatherScreen extends StatefulWidget {
@@ -11,6 +12,57 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  String _locationName = "Kurnool, Andhra Pradesh";
+  String _temp = "28°C";
+  String _condition = "Partly Cloudy";
+  String _feelsLike = "31°C";
+  String _high = "34°";
+  String _low = "20°";
+  String _humidity = "65%";
+  String _wind = "12 km/h";
+  String _pressure = "1012 hPa";
+  String _uvIndex = "UV 6.5";
+  String _lastUpdated = "Updated just now";
+  bool _isRefreshing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLiveWeatherData();
+  }
+
+  Future<void> _loadLiveWeatherData() async {
+    setState(() => _isRefreshing = true);
+    try {
+      final data = await ApiService.getCombinedAlerts(latitude: 15.8281, longitude: 78.0373);
+      if (data != null && data['weather'] != null) {
+        final w = data['weather'];
+        final loc = data['location'];
+        if (mounted) {
+          setState(() {
+            if (loc != null) {
+              _locationName = loc['display_name'] ?? "${loc['district']}, ${loc['state']}";
+            }
+            _temp = "${w['temperature']}°C";
+            _condition = w['condition'] ?? "Partly Cloudy";
+            _feelsLike = "${w['feels_like']}°C";
+            _high = "${w['high']}°";
+            _low = "${w['low']}°";
+            _humidity = "${w['humidity']}%";
+            _wind = "${w['wind_speed']} km/h";
+            _pressure = "${w['pressure']} hPa";
+            _uvIndex = "UV ${w['uv_index']}";
+            _lastUpdated = "Updated just now";
+          });
+        }
+      }
+    } catch (e) {
+      print("Weather load error: $e");
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
+  }
+
   final List<_HourlyWeather> _hourly = const [
     _HourlyWeather('6 AM', Icons.wb_sunny_rounded, '24°', 0),
     _HourlyWeather('9 AM', Icons.wb_sunny_rounded, '27°', 0),
@@ -107,7 +159,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 ),
               ),
               const Spacer(),
-              const Icon(Icons.refresh_rounded, color: Colors.white70, size: 22),
+              GestureDetector(
+                onTap: _loadLiveWeatherData,
+                child: _isRefreshing
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Icon(Icons.refresh_rounded, color: Colors.white70, size: 22),
+              ),
             ],
           ),
 
@@ -121,7 +181,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   color: Colors.white70, size: 16),
               const SizedBox(width: 4),
               Text(
-                'Kurnool, Andhra Pradesh'.tr,
+                _locationName.tr,
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
@@ -137,9 +197,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
           const SizedBox(height: 16),
 
           // Big temperature
-          const Text(
-            '28°C',
-            style: TextStyle(
+          Text(
+            _temp,
+            style: const TextStyle(
               fontSize: 80,
               fontWeight: FontWeight.w200,
               color: Colors.white,
@@ -156,7 +216,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
               const Icon(Icons.cloud_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text(
-                'Partly Cloudy'.tr,
+                _condition.tr,
                 style: const TextStyle(
                   fontSize: 18,
                   color: Colors.white,
@@ -170,7 +230,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           const SizedBox(height: 6),
 
           Text(
-            'Feels like 31°C  ·  H: 34°  L: 20°'.tr,
+            'Feels like $_feelsLike  ·  H: $_high  L: $_low'.tr,
             style: TextStyle(
               fontSize: 13,
               color: Colors.white.withValues(alpha: 0.7),
@@ -188,16 +248,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _WeatherStatColumn(Icons.water_drop_rounded, '68%', 'Humidity'),
-                _VerticalDivider(),
-                _WeatherStatColumn(Icons.air_rounded, '12 km/h', 'Wind'),
-                _VerticalDivider(),
-                _WeatherStatColumn(Icons.compress_rounded, '1012 hPa', 'Pressure'),
-                _VerticalDivider(),
-                _WeatherStatColumn(Icons.wb_sunny_rounded, 'UV 7', 'UV Index'),
+                _WeatherStatColumn(Icons.water_drop_rounded, _humidity, 'Humidity'),
+                const _VerticalDivider(),
+                _WeatherStatColumn(Icons.air_rounded, _wind, 'Wind'),
+                const _VerticalDivider(),
+                _WeatherStatColumn(Icons.compress_rounded, _pressure, 'Pressure'),
+                const _VerticalDivider(),
+                _WeatherStatColumn(Icons.wb_sunny_rounded, _uvIndex, 'UV Index'),
               ],
             ),
           ),

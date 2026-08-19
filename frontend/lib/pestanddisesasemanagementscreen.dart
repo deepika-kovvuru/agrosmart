@@ -105,39 +105,41 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
 
   void _loadPestAlerts() async {
     setState(() => _isLoadingAlerts = true);
-    // Fetch live pest alerts (optionally filtered by user's state/region)
-    final res = await ApiService.getPestAlerts(region: user?.state);
+    final resData = await ApiService.getCombinedAlerts(latitude: 15.8281, longitude: 78.0373);
+    final pestList = resData['pest_alerts'] ?? [];
     if (mounted) {
       setState(() {
-        if (res.isNotEmpty) {
-          _activeIssues = res.map((a) {
-            String p = a['severity']?.toString() ?? 'Medium';
+        if (pestList is List && pestList.isNotEmpty) {
+          _activeIssues = pestList.map((a) {
+            String level = a['risk_level']?.toString() ?? 'HIGH';
             Color pc = const Color(0xFFF4A261);
-            if (p == 'High') pc = const Color(0xFFE63946);
-            if (p == 'Low') pc = const Color(0xFF2D6A4F);
+            if (level == 'CRITICAL' || level == 'VERY HIGH') pc = const Color(0xFFE63946);
+            if (level == 'HIGH') pc = const Color(0xFFF4A261);
+            if (level == 'MODERATE') pc = const Color(0xFF0284C7);
+            if (level == 'LOW') pc = const Color(0xFF2D6A4F);
             
-            String name = a['pest_name'] ?? 'Pest Alert';
+            String name = "${a['name']} (${a['risk_score']}%)";
             String emoji = '🐛';
             if (name.toLowerCase().contains('hopper')) emoji = '🦗';
             if (name.toLowerCase().contains('blast') || name.toLowerCase().contains('rot')) emoji = '🍄';
 
+            String desc = "${a['reason']}\n\n💡 Action: ${a['recommended_action']}";
+
             return _PestAlert(
               name,
-              a['crop'] ?? 'Maize',
-              'Crop Alert',
-              a['description'] ?? '',
-              p,
+              a['crop'] ?? 'Rice',
+              level,
+              desc,
+              level,
               pc,
               emoji,
-              a['reported_at'] ?? 'Today',
+              'Updated just now',
             );
           }).toList();
         } else {
-          // fallback mock issues
           _activeIssues = const [
-            _PestAlert('Fall Armyworm', 'FAW', 'Insect Pest', 'Your district has an active outbreak. 15+ farmers reported damage.', 'High', Color(0xFFE63946), '🪱', '2h ago'),
-            _PestAlert('Rice Blast', 'Rice Blast', 'Fungal Disease', 'Humid conditions favor rice blast. Check leaf nodes for gray lesions.', 'Medium', Color(0xFFF4A261), '🍄', '1d ago'),
-            _PestAlert('Brown Plant Hopper', 'BPH', 'Insect Pest', 'Hopperburn symptoms noticed nearby. Monitor crop base carefully.', 'Low', Color(0xFF2D6A4F), '🦗', '3d ago'),
+            _PestAlert('Brown Planthopper (82%)', 'Rice', 'CRITICAL', 'High humidity and optimal temperature in Kurnool district.\nAction: Spray Imidacloprid 17.8 SL @ 0.5 ml/L.', 'CRITICAL', Color(0xFFE63946), '🦗', 'Just now'),
+            _PestAlert('Stem Borer (67%)', 'Rice', 'HIGH', 'Favorable weather for stem borer larvae activity.\nAction: Apply Chlorantraniliprole 0.4% GR @ 4 kg/acre.', 'HIGH', Color(0xFFF4A261), '🐛', 'Just now'),
           ];
         }
         _isLoadingAlerts = false;

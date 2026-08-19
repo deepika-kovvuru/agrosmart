@@ -117,7 +117,6 @@ jobs:
           name: full-e2e-report
           path: |
             reports/full_e2e_report.xlsx
-            reports/E2E_Test_Report_AgroSmart.xlsx
             reports/full_e2e_report.json
             reports/unified_summary.md
             reports/load_report.html
