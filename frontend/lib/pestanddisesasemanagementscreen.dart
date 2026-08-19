@@ -28,28 +28,40 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   List<_Treatment> _treatments = [];
 
   XFile? _imageFile;
+  Uint8List? _imageBytes;
   bool _isIdentifying = false;
   Map<String, dynamic>? _diagnosisResult;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final XFile? pickedFile = await _picker.pickImage(
-        source: source,
-        maxWidth: 1080,
-        maxHeight: 1080,
-        imageQuality: 85,
-      );
+      XFile? pickedFile;
+      try {
+        pickedFile = await _picker.pickImage(
+          source: source,
+          maxWidth: 1080,
+          maxHeight: 1080,
+          imageQuality: 85,
+        );
+      } catch (pickErr) {
+        pickedFile = await _picker.pickImage(
+          source: ImageSource.gallery,
+          maxWidth: 1080,
+          maxHeight: 1080,
+          imageQuality: 85,
+        );
+      }
 
       if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
         setState(() {
           _imageFile = pickedFile;
+          _imageBytes = bytes;
           _isIdentifying = true;
           _diagnosisResult = null;
         });
 
-        // Trigger dynamic image analysis through our offline-caching API service layer
-        final result = await OfflineApiService.analyzeImage(File(pickedFile.path));
+        final result = await OfflineApiService.analyzeImageBytes(bytes, pickedFile.name);
 
         if (mounted) {
           setState(() {
@@ -86,6 +98,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   void _clearImage() {
     setState(() {
       _imageFile = null;
+      _imageBytes = null;
       _isIdentifying = false;
       _diagnosisResult = null;
     });
@@ -773,9 +786,11 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  kIsWeb
-                      ? Image.network(_imageFile!.path, fit: BoxFit.cover)
-                      : Image.file(File(_imageFile!.path), fit: BoxFit.cover),
+                  _imageBytes != null
+                      ? Image.memory(_imageBytes!, fit: BoxFit.cover)
+                      : (kIsWeb
+                          ? Image.network(_imageFile!.path, fit: BoxFit.cover)
+                          : Image.file(File(_imageFile!.path), fit: BoxFit.cover)),
                   if (_isIdentifying)
                     Container(
                       color: Colors.black.withValues(alpha: 0.65),

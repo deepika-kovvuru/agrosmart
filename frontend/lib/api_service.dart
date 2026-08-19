@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
@@ -580,7 +581,7 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> analyzeImage(File imageFile) async {
+  static Future<Map<String, dynamic>> analyzeImageBytes(Uint8List bytes, String filename) async {
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}/api/analyze-image');
       final request = http.MultipartRequest('POST', uri);
@@ -590,18 +591,18 @@ class ApiService {
         'Bypass-Tunnel-Reminder': 'true',
       });
       
-      final ext = path.extension(imageFile.path).toLowerCase();
       String mimeType = 'image/jpeg';
-      if (ext == '.png') {
+      if (filename.toLowerCase().endsWith('.png')) {
         mimeType = 'image/png';
-      } else if (ext == '.gif') {
+      } else if (filename.toLowerCase().endsWith('.gif')) {
         mimeType = 'image/gif';
       }
       
       request.files.add(
-        await http.MultipartFile.fromPath(
+        http.MultipartFile.fromBytes(
           'image',
-          imageFile.path,
+          bytes,
+          filename: filename.isEmpty ? 'upload.jpg' : filename,
           contentType: MediaType.parse(mimeType),
         ),
       );
@@ -616,6 +617,15 @@ class ApiService {
       return {'success': false, 'message': decoded['message'] ?? 'Image upload failed'};
     } catch (e) {
       return {'success': false, 'message': 'Image analysis failed: $e'};
+    }
+  }
+
+  static Future<Map<String, dynamic>> analyzeImage(File imageFile) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      return analyzeImageBytes(bytes, imageFile.path.split('/').last);
+    } catch (e) {
+      return {'success': false, 'message': 'Failed to read image file: $e'};
     }
   }
 
