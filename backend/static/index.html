@@ -129,6 +129,15 @@
         };
       });
     };
+
+    window.addEventListener('AGROSMART_OPEN_CAMERA', function() {
+      window.openAgroSmartCamera().then(function(dataUrl) {
+        if (dataUrl) {
+          const event = new CustomEvent('AGROSMART_CAMERA_CAPTURED', { detail: dataUrl });
+          window.dispatchEvent(event);
+        }
+      });
+    });
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

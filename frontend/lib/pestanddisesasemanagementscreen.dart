@@ -34,51 +34,26 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   bool _isIdentifying = false;
   Map<String, dynamic>? _diagnosisResult;
   String? _currentScanId;
+  StreamSubscription? _cameraSubscription;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage(ImageSource source) async {
-    try {
-      XFile? pickedFile;
+    if (kIsWeb && source == ImageSource.camera) {
+      html.window.dispatchEvent(html.CustomEvent('AGROSMART_OPEN_CAMERA'));
+      return;
+    }
 
-      try {
-        pickedFile = await _picker.pickImage(
-          source: source,
-          maxWidth: 1080,
-          maxHeight: 1080,
-          imageQuality: 85,
-        );
-      } catch (pickErr) {
-        try {
-          pickedFile = await _picker.pickImage(
-            source: ImageSource.gallery,
-            maxWidth: 1080,
-            maxHeight: 1080,
-            imageQuality: 85,
-          );
-        } catch (_) {}
-      }
+    try {
+      XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        maxWidth: 1080,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
 
       if (pickedFile != null) {
         final bytes = await pickedFile.readAsBytes();
-        final String scanId = 'scan_${DateTime.now().millisecondsSinceEpoch}_${bytes.length}';
-        setState(() {
-          _currentScanId = scanId;
-          _imageFile = pickedFile;
-          _imageBytes = bytes;
-          _isIdentifying = true;
-          _diagnosisResult = null;
-        });
-
-        debugPrint('[FRONTEND SCAN] Uploading image ($scanId): ${pickedFile.name} (${bytes.length} bytes)');
-        final result = await ApiService.analyzeImageBytes(bytes, pickedFile.name);
-        debugPrint('[FRONTEND SCAN RESULT] $result');
-
-        if (mounted && _currentScanId == scanId) {
-          setState(() {
-            _isIdentifying = false;
-            _diagnosisResult = result;
-          });
-        }
+        await _processCapturedImageBytes(bytes, pickedFile.name);
       }
     } catch (e) {
       debugPrint('[CAMERA EXCEPTION] $e');
@@ -86,13 +61,29 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
         setState(() {
           _isIdentifying = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to access camera or gallery.'.tr),
-            backgroundColor: AppTheme.error,
-          ),
-        );
       }
+    }
+  }
+
+  Future<void> _processCapturedImageBytes(Uint8List bytes, String filename) async {
+    final String scanId = 'scan_${DateTime.now().millisecondsSinceEpoch}_${bytes.length}';
+    setState(() {
+      _currentScanId = scanId;
+      _imageFile = XFile.fromData(bytes, name: filename);
+      _imageBytes = bytes;
+      _isIdentifying = true;
+      _diagnosisResult = null;
+    });
+
+    debugPrint('[FRONTEND SCAN] Uploading image ($scanId): $filename (${bytes.length} bytes)');
+    final result = await ApiService.analyzeImageBytes(bytes, filename);
+    debugPrint('[FRONTEND SCAN RESULT] $result');
+
+    if (mounted && _currentScanId == scanId) {
+      setState(() {
+        _isIdentifying = false;
+        _diagnosisResult = result;
+      });
     }
   }
 
@@ -112,6 +103,19 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadData();
+
+    if (kIsWeb) {
+      _cameraSubscription = html.window.on['AGROSMART_CAMERA_CAPTURED'].listen((event) {
+        if (event is html.CustomEvent && event.detail != null) {
+          final String dataUrl = event.detail.toString();
+          if (dataUrl.startsWith('data:image/')) {
+            final String base64Data = dataUrl.split(',')[1];
+            final Uint8List bytes = base64Decode(base64Data);
+            _processCapturedImageBytes(bytes, 'camera_snapshot_${DateTime.now().millisecondsSinceEpoch}.jpg');
+          }
+        }
+      });
+    }
   }
 
   void _loadData() {
