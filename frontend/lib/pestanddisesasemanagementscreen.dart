@@ -272,24 +272,21 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
               'Apply 0.3ml/L water for sucking pests like whitefly, aphids and thrips in your location.',
               'Chemical',
               const Color(0xFFE63946),
-              isPriorityForLocation: true,
-              targetAlert: 'Chilli Thrips (92%)',
+              isPriorityForLocation: false,
             ),
             _Treatment(
               'Chlorpyrifos 20 EC',
               'Spray 2ml/L water for FAW control during evening hours for your location.',
               'Chemical',
               const Color(0xFFE63946),
-              isPriorityForLocation: true,
-              targetAlert: 'Fall Armyworm (90%)',
+              isPriorityForLocation: false,
             ),
             _Treatment(
               'Neem Oil Spray',
               'Eco-friendly 5ml/L water spray weekly for BPH & sucking pest prevention.',
               'Bio-Pesticide',
               const Color(0xFF2D6A4F),
-              isPriorityForLocation: true,
-              targetAlert: 'Pink Bollworm (88%)',
+              isPriorityForLocation: false,
             ),
             const _Treatment('Trichoderma viride', 'Soil application 2.5kg/acre for root rot and damping off prevention.', 'Bio-Pesticide', Color(0xFF2D6A4F)),
             const _Treatment('Copper Oxychloride', '3g/L water for bacterial and fungal diseases. Spray at first sign.', 'Fungicide', Color(0xFF9B59B6)),
@@ -887,16 +884,27 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                 child: Builder(
                   builder: (context) {
                     final category = _diagnosisResult!['category']?.toString() ?? 'crop_leaf';
-                    final cropName = _diagnosisResult!['crop']?.toString() ?? 'Crop / Plant';
-                    num rawConf = _diagnosisResult!['confidence'] ?? (_diagnosisResult!['analysis'] is Map ? _diagnosisResult!['analysis']['confidence'] : null) ?? 0.94;
+                    final cropName = _diagnosisResult!['plant_identified']?.toString() ?? _diagnosisResult!['crop']?.toString() ?? 'Crop / Plant';
+                    final visibleCond = _diagnosisResult!['visible_condition']?.toString() ?? 'diseased';
+                    
+                    num rawConf = 0.92;
+                    if (_diagnosisResult!['diagnosis'] is Map && _diagnosisResult!['diagnosis']['confidence'] != null) {
+                      rawConf = _diagnosisResult!['diagnosis']['confidence'];
+                    } else if (_diagnosisResult!['confidence'] is num) {
+                      rawConf = _diagnosisResult!['confidence'];
+                    } else if (_diagnosisResult!['analysis'] is Map && _diagnosisResult!['analysis']['confidence'] != null) {
+                      rawConf = _diagnosisResult!['analysis']['confidence'];
+                    }
                     final int confidence = (rawConf > 1.0) ? rawConf.round() : (rawConf * 100).round();
                     
                     final analysisMap = (_diagnosisResult!['analysis'] is Map) ? (_diagnosisResult!['analysis'] as Map<String, dynamic>) : <String, dynamic>{};
-                    final severity = _diagnosisResult!['severity']?.toString() ?? analysisMap['severity']?.toString() ?? 'High';
-                    final condition = _diagnosisResult!['disease']?.toString() ?? analysisMap['condition']?.toString() ?? analysisMap['pest_name']?.toString() ?? 'Crop Disease / Pest Detection';
-                    final symptoms = (_diagnosisResult!['symptoms'] is List) ? (_diagnosisResult!['symptoms'] as List) : ((analysisMap['symptoms'] is List) ? (analysisMap['symptoms'] as List) : []);
-                    final recommendation = analysisMap['recommendation']?.toString() ?? 'Apply recommended treatments and maintain clean field management.';
-                    final scanId = _diagnosisResult!['image_id']?.toString();
+                    final severity = _diagnosisResult!['diagnosis']?['severity']?.toString() ?? _diagnosisResult!['severity']?.toString() ?? analysisMap['severity']?.toString() ?? 'High';
+                    final condition = _diagnosisResult!['diagnosis']?['name']?.toString() ?? _diagnosisResult!['disease']?.toString() ?? analysisMap['condition']?.toString() ?? 'Crop Disease / Pest Detection';
+                    final symptoms = (_diagnosisResult!['observations'] is List && (_diagnosisResult!['observations'] as List).isNotEmpty)
+                        ? (_diagnosisResult!['observations'] as List)
+                        : ((_diagnosisResult!['symptoms'] is List) ? (_diagnosisResult!['symptoms'] as List) : ((analysisMap['symptoms'] is List) ? (analysisMap['symptoms'] as List) : []));
+                    final recommendation = _diagnosisResult!['recommendation']?.toString() ?? analysisMap['recommendation']?.toString() ?? 'Apply recommended management for crop.';
+                    final scanId = _diagnosisResult!['scan_id']?.toString() ?? _diagnosisResult!['image_id']?.toString();
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

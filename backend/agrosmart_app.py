@@ -1851,9 +1851,25 @@ def analyze_image():
         if diag_conf < 70:
             res_data["status"] = "Uncertain"
 
+        conf_label = "high" if diag_conf >= 85 else ("medium" if diag_conf >= 70 else "low")
+        vis_cond = "healthy" if condition_cat == "healthy" else ("pest damage" if condition_cat == "pest" else "diseased")
+
+        if condition_cat == "healthy":
+            rec_text = "no action needed; maintain regular watering and organic crop nutrition"
+            causes_list = []
+        else:
+            rec_text = f"Apply recommended management for {condition_name} in {plant_name} as detailed below."
+            causes_list = [condition_name]
+
         response_json = {
             'success': True,
             'scan_id': scan_id,
+            'plant_identified': plant_name,
+            'visible_condition': vis_cond,
+            'observations': res_data["symptoms"],
+            'likely_causes': causes_list,
+            'confidence': conf_label,
+            'recommendation': rec_text,
             'image': {
                 'received': True,
                 'image_id': image_id,
@@ -1884,7 +1900,6 @@ def analyze_image():
             'crop': plant_name,
             'condition_type': condition_cat,
             'disease': condition_name,
-            'confidence': diag_conf,
             'severity': severity_level,
             'symptoms': res_data["symptoms"],
             'chemical_treatments': res_data["chemical"],
@@ -1912,7 +1927,7 @@ def analyze_image():
         print(f"[IMAGE] size: {len(file_bytes)} bytes ({width}x{height})")
         print(f"[AI] predicted crop: {plant_name}")
         print(f"[AI] predicted disease: {condition_name}")
-        print(f"[AI] confidence: {diag_conf}%")
+        print(f"[AI] confidence: {diag_conf}% ({conf_label})")
         print(f"[API] response: {response_json['message']}\n")
 
         return jsonify(response_json), 200
