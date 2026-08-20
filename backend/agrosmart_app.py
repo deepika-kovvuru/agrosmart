@@ -1036,12 +1036,15 @@ def _classify_article(title, summary):
     return 'Market Update'
 
 def _clean_html(raw):
-    """Strip HTML tags from text."""
+    """Strip HTML tags and unescape HTML entities from text."""
     if not raw:
         return ''
+    import html as py_html
     clean = re.sub(r'<[^>]+>', '', raw)
+    clean = py_html.unescape(clean)
+    clean = clean.replace('&#8217;', "'").replace('&#8216;', "'").replace('&#8220;', '"').replace('&#8221;', '"').replace('&#8211;', '-').replace('&#039;', "'")
     clean = re.sub(r'\s+', ' ', clean).strip()
-    return clean[:300]
+    return clean[:500]
 
 def _fetch_live_articles():
     """Fetch and aggregate news from all RSS feeds with caching."""

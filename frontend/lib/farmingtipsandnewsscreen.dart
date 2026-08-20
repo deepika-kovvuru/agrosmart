@@ -1,5 +1,6 @@
 import 'app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart' as html;
 import 'api_service.dart';
 import 'translation_provider.dart';
 
@@ -100,6 +101,232 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
     } catch (_) {
       return const Color(0xFF2D6A4F);
     }
+  }
+
+  String _cleanText(String? input) {
+    if (input == null || input.isEmpty) return '';
+    return input
+        .replaceAll('&#8217;', "'")
+        .replaceAll('&#8216;', "'")
+        .replaceAll('&#8220;', '"')
+        .replaceAll('&#8221;', '"')
+        .replaceAll('&#8211;', '-')
+        .replaceAll('&#8212;', '—')
+        .replaceAll('&#039;', "'")
+        .replaceAll('&amp;', '&')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll(RegExp(r'&#\d+;'), '');
+  }
+
+  void _showArticleDetailModal(NewsArticle article) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(ctx).size.height * 0.82,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: article.categoryColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      article.category.tr,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    article.timeAgo.tr,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.black54),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _cleanText(article.title).tr,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B4332),
+                  height: 1.35,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Icon(Icons.source_rounded, size: 14, color: Color(0xFF2D6A4F)),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Source: ${_cleanText(article.source)}'.tr,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2D6A4F),
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 24),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    _cleanText(article.summary).tr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF334155),
+                      height: 1.6,
+                    ),
+                  ),
+                ),
+              ),
+              if (article.link.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      try {
+                        html.window.open(article.link, '_blank');
+                      } catch (_) {}
+                    },
+                    icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                    label: Text('Read Full Article on ${article.source}'.tr),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2D6A4F),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showTipDetailModal(FarmingTip tip) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(ctx).size.height * 0.65,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: tip.color.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(child: Text(tip.icon, style: const TextStyle(fontSize: 22))),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: tip.color.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      tip.tag.tr,
+                      style: TextStyle(color: tip.color, fontSize: 11, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.black54),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(
+                _cleanText(tip.title).tr,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B4332),
+                ),
+              ),
+              const Divider(height: 24),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    _cleanText(tip.description).tr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF334155),
+                      height: 1.6,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _loadLiveNews({bool forceRefresh = false}) async {
@@ -540,162 +767,42 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
   }
 
   Widget _buildFeaturedCard(NewsArticle article) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1B4332),
-              Color(0xFF2D6A4F),
+    return GestureDetector(
+      onTap: () => _showArticleDetailModal(article),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Container(
+          height: 200,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF1B4332),
+                Color(0xFF2D6A4F),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF2D6A4F).withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
             ],
           ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF2D6A4F).withValues(alpha: 0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -10,
-              bottom: -10,
-              child: Text(
-                article.imageEmoji,
-                style: TextStyle(fontSize: 100),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: article.categoryColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          article.category.tr,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        article.timeAgo.tr,
-                        style: const TextStyle(
-                          color: Color(0xFF95D5B2),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    article.title.tr,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      height: 1.3,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.source_outlined,
-                          color: Color(0xFF95D5B2), size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        article.source.tr,
-                        style: const TextStyle(
-                          color: Color(0xFF95D5B2),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Read More'.tr + ' →',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNewsCard(NewsArticle article) {
-    final isSaved = _savedArticles.contains(article.id);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: article.categoryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Center(
-                  child: Text(
-                    article.imageEmoji,
-                    style: TextStyle(fontSize: 26),
-                  ),
+              Positioned(
+                right: -10,
+                bottom: -10,
+                child: Text(
+                  article.imageEmoji,
+                  style: const TextStyle(fontSize: 100),
                 ),
               ),
-              const SizedBox(width: 14),
-              Expanded(
+              Padding(
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -703,16 +810,16 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                              horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: article.categoryColor.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(6),
+                            color: article.categoryColor,
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             article.category.tr,
-                            style: TextStyle(
-                              color: article.categoryColor,
-                              fontSize: 10,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -720,65 +827,54 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
                         const Spacer(),
                         Text(
                           article.timeAgo.tr,
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 11,
+                          style: const TextStyle(
+                            color: Color(0xFF95D5B2),
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const Spacer(),
                     Text(
-                      article.title.tr,
+                      _cleanText(article.title).tr,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A2E1A),
-                        height: 1.35,
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        height: 1.3,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      article.summary.tr,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade500,
-                        height: 1.4,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.newspaper_rounded,
-                            size: 12, color: Colors.grey.shade400),
+                        const Icon(Icons.source_outlined,
+                            color: Color(0xFF95D5B2), size: 14),
                         const SizedBox(width: 4),
                         Text(
-                          article.source.tr,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade400,
+                          _cleanText(article.source).tr,
+                          style: const TextStyle(
+                            color: Color(0xFF95D5B2),
+                            fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const Spacer(),
-                        GestureDetector(
-                          onTap: () => setState(() {
-                            isSaved
-                                ? _savedArticles.remove(article.id)
-                                : _savedArticles.add(article.id);
-                          }),
-                          child: Icon(
-                            isSaved
-                                ? Icons.bookmark_rounded
-                                : Icons.bookmark_border_rounded,
-                            size: 20,
-                            color: isSaved
-                                ? const Color(0xFF2D6A4F)
-                                : Colors.grey.shade400,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Read More'.tr + ' →',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
@@ -787,6 +883,143 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNewsCard(NewsArticle article) {
+    final isSaved = _savedArticles.contains(article.id);
+    return GestureDetector(
+      onTap: () => _showArticleDetailModal(article),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: article.categoryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Center(
+                    child: Text(
+                      article.imageEmoji,
+                      style: const TextStyle(fontSize: 26),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: article.categoryColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              article.category.tr,
+                              style: TextStyle(
+                                color: article.categoryColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            article.timeAgo.tr,
+                            style: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _cleanText(article.title).tr,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1A2E1A),
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _cleanText(article.summary).tr,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.newspaper_rounded,
+                              size: 12, color: Colors.grey.shade400),
+                          const SizedBox(width: 4),
+                          Text(
+                            _cleanText(article.source).tr,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () => setState(() {
+                              isSaved
+                                  ? _savedArticles.remove(article.id)
+                                  : _savedArticles.add(article.id);
+                            }),
+                            child: Icon(
+                              isSaved
+                                  ? Icons.bookmark_rounded
+                                  : Icons.bookmark_border_rounded,
+                              size: 20,
+                              color: isSaved
+                                  ? const Color(0xFF2D6A4F)
+                                  : Colors.grey.shade400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -952,80 +1185,83 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
   }
 
   Widget _buildTipCard(FarmingTip tip, int index) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: tip.color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Text(
-                    tip.icon,
-                    style: TextStyle(fontSize: 22),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: tip.color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        tip.tag.tr,
-                        style: TextStyle(
-                          color: tip.color,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      tip.title.tr,
-                      style: const TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1B4332),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      tip.description.tr,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                        height: 1.45,
-                      ),
-                    ),
-                  ],
-                ),
+    return GestureDetector(
+      onTap: () => _showTipDetailModal(tip),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: tip.color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      tip.icon,
+                      style: const TextStyle(fontSize: 22),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: tip.color.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          tip.tag.tr,
+                          style: TextStyle(
+                            color: tip.color,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _cleanText(tip.title).tr,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1B4332),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _cleanText(tip.description).tr,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          height: 1.45,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
