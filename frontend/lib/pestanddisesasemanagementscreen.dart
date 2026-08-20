@@ -177,9 +177,6 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
             _isLoadingAlerts = false;
           });
         }
-      } else {
-        _loadPestAlerts();
-      }
     } catch (e) {
       print("GPS load error in pests: $e");
       _loadPestAlerts();
@@ -469,7 +466,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                         ),
                       ),
                       Text(
-                        '${(user?.district != null && user!.district!.isNotEmpty) ? "${user.district}, ${user.state ?? ''}" : (user?.state ?? "Kurnool")} ' + 'district · As of today'.tr,
+                        '${(user?.district != null && (user?.district?.isNotEmpty ?? false)) ? "${user?.district}, ${user?.state ?? ''}" : (user?.state ?? "Kurnool")} ' + 'district · As of today'.tr,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.75),
                           fontSize: 11,
