@@ -478,44 +478,6 @@ class _MarketScreenState extends State<MarketScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
-
-          // Category chips
-          SizedBox(
-            height: 36,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _categories.length,
-              itemBuilder: (_, i) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedCategory = i;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: _selectedCategory == i ? const Color(0xFF2D6A4F) : Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: _selectedCategory == i ? const Color(0xFF2D6A4F) : const Color(0xFFE5E7EB),
-                    ),
-                  ),
-                  child: Text(
-                    _categories[i].tr,
-                    style: TextStyle(
-                      color: _selectedCategory == i ? Colors.white : AppTheme.textSecondary,
-                      fontWeight: _selectedCategory == i ? FontWeight.w600 : FontWeight.w400,
-                      fontSize: 12,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
