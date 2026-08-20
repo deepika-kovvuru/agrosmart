@@ -1268,51 +1268,295 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
     );
   }
 
+  void _openVideoModal(String title, String subtitle, String duration, String youtubeUrl, String category) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(ctx).size.height * 0.58,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE53935),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      category.tr,
+                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text('⏱️ $duration', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.black54),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title.tr,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B4332),
+                  height: 1.3,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                subtitle.tr,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF52796F), height: 1.4),
+              ),
+              const Divider(height: 24),
+              Container(
+                height: 140,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1B4332), Color(0xFF2D6A4F)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFE53935),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 36),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Watch Tutorial Video',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    try {
+                      html.window.open(youtubeUrl, '_blank');
+                    } catch (_) {}
+                  },
+                  icon: const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 22),
+                  label: Text('Watch Full Video on YouTube'.tr),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE53935),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildVideoSection() {
+    final List<Map<String, String>> videos = [
+      {
+        'title': 'Smart Drip Irrigation Installation & Maintenance',
+        'subtitle': 'Learn step-by-step drip emitter placement for sandy loam and clay soils.',
+        'duration': '8:45 min',
+        'url': 'https://www.youtube.com/results?search_query=drip+irrigation+installation+guide+farming',
+        'category': 'Irrigation',
+        'icon': '💧',
+        'color': '#2196F3'
+      },
+      {
+        'title': 'Organic Neem Oil (NSKE 5%) Spray Preparation',
+        'subtitle': 'Eco-friendly bio-pesticide formula for sucking pest control.',
+        'duration': '6:20 min',
+        'url': 'https://www.youtube.com/results?search_query=how+to+prepare+neem+oil+spray+for+crops',
+        'category': 'Organic Pest Control',
+        'icon': '🌿',
+        'color': '#2D6A4F'
+      },
+      {
+        'title': 'Integrated Disease Management for Paddy & Tomato',
+        'subtitle': 'Early disease identification, pruning, and bio-fungicide sprays.',
+        'duration': '11:10 min',
+        'url': 'https://www.youtube.com/results?search_query=paddy+tomato+crop+disease+management',
+        'category': 'Disease Control',
+        'icon': '🌾',
+        'color': '#E53935'
+      },
+      {
+        'title': 'Field Soil Sampling & NPK Fertilizer Balancing',
+        'subtitle': 'How to collect soil samples and calculate optimum NPK fertilizer doses.',
+        'duration': '7:15 min',
+        'url': 'https://www.youtube.com/results?search_query=soil+testing+and+npk+fertilizer+calculation+farming',
+        'category': 'Soil Health',
+        'icon': '🧪',
+        'color': '#7B1FA2'
+      },
+    ];
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Video Guides'.tr,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1B4332),
-            ),
+          Row(
+            children: [
+              Text(
+                'Video Guides'.tr,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1B4332),
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE53935).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.ondemand_video_rounded, size: 14, color: Color(0xFFE53935)),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${videos.length} ' + 'Tutorials'.tr,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFE53935),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
-          Container(
-            height: 160,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(16),
-              image: const DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&q=80&w=800'),
-                fit: BoxFit.cover,
+          ...videos.map((v) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(
-                  color: Colors.black45,
-                  shape: BoxShape.circle,
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(12),
+                onTap: () => _openVideoModal(
+                  v['title']!,
+                  v['subtitle']!,
+                  v['duration']!,
+                  v['url']!,
+                  v['category']!,
                 ),
-                child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 36),
+                leading: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1B4332), Color(0xFF2D6A4F)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Stack(
+                    children: [
+                      Center(child: Text(v['icon']!, style: const TextStyle(fontSize: 20))),
+                      Positioned(
+                        right: 2,
+                        bottom: 2,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(color: Color(0xFFE53935), shape: BoxShape.circle),
+                          child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                title: Text(
+                  v['title']!.tr,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1B4332),
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          v['category']!.tr,
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '⏱️ ${v['duration']}',
+                        style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                      ),
+                    ],
+                  ),
+                ),
+                trailing: const Icon(Icons.play_circle_fill_rounded, color: Color(0xFFE53935), size: 28),
               ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'How to implement smart drip irrigation in sandy loam soils'.tr,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1B4332),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );
