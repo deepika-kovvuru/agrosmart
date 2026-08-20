@@ -954,7 +954,7 @@ _AGRI_FEEDS = [
         'agri_only': False
     },
     {
-        'url': 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3',
+        'url': 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=2&Regid=3',
         'source': 'PIB – Agriculture Ministry',
         'emoji': '🏛️',
         'color': '#7B1FA2',
@@ -1074,6 +1074,10 @@ def _fetch_live_articles():
 
                 raw_summary = entry.get('summary', entry.get('description', ''))
                 summary = _clean_html(raw_summary)
+
+                # Skip non-English (Hindi / Devanagari) articles
+                if re.search(r'[\u0900-\u097F]', title) or re.search(r'[\u0900-\u097F]', summary):
+                    continue
 
                 # For feeds marked agri_only=True, skip if article doesn't match agri keywords
                 if feed_cfg.get('agri_only', False):

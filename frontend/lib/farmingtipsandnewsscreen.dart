@@ -596,10 +596,11 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
       return const Center(child: CircularProgressIndicator());
     }
 
+    final englishOnlyNews = _news.where((a) => !RegExp(r'[\u0900-\u097F]').hasMatch(a.title) && !RegExp(r'[\u0900-\u097F]').hasMatch(a.summary)).toList();
     final categoryName = _categories[_selectedCategory];
     List<NewsArticle> filtered = _selectedCategory == 0
-        ? _news
-        : _news
+        ? englishOnlyNews
+        : englishOnlyNews
         .where((a) => a.category.toLowerCase() == categoryName.toLowerCase())
         .toList();
 
