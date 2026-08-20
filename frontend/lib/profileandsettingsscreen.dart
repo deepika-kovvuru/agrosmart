@@ -197,8 +197,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             color: Color(0xFF95D5B2), size: 13),
                         const SizedBox(width: 3),
                         Text(
-                          user?.state ?? 'No State Provided',
-                          style: TextStyle(
+                          (user?.district != null && user!.district!.isNotEmpty)
+                              ? '${user.district}, ${user.state ?? ''}'
+                              : (user?.state ?? 'No Location Provided'.tr),
+                          style: const TextStyle(
                             color: Color(0xFF95D5B2),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -784,6 +786,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   late TextEditingController _nameCtrl;
   late TextEditingController _phoneCtrl;
   late TextEditingController _stateCtrl;
+  late TextEditingController _districtCtrl;
   bool _isLoading = false;
 
   @override
@@ -793,6 +796,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     _nameCtrl = TextEditingController(text: user?.name ?? '');
     _phoneCtrl = TextEditingController(text: user?.phone ?? '');
     _stateCtrl = TextEditingController(text: user?.state ?? '');
+    _districtCtrl = TextEditingController(text: user?.district ?? '');
   }
 
   @override
@@ -800,6 +804,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     _nameCtrl.dispose();
     _phoneCtrl.dispose();
     _stateCtrl.dispose();
+    _districtCtrl.dispose();
     super.dispose();
   }
 
@@ -813,6 +818,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
         name: _nameCtrl.text,
         phone: _phoneCtrl.text,
         state: _stateCtrl.text,
+        district: _districtCtrl.text,
       );
       if (mounted) {
         setState(() => _isLoading = false);
@@ -855,6 +861,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
             _buildInfoField('Full Name'.tr, _nameCtrl),
             _buildInfoField('Phone Number'.tr, _phoneCtrl),
             _buildInfoField('State'.tr, _stateCtrl),
+            _buildInfoField('District'.tr, _districtCtrl),
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Column(

@@ -91,6 +91,7 @@ class OfflineApiService {
     required String password,
     required String confirmPassword,
     String? state,
+    String? district,
   }) async {
     if (!ConnectivityService.instance.isOnlineNow) {
       return {'success': false, 'error': 'Internet connection required to create a new account.'};
@@ -107,6 +108,7 @@ class OfflineApiService {
               'password': password,
               'confirm_password': confirmPassword,
               'state': state,
+              'district': district,
             }),
           )
           .timeout(_timeout);

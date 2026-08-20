@@ -74,6 +74,7 @@ class User(db.Model):
     phone      = db.Column(db.String(50), nullable=False)
     password   = db.Column(db.String(255), nullable=False)
     state      = db.Column(db.String(100), nullable=True)
+    district   = db.Column(db.String(100), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class ActiveSession(db.Model):
@@ -232,7 +233,8 @@ def signup():
         new_user = User(
             name=data['name'], email=data['email'], phone=data['phone'],
             password=generate_password_hash(data['password']),
-            state=data.get('state', None)
+            state=data.get('state', None),
+            district=data.get('district', None)
         )
         db.session.add(new_user)
         db.session.commit()
@@ -255,6 +257,7 @@ def get_all_users():
                 'email': u.email,
                 'phone': u.phone,
                 'state': u.state,
+                'district': u.district,
                 'created_at': u.created_at.strftime('%Y-%m-%d %H:%M:%S') if u.created_at else None
             } for u in users]
         })
@@ -286,7 +289,7 @@ def login():
         db.session.commit()
         return jsonify({'message': 'Login successful', 'user': {
             'id': user.id, 'name': user.name, 'email': user.email,
-            'phone': user.phone, 'state': user.state
+            'phone': user.phone, 'state': user.state, 'district': user.district
         }}), 200
     except Exception as e:
         db.session.rollback()
@@ -302,7 +305,7 @@ def get_current_user():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         return jsonify({'id': user.id, 'name': user.name, 'email': user.email,
-                        'phone': user.phone, 'state': user.state}), 200
+                        'phone': user.phone, 'state': user.state, 'district': user.district}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -332,9 +335,10 @@ def update_profile(user_id):
         user = User.query.get(user_id)
         if not user:
             return jsonify({'error': 'User not found'}), 404
-        user.name  = data.get('name',  user.name)
-        user.phone = data.get('phone', user.phone)
-        user.state = data.get('state', user.state)
+        user.name     = data.get('name',     user.name)
+        user.phone    = data.get('phone',    user.phone)
+        user.state    = data.get('state',    user.state)
+        user.district = data.get('district', user.district)
         db.session.commit()
         return jsonify({'message': 'Profile updated'}), 200
     except Exception as e:

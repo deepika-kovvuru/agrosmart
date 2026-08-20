@@ -7,6 +7,7 @@ class ApiConfig {
   static const String _primaryUrl = 'http://127.0.0.1:5000';
 
   static const List<String> _fallbacks = [
+    'https://agrosmart-app-service.onrender.com',
     'http://localhost:5000',
     'http://127.0.0.1:5000',
     'http://172.20.10.2:5000',

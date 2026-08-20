@@ -24,6 +24,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   bool _agreed = true;
   bool _isLoading = false;
   String _selectedState = 'Andhra Pradesh';
+  String _selectedDistrict = 'Kurnool';
 
   late AnimationController _animCtrl;
   late Animation<Offset> _slideAnim;
@@ -31,24 +32,93 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   final List<String> _states = [
     'Andhra Pradesh',
-    'Punjab',
-    'Maharashtra',
+    'Telangana',
     'Tamil Nadu',
     'Karnataka',
-    'Uttar Pradesh',
+    'Maharashtra',
+    'Punjab',
+    'Haryana',
     'Rajasthan',
+    'Gujarat',
+    'Kerala',
+    'Uttar Pradesh',
+    'Madhya Pradesh',
     'Bihar',
+    'West Bengal',
+    'Odisha',
+    'Assam',
+    'Chhattisgarh',
+    'Jharkhand',
   ];
+
+  final Map<String, List<String>> _districtsByState = {
+    'Andhra Pradesh': [
+      'Kurnool', 'Guntur', 'Krishna', 'Anantapur', 'Visakhapatnam', 
+      'Chittoor', 'Kadapa', 'Nellore', 'Tirupati', 'Prakasam', 
+      'Vizianagaram', 'Srikakulam', 'East Godavari', 'West Godavari', 'Eluru', 'Nandyal'
+    ],
+    'Telangana': [
+      'Hyderabad', 'Warangal', 'Nalgonda', 'Nizamabad', 'Karimnagar', 
+      'Khammam', 'Mahabubnagar', 'Medak', 'Adilabad', 'Rangareddy', 'Suryapet'
+    ],
+    'Tamil Nadu': [
+      'Chennai', 'Coimbatore', 'Madurai', 'Salem', 'Thanjavur', 
+      'Kanchipuram', 'Tiruchirappalli', 'Erode', 'Vellore', 'Tirunelveli'
+    ],
+    'Karnataka': [
+      'Bengaluru Rural', 'Mandya', 'Belagavi', 'Dharwad', 'Mysuru', 
+      'Hassan', 'Tumakuru', 'Shivamogga', 'Kalaburagi', 'Ballari'
+    ],
+    'Maharashtra': [
+      'Pune', 'Nashik', 'Nagpur', 'Ahmednagar', 'Solapur', 
+      'Kolhapur', 'Satara', 'Aurangabad', 'Amravati', 'Latur'
+    ],
+    'Punjab': [
+      'Ludhiana', 'Amritsar', 'Bhatinda', 'Jalandhar', 'Patiala', 'Sangrur'
+    ],
+    'Haryana': [
+      'Karnal', 'Hisar', 'Gurugram', 'Ambala', 'Rohtak', 'Sonipat'
+    ],
+    'Rajasthan': [
+      'Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer', 'Bikaner', 'Ganganagar'
+    ],
+    'Gujarat': [
+      'Rajkot', 'Anand', 'Surat', 'Ahmedabad', 'Vadodara', 'Junagadh', 'Mehsana'
+    ],
+    'Kerala': [
+      'Palakkad', 'Wayanad', 'Idukki', 'Kottayam', 'Thrissur', 'Alappuzha'
+    ],
+    'Uttar Pradesh': [
+      'Varanasi', 'Lucknow', 'Kanpur', 'Agra', 'Prayagraj', 'Gorakhpur', 'Meerut'
+    ],
+    'Madhya Pradesh': [
+      'Indore', 'Bhopal', 'Ujjain', 'Gwalior', 'Jabalpur', 'Hoshangabad'
+    ],
+    'Bihar': [
+      'Patna', 'Gaya', 'Muzaffarpur', 'Bhagalpur', 'Darbhanga', 'Rohtas'
+    ],
+    'West Bengal': [
+      'Kolkata', 'Burdwan', 'Hooghly', 'Nadia', 'Murshidabad', 'North 24 Parganas'
+    ],
+    'Odisha': [
+      'Bhubaneswar', 'Cuttack', 'Ganjam', 'Balasore', 'Sambalpur', 'Bargarh'
+    ],
+  };
+
+  List<String> _getDistrictsForState(String state) {
+    return _districtsByState[state] ?? ['Default District'];
+  }
 
   @override
   void initState() {
     super.initState();
+    _selectedDistrict = _getDistrictsForState(_selectedState).first;
     _animCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
     _slideAnim = Tween<Offset>(
-      begin: const Offset(0, 0.3),
+      begin: const Offset(0, 0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut));
     _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
@@ -68,13 +138,6 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     super.dispose();
   }
 
-  void _register() async {
-    final isValid = _formKey.currentState?.validate() ?? false;
-    if (!isValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please fill in all required fields (Full Name, Phone, Email, Password)'.tr),
-          backgroundColor: AppTheme.error,
         ),
       );
       return;
@@ -238,7 +301,11 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                         const SizedBox(height: 16),
                         _buildLabel('State'),
                         const SizedBox(height: 8),
-                        _buildDropdown(),
+                        _buildStateDropdown(),
+                        const SizedBox(height: 16),
+                        _buildLabel('District'),
+                        const SizedBox(height: 8),
+                        _buildDistrictDropdown(),
                         const SizedBox(height: 16),
                         _buildLabel('Password'),
                         const SizedBox(height: 8),
@@ -368,7 +435,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     );
   }
 
-  Widget _buildDropdown() {
+  Widget _buildStateDropdown() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       decoration: BoxDecoration(
@@ -378,10 +445,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: _selectedState,
+          value: _states.contains(_selectedState) ? _selectedState : _states.first,
           isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down_rounded,
-              color: AppTheme.primary),
+          icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppTheme.primary),
           style: TextStyle(
             color: AppTheme.textPrimary,
             fontFamily: 'Poppins',
@@ -390,7 +456,49 @@ class _RegistrationScreenState extends State<RegistrationScreen>
           items: _states
               .map((s) => DropdownMenuItem(value: s, child: Text(s.tr)))
               .toList(),
-          onChanged: (v) => setState(() => _selectedState = v!),
+          onChanged: (v) {
+            if (v != null) {
+              setState(() {
+                _selectedState = v;
+                final dists = _getDistrictsForState(v);
+                _selectedDistrict = dists.first;
+              });
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDistrictDropdown() {
+    final districts = _getDistrictsForState(_selectedState);
+    final currentDist = districts.contains(_selectedDistrict) ? _selectedDistrict : districts.first;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: currentDist,
+          isExpanded: true,
+          icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppTheme.primary),
+          style: TextStyle(
+            color: AppTheme.textPrimary,
+            fontFamily: 'Poppins',
+            fontSize: 14,
+          ),
+          items: districts
+              .map((d) => DropdownMenuItem(value: d, child: Text(d.tr)))
+              .toList(),
+          onChanged: (v) {
+            if (v != null) {
+              setState(() => _selectedDistrict = v);
+            }
+          },
         ),
       ),
     );

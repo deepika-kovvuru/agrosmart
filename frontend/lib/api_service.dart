@@ -51,6 +51,7 @@ class ApiService {
     required String password,
     required String confirmPassword,
     String? state,
+    String? district,
   }) async {
     try {
       final response = await http.post(
@@ -63,6 +64,7 @@ class ApiService {
           'password': password,
           'confirm_password': confirmPassword,
           'state': state,
+          'district': district,
         }),
       );
 
@@ -125,6 +127,7 @@ class ApiService {
     required String name,
     required String phone,
     String? state,
+    String? district,
   }) async {
     try {
       final response = await http.put(
@@ -134,6 +137,7 @@ class ApiService {
           'name': name,
           'phone': phone,
           'state': state,
+          'district': district,
         }),
       );
 
@@ -147,6 +151,7 @@ class ApiService {
             phone: phone,
             email: UserSession.currentUser!.email,
             state: state,
+            district: district,
           );
         }
         return {'success': true, 'message': decoded['message'] ?? 'Profile updated'};
