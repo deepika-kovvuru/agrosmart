@@ -1009,7 +1009,9 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
                         color: Colors.white, size: 14),
                     const SizedBox(width: 4),
                     Text(
-                      (user?.state ?? 'Andhra Pradesh').tr,
+                      ((user?.district != null && user!.district!.isNotEmpty)
+                              ? '${user.district}, ${user.state ?? ''}'
+                              : (user?.state ?? 'Andhra Pradesh')).tr,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,

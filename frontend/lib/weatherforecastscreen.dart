@@ -31,20 +31,30 @@ class _WeatherScreenState extends State<WeatherScreen> {
   @override
   void initState() {
     super.initState();
+    final u = UserSession.currentUser;
+    if (u != null) {
+      if (u.district != null && u.district!.isNotEmpty && u.state != null && u.state!.isNotEmpty) {
+        _locationName = "${u.district}, ${u.state}";
+      } else if (u.district != null && u.district!.isNotEmpty) {
+        _locationName = u.district!;
+      } else if (u.state != null && u.state!.isNotEmpty) {
+        _locationName = u.state!;
+      }
+    }
     _loadLiveGPSLocation();
   }
 
   Future<void> _loadLiveWeatherData() async {
     setState(() => _isRefreshing = true);
     try {
-      final data = await ApiService.getCombinedAlerts(latitude: 15.8281, longitude: 78.0373);
+      final data = await ApiService.getCombinedAlerts(locationName: _locationName, latitude: 15.8281, longitude: 78.0373);
       if (data != null && data['weather'] != null) {
         final w = data['weather'];
         final loc = data['location'];
         if (mounted) {
           setState(() {
-            if (loc != null) {
-              _locationName = loc['display_name'] ?? "${loc['district']}, ${loc['state']}";
+            if (loc != null && loc['display_name'] != null && !loc['display_name'].toString().contains('Local Farm Area')) {
+              _locationName = loc['display_name'];
             }
             _temp = "${w['temperature']}°C";
             _condition = w['condition'] ?? "Partly Cloudy";

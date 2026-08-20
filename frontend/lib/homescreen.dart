@@ -49,8 +49,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    final u = UserSession.currentUser;
+    if (u != null) {
+      if (u.district != null && u.district!.isNotEmpty && u.state != null && u.state!.isNotEmpty) {
+        _homeLocationName = "${u.district}, ${u.state}";
+      } else if (u.district != null && u.district!.isNotEmpty) {
+        _homeLocationName = u.district!;
+      } else if (u.state != null && u.state!.isNotEmpty) {
+        _homeLocationName = u.state!;
+      }
+    }
     _loadData();
-    _loadLiveHomeWeather();
+    _loadLiveHomeWeather(locationName: _homeLocationName);
   }
 
   Future<void> _loadLiveHomeWeather({String? locationName}) async {
@@ -59,23 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
       double lat = 15.8281;
       double lon = 78.0373;
 
-      if (locationName == null) {
-        try {
-          if (html.window.navigator.geolocation != null) {
-            final pos = await html.window.navigator.geolocation.getCurrentPosition(
-              enableHighAccuracy: true,
-              timeout: const Duration(seconds: 8),
-            );
-            lat = pos.coords?.latitude?.toDouble() ?? 15.8281;
-            lon = pos.coords?.longitude?.toDouble() ?? 78.0373;
-          }
-        } catch (geoErr) {
-          print("GPS auto-detect fallback: $geoErr");
-        }
-      }
+      final reqLoc = locationName ?? _homeLocationName;
 
       final data = await ApiService.getCombinedAlerts(
-        locationName: locationName,
+        locationName: reqLoc,
         latitude: lat,
         longitude: lon,
       );
@@ -84,10 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
         final loc = data['location'];
         if (mounted) {
           setState(() {
-            if (loc != null && loc['display_name'] != null) {
-              _homeLocationName = loc['display_name'];
-            } else if (locationName != null) {
+            if (locationName != null && locationName.isNotEmpty) {
               _homeLocationName = locationName;
+            } else if (loc != null && loc['display_name'] != null && !loc['display_name'].toString().contains('Local Farm Area')) {
+              _homeLocationName = loc['display_name'];
             }
             _homeTemp = "${w['temperature']}°C";
             _homeCondition = w['condition'] ?? "Partly Cloudy";

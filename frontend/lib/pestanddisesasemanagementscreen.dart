@@ -119,6 +119,16 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   }
 
   void _loadData() {
+    final u = UserSession.currentUser;
+    if (u != null) {
+      if (u.district != null && u.district!.isNotEmpty && u.state != null && u.state!.isNotEmpty) {
+        _currentLocationName = "${u.district}, ${u.state}";
+      } else if (u.district != null && u.district!.isNotEmpty) {
+        _currentLocationName = u.district!;
+      } else if (u.state != null && u.state!.isNotEmpty) {
+        _currentLocationName = u.state!;
+      }
+    }
     _loadLiveGPSLocationForPests();
     _loadTreatments();
   }
@@ -126,21 +136,16 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
   Future<void> _loadLiveGPSLocationForPests() async {
     setState(() => _isLoadingAlerts = true);
     try {
-      if (html.window.navigator.geolocation != null) {
-        final pos = await html.window.navigator.geolocation.getCurrentPosition(
-          enableHighAccuracy: true,
-          timeout: const Duration(seconds: 10),
-        );
-        final double lat = pos.coords?.latitude?.toDouble() ?? 15.8281;
-        final double lon = pos.coords?.longitude?.toDouble() ?? 78.0373;
-        final resData = await ApiService.getCombinedAlerts(latitude: lat, longitude: lon);
-        final pestList = resData['pest_alerts'] ?? [];
-        final loc = resData['location'];
-        if (mounted) {
-          setState(() {
-            if (loc != null && loc['display_name'] != null) {
-              _currentLocationName = loc['display_name'];
-            }
+      final double lat = 15.8281;
+      final double lon = 78.0373;
+      final resData = await ApiService.getCombinedAlerts(locationName: _currentLocationName, latitude: lat, longitude: lon);
+      final pestList = resData['pest_alerts'] ?? [];
+      final loc = resData['location'];
+      if (mounted) {
+        setState(() {
+          if (loc != null && loc['display_name'] != null && !loc['display_name'].toString().contains('Local Farm Area')) {
+            _currentLocationName = loc['display_name'];
+          }
             if (pestList is List && pestList.isNotEmpty) {
               _activeIssues = pestList.map((a) {
                 String level = a['risk_level']?.toString() ?? 'HIGH';
@@ -464,7 +469,7 @@ class _PestDiseaseScreenState extends State<PestDiseaseScreen>
                         ),
                       ),
                       Text(
-                        '${user?.state ?? "Kurnool"} ' + 'district · As of today'.tr,
+                        '${(user?.district != null && user!.district!.isNotEmpty) ? "${user.district}, ${user.state ?? ''}" : (user?.state ?? "Kurnool")} ' + 'district · As of today'.tr,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.75),
                           fontSize: 11,
