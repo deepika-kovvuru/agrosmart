@@ -117,34 +117,69 @@ class _WeatherScreenState extends State<WeatherScreen> {
       'Visakhapatnam, Andhra Pradesh',
       'Hyderabad, Telangana',
       'Warangal, Telangana',
-      'Nalgonda, Telangana',
       'Bengaluru, Karnataka',
       'Chennai, Tamil Nadu',
+      'Pune, Maharashtra',
+      'Ludhiana, Punjab',
+    ];
+
+    final List<String> indianStates = [
+      'Andhra Pradesh',
+      'Telangana',
+      'Tamil Nadu',
+      'Karnataka',
+      'Maharashtra',
+      'Punjab',
+      'Haryana',
+      'Rajasthan',
+      'Gujarat',
+      'Kerala',
+      'Uttar Pradesh',
+      'Madhya Pradesh',
+      'Bihar',
+      'West Bengal',
+      'Odisha',
+      'Assam',
+      'Jharkhand',
+      'Chhattisgarh',
+      'Himachal Pradesh',
+      'Jammu & Kashmir',
     ];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: const Color(0xFF0F172A),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return Padding(
+        return Container(
+          height: MediaQuery.of(ctx).size.height * 0.82,
           padding: EdgeInsets.fromLTRB(
               20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white30,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    '📍 Select Your Location',
+                    '📍 Change Location & Select State',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontFamily: 'Poppins',
                     ),
@@ -156,40 +191,66 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              TextField(
-                controller: searchController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Type your village, town, or district...',
-                  hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
-                  prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      decoration: InputDecoration(
+                        hintText: 'Type state, district, or village name...',
+                        hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
+                        prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF10B981)),
+                        filled: true,
+                        fillColor: const Color(0xFF1E293B),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(color: Color(0xFF334155)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(color: Color(0xFF10B981), width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      ),
+                      onSubmitted: (val) {
+                        if (val.trim().isNotEmpty) {
+                          Navigator.pop(ctx);
+                          _loadLiveWeatherDataForLocation(val.trim());
+                        }
+                      },
+                    ),
                   ),
-                ),
-                onSubmitted: (val) {
-                  if (val.trim().isNotEmpty) {
-                    Navigator.pop(ctx);
-                    _loadLiveWeatherDataForLocation(val.trim());
-                  }
-                },
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    onPressed: () {
+                      if (searchController.text.trim().isNotEmpty) {
+                        Navigator.pop(ctx);
+                        _loadLiveWeatherDataForLocation(searchController.text.trim());
+                      }
+                    },
+                    child: const Text('Search', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2D6A4F),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
-                  icon: const Icon(Icons.my_location_rounded, color: Colors.white),
+                  icon: const Icon(Icons.my_location_rounded, color: Colors.white, size: 20),
                   label: const Text(
-                    '📍 Use My Exact GPS Location',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    '📍 Detect My GPS Location Automatically',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                   onPressed: () {
                     Navigator.pop(ctx);
@@ -199,23 +260,88 @@ class _WeatherScreenState extends State<WeatherScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Popular Farming Districts',
-                style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                '🏛️ Select Indian State',
+                style: TextStyle(color: Color(0xFF10B981), fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 38,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: indianStates.length,
+                  itemBuilder: (_, i) {
+                    final st = indianStates[i];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _loadLiveWeatherDataForLocation(st);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFF10B981)),
+                        ),
+                        child: Text(
+                          st,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                '📍 Popular Farming Districts (District, State)',
+                style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
               ),
               const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: popularCities.map((city) {
-                  return ActionChip(
-                    backgroundColor: Colors.white.withOpacity(0.14),
-                    label: Text(city.split(',')[0], style: const TextStyle(color: Colors.white, fontSize: 12)),
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      _loadLiveWeatherDataForLocation(city);
-                    },
-                  );
-                }).toList(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 10,
+                    children: popularCities.map((city) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _loadLiveWeatherDataForLocation(city);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2D6A4F),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            city,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
             ],
           ),
