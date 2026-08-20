@@ -266,44 +266,64 @@ class _HomeScreenState extends State<HomeScreen> {
   void _updateLocationSpecificAlertsAndPrices() {
     String loc = _homeLocationName;
     String districtName = loc.split(',')[0].trim();
+    if (districtName.isEmpty) districtName = 'Your Location';
+    String stateName = loc.contains(',') ? loc.split(',').last.trim() : loc.trim();
     String l = loc.toLowerCase();
 
     List<_AlertItem> locAlerts = [];
     if (l.contains('tamil nadu') || l.contains('kanchipuram') || l.contains('thanjavur') || l.contains('chennai') || l.contains('coimbatore')) {
       locAlerts = [
-        _AlertItem('🐛', 'Yellow Stem Borer alert in $districtName for Paddy crop. Severity: High', 'error', 'Just now'),
+        _AlertItem('🐛', 'Yellow Stem Borer alert in $districtName ($stateName) for Paddy crop. Severity: High', 'error', 'Just now'),
         _AlertItem('🍄', 'Rice Blast fungal advisory in $districtName region. High moisture level.', 'warning', '2h ago'),
         _AlertItem('🐛', 'Cotton Aphids & Thrips alert in $districtName farming zone.', 'warning', '4h ago'),
       ];
     } else if (l.contains('telangana') || l.contains('hyderabad') || l.contains('warangal') || l.contains('nalgonda')) {
       locAlerts = [
-        _AlertItem('🐛', 'Pink Bollworm critical alert in $districtName for Cotton crop.', 'error', 'Just now'),
+        _AlertItem('🐛', 'Pink Bollworm critical alert in $districtName ($stateName) for Cotton crop.', 'error', 'Just now'),
         _AlertItem('🌽', 'Fall Armyworm (FAW) alert in $districtName for Maize crop.', 'error', '3h ago'),
         _AlertItem('🦗', 'Brown Planthopper (BPH) alert in $districtName for Paddy.', 'warning', '5h ago'),
       ];
-    } else if (l.contains('karnataka') || l.contains('bengaluru') || l.contains('mandya') || l.contains('belagavi')) {
+    } else if (l.contains('karnataka') || l.contains('bengaluru') || l.contains('mandya') || l.contains('belagavi') || l.contains('shimoga')) {
       locAlerts = [
-        _AlertItem('🐛', 'Sugarcane Woolly Aphid alert in $districtName district.', 'warning', 'Just now'),
+        _AlertItem('🐛', 'Sugarcane Woolly Aphid alert in $districtName ($stateName) district.', 'warning', 'Just now'),
         _AlertItem('🍅', 'Tomato Pinworm & Whitefly risk in $districtName vegetable area.', 'error', '1h ago'),
         _AlertItem('🦗', 'Paddy Brown Planthopper advisory in $districtName mandi zone.', 'warning', '4h ago'),
       ];
     } else if (l.contains('maharashtra') || l.contains('nashik') || l.contains('pune') || l.contains('nagpur')) {
       locAlerts = [
-        _AlertItem('🍇', 'Grape Downy Mildew advisory in $districtName vineyard region.', 'error', 'Just now'),
+        _AlertItem('🍇', 'Grape Downy Mildew advisory in $districtName ($stateName) vineyard region.', 'error', 'Just now'),
         _AlertItem('🧅', 'Onion Purple Blotch risk in $districtName district.', 'warning', '3h ago'),
         _AlertItem('🍊', 'Citrus Blackfly alert in $districtName orchards.', 'warning', '5h ago'),
       ];
     } else if (l.contains('punjab') || l.contains('haryana') || l.contains('ludhiana') || l.contains('karnal') || l.contains('hisar')) {
       locAlerts = [
-        _AlertItem('🌾', 'Wheat Yellow Rust disease warning in $districtName region.', 'error', 'Just now'),
+        _AlertItem('🌾', 'Wheat Yellow Rust disease warning in $districtName ($stateName) region.', 'error', 'Just now'),
         _AlertItem('🐛', 'Paddy Stem Borer alert in $districtName mandi zone.', 'warning', '2h ago'),
         _AlertItem('☁️', 'Cotton Whitefly advisory in $districtName district.', 'warning', '4h ago'),
       ];
+    } else if (l.contains('rajasthan') || l.contains('jaipur') || l.contains('jodhpur') || l.contains('kota')) {
+      locAlerts = [
+        _AlertItem('🦗', 'Locust & Whitefly alert in $districtName ($stateName) mustard fields.', 'error', 'Just now'),
+        _AlertItem('🌱', 'Bajra Powdery Mildew risk in $districtName zone.', 'warning', '2h ago'),
+        _AlertItem('💧', 'Moisture stress & Heat wave warning for $districtName.', 'warning', '4h ago'),
+      ];
+    } else if (l.contains('bihar') || l.contains('patna') || l.contains('muzaffarpur') || l.contains('gaya')) {
+      locAlerts = [
+        _AlertItem('🌾', 'False Smut alert in $districtName ($stateName) for Paddy crop.', 'error', 'Just now'),
+        _AlertItem('🌽', 'Maize Stem Borer advisory in $districtName region.', 'warning', '2h ago'),
+        _AlertItem('🥔', 'Late Blight warning in $districtName Potato farming belts.', 'error', '5h ago'),
+      ];
+    } else if (l.contains('west bengal') || l.contains('kolkata') || l.contains('hooghly') || l.contains('bardhaman')) {
+      locAlerts = [
+        _AlertItem('🌾', 'Paddy Sheath Blight alert in $districtName ($stateName) district.', 'error', 'Just now'),
+        _AlertItem('🥔', 'Potato Late Blight alert in $districtName region.', 'warning', '3h ago'),
+        _AlertItem('🦟', 'Jute Yellow Mite advisory in $districtName farming zone.', 'warning', '5h ago'),
+      ];
     } else {
       locAlerts = [
-        _AlertItem('🐛', 'Whitefly & Thrips alert in $districtName for Cotton crop. Severity: Medium', 'warning', 'Just now'),
-        _AlertItem('🐛', 'Fall Armyworm alert in $districtName for Maize crop. Severity: High', 'error', '2h ago'),
-        _AlertItem('🦗', 'Brown Planthopper alert in $districtName for Paddy crop. Severity: High', 'error', '4h ago'),
+        _AlertItem('🐛', 'Whitefly & Thrips alert in $districtName ($stateName) for Cotton crop. Severity: Medium', 'warning', 'Just now'),
+        _AlertItem('🐛', 'Fall Armyworm alert in $districtName ($stateName) for Maize crop. Severity: High', 'error', '2h ago'),
+        _AlertItem('🦗', 'Brown Planthopper alert in $districtName ($stateName) for Paddy crop. Severity: High', 'error', '4h ago'),
       ];
     }
 
@@ -478,28 +498,63 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Recent Alerts'.tr,
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.textPrimary,
-                      fontFamily: 'Poppins',
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Recent Alerts'.tr,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() => _selectedIndex = 1); // Go to advisory/pest
+                        },
+                        child: Text(
+                          'View all'.tr,
+                          style: TextStyle(
+                            color: AppTheme.primary,
+                            fontSize: 13,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() => _selectedIndex = 1); // Go to advisory/pest
-                    },
-                    child: Text(
-                      'View all'.tr,
-                      style: TextStyle(
-                        color: AppTheme.primary,
-                        fontSize: 13,
-                        fontFamily: 'Poppins',
+                  const SizedBox(height: 4),
+                  GestureDetector(
+                    onTap: () => _showHomeLocationDialog(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppTheme.primary.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.location_on_rounded, size: 14, color: AppTheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Threat alerts tuned to: '.tr + _homeLocationName.tr,
+                            style: const TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primary,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.edit_location_alt_rounded, size: 14, color: AppTheme.primary),
+                        ],
                       ),
                     ),
                   ),
