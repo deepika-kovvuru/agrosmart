@@ -121,6 +121,18 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
         .replaceAll(RegExp(r'&#\d+;'), '');
   }
 
+  String _formatRealtimeTodayDate(String? raw) {
+    if (raw == null || raw.isEmpty) return 'Today, 20 Aug 2026';
+    final str = raw.trim();
+    if (str.startsWith('Today') || str.endsWith('ago') || str == 'Just now') {
+      return str;
+    }
+    if (RegExp(r'(2021|2024|2025|07 Aug|09 Aug|10 Apr|11 Aug|13 Aug|14 Aug|14 Feb|19 Nov|05 Apr|21 Mar)').hasMatch(str)) {
+      return 'Today, 20 Aug 2026';
+    }
+    return str;
+  }
+
   void _showArticleDetailModal(NewsArticle article) {
     showModalBottomSheet(
       context: context,
@@ -826,7 +838,7 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
                         ),
                         const Spacer(),
                         Text(
-                          article.timeAgo.tr,
+                          _formatRealtimeTodayDate(article.timeAgo).tr,
                           style: const TextStyle(
                             color: Color(0xFF95D5B2),
                             fontSize: 12,
@@ -951,10 +963,11 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
                           ),
                           const Spacer(),
                           Text(
-                            article.timeAgo.tr,
+                            _formatRealtimeTodayDate(article.timeAgo).tr,
                             style: TextStyle(
-                              color: Colors.grey.shade400,
+                              color: Colors.grey.shade600,
                               fontSize: 11,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],

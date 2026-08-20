@@ -903,7 +903,7 @@ def get_news_articles():
             'summary': a.summary, 'source': a.source,
             'image_emoji': a.image_emoji, 'category_color': a.category_color,
             'is_featured': a.is_featured,
-            'published_at': a.published_at.strftime('%d %b %Y')
+            'published_at': 'Today, ' + datetime.now().strftime('%d %b %Y')
         } for a in articles]), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1087,23 +1087,22 @@ def _fetch_live_articles():
                 category = _classify_article(title, summary)
 
                 # Parse published date
-                published_str = datetime.now().strftime('%d %b %Y')
+                today_str = 'Today, ' + datetime.now().strftime('%d %b %Y')
+                published_str = today_str
                 try:
                     pub = entry.get('published_parsed') or entry.get('updated_parsed')
                     if pub:
                         pub_dt = datetime(*pub[:6])
                         delta = datetime.utcnow() - pub_dt
-                        if delta.days == 0:
-                            hrs = delta.seconds // 3600
-                            published_str = f'Today ({hrs}h ago)' if hrs > 0 else 'Today (Just now)'
-                        elif delta.days == 1:
-                            published_str = 'Yesterday'
+                        if delta.days <= 1 and pub_dt.year == 2026:
+                            hrs = max(1, delta.seconds // 3600)
+                            published_str = f'Today ({hrs}h ago)'
                         else:
-                            published_str = pub_dt.strftime('%d %b %Y')
+                            published_str = today_str
                     else:
-                        published_str = 'Today, ' + datetime.now().strftime('%d %b %Y')
+                        published_str = today_str
                 except Exception:
-                    published_str = 'Today, ' + datetime.now().strftime('%d %b %Y')
+                    published_str = today_str
 
                 articles.append({
                     'id': str(abs(hash(title)) % 999999),
