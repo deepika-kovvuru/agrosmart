@@ -1087,7 +1087,7 @@ def _fetch_live_articles():
                 category = _classify_article(title, summary)
 
                 # Parse published date
-                published_str = 'Today'
+                published_str = datetime.now().strftime('%d %b %Y')
                 try:
                     pub = entry.get('published_parsed') or entry.get('updated_parsed')
                     if pub:
@@ -1095,13 +1095,15 @@ def _fetch_live_articles():
                         delta = datetime.utcnow() - pub_dt
                         if delta.days == 0:
                             hrs = delta.seconds // 3600
-                            published_str = f'{hrs}h ago' if hrs > 0 else 'Just now'
+                            published_str = f'Today ({hrs}h ago)' if hrs > 0 else 'Today (Just now)'
                         elif delta.days == 1:
-                            published_str = '1 day ago'
+                            published_str = 'Yesterday'
                         else:
                             published_str = pub_dt.strftime('%d %b %Y')
+                    else:
+                        published_str = 'Today, ' + datetime.now().strftime('%d %b %Y')
                 except Exception:
-                    pass
+                    published_str = 'Today, ' + datetime.now().strftime('%d %b %Y')
 
                 articles.append({
                     'id': str(abs(hash(title)) % 999999),
@@ -1123,13 +1125,14 @@ def _fetch_live_articles():
             continue  # skip unreachable feeds silently
 
     # If live fetch got very few articles, supplement with curated static articles
+    today_str = 'Today, ' + datetime.now().strftime('%d %b %Y')
     if len(articles) < 6:
         static_fill = [
-            {'id': 'sf1', 'category': 'Market Update', 'title': 'Kharif 2026 MSP declared for Paddy, Maize and Pulses', 'summary': 'The Cabinet Committee on Economic Affairs has announced the Minimum Support Prices for major Kharif crops for the 2026-27 marketing season with significant hike.', 'source': 'Agrosmart Market Daily', 'image_emoji': '📈', 'category_color': '#E07B39', 'is_featured': len(articles) == 0, 'published_at': 'Today', 'link': '', 'live': False},
-            {'id': 'sf2', 'category': 'Climate', 'title': 'IMD issues Orange Alert: Moderate to heavy rains expected across Kharif belt', 'summary': 'India Meteorological Department forecasts 104% of long-period average rainfall for remainder of August across major crop-growing states.', 'source': 'Agrosmart Weather', 'image_emoji': '🌧️', 'category_color': '#00897B', 'is_featured': False, 'published_at': 'Today', 'link': '', 'live': False},
-            {'id': 'sf3', 'category': 'Pest Alert', 'title': 'Fall Armyworm advisory issued for Kharif Maize in Maharashtra and Karnataka', 'summary': 'State agriculture departments have issued high-alert advisories after confirmed Fall Armyworm (Spodoptera frugiperda) infestations across 3 districts.', 'source': 'Crop Protection News', 'image_emoji': '🐛', 'category_color': '#E53935', 'is_featured': False, 'published_at': 'Today', 'link': '', 'live': False},
-            {'id': 'sf4', 'category': 'Policy', 'title': 'PM-KISAN 17th instalment disbursed: ₹2,000 credited to 9 crore farmer accounts', 'summary': 'Prime Minister has directly transferred the 17th instalment of PM-KISAN benefit to over 9 crore eligible farmers through DBT mode.', 'source': 'PIB Agriculture', 'image_emoji': '🏛️', 'category_color': '#7B1FA2', 'is_featured': False, 'published_at': 'Today', 'link': '', 'live': False},
-            {'id': 'sf5', 'category': 'Technology', 'title': 'Drone-based nano-urea spraying saves 30% fertilizer cost for paddy farmers', 'summary': 'IFFCO and partner state governments have expanded the drone-spraying nano-urea pilot programme to 12 new districts, showing 28-32% input cost savings.', 'source': 'Agri Tech Review', 'image_emoji': '💡', 'category_color': '#2196F3', 'is_featured': False, 'published_at': 'Today', 'link': '', 'live': False},
+            {'id': 'sf1', 'category': 'Market Update', 'title': 'Kharif 2026 MSP declared for Paddy, Maize and Pulses', 'summary': 'The Cabinet Committee on Economic Affairs has announced the Minimum Support Prices for major Kharif crops for the 2026-27 marketing season with significant hike.', 'source': 'Agrosmart Market Daily', 'image_emoji': '📈', 'category_color': '#E07B39', 'is_featured': len(articles) == 0, 'published_at': today_str, 'link': '', 'live': False},
+            {'id': 'sf2', 'category': 'Climate', 'title': 'IMD issues Orange Alert: Moderate to heavy rains expected across Kharif belt', 'summary': 'India Meteorological Department forecasts 104% of long-period average rainfall for remainder of August across major crop-growing states.', 'source': 'Agrosmart Weather', 'image_emoji': '🌧️', 'category_color': '#00897B', 'is_featured': False, 'published_at': today_str, 'link': '', 'live': False},
+            {'id': 'sf3', 'category': 'Pest Alert', 'title': 'Fall Armyworm advisory issued for Kharif Maize in Maharashtra and Karnataka', 'summary': 'State agriculture departments have issued high-alert advisories after confirmed Fall Armyworm (Spodoptera frugiperda) infestations across 3 districts.', 'source': 'Crop Protection News', 'image_emoji': '🐛', 'category_color': '#E53935', 'is_featured': False, 'published_at': today_str, 'link': '', 'live': False},
+            {'id': 'sf4', 'category': 'Policy', 'title': 'PM-KISAN 17th instalment disbursed: ₹2,000 credited to 9 crore farmer accounts', 'summary': 'Prime Minister has directly transferred the 17th instalment of PM-KISAN benefit to over 9 crore eligible farmers through DBT mode.', 'source': 'PIB Agriculture', 'image_emoji': '🏛️', 'category_color': '#7B1FA2', 'is_featured': False, 'published_at': today_str, 'link': '', 'live': False},
+            {'id': 'sf5', 'category': 'Technology', 'title': 'Drone-based nano-urea spraying saves 30% fertilizer cost for paddy farmers', 'summary': 'IFFCO and partner state governments have expanded the drone-spraying nano-urea pilot programme to 12 new districts, showing 28-32% input cost savings.', 'source': 'Agri Tech Review', 'image_emoji': '💡', 'category_color': '#2196F3', 'is_featured': False, 'published_at': today_str, 'link': '', 'live': False},
         ]
         existing_cats = {a['category'] for a in articles}
         for s in static_fill:

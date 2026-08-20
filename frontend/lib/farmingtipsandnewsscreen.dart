@@ -469,23 +469,23 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
   // ── SLIVER APP BAR ──
   Widget _buildSliverAppBar(bool innerBoxIsScrolled) {
     return SliverAppBar(
-      expandedHeight: 130,
+      expandedHeight: 160,
       floating: false,
       pinned: true,
       elevation: 0,
       backgroundColor: const Color(0xFF1B4332),
       surfaceTintColor: Colors.transparent,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.search_rounded, color: Colors.white),
+          icon: const Icon(Icons.search_rounded, color: Colors.white),
           onPressed: () {},
         ),
         IconButton(
-          icon: Icon(Icons.bookmark_border_rounded, color: Colors.white),
+          icon: const Icon(Icons.bookmark_border_rounded, color: Colors.white),
           onPressed: () {},
         ),
         const SizedBox(width: 4),
@@ -513,7 +513,7 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+            padding: const EdgeInsets.fromLTRB(20, 48, 20, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -542,7 +542,7 @@ class _FarmingTipsNewsScreenState extends State<FarmingTipsNewsScreen>
                   'Farming Tips & News'.tr,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.5,
                   ),
