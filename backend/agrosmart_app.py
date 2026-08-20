@@ -13,10 +13,13 @@ import time
 from PIL import Image
 
 app = Flask(__name__, static_folder='static', static_url_path='/')
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.after_request
 def add_header(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = '*'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'

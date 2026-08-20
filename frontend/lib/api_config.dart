@@ -21,7 +21,10 @@ class ApiConfig {
       try {
         final origin = Uri.base.origin;
         if (origin.isNotEmpty && !origin.contains('null') && !origin.contains('file://')) {
-          return origin;
+          final isLocalDev = (origin.contains('localhost') || origin.contains('127.0.0.1')) && !origin.contains(':5000');
+          if (!isLocalDev) {
+            return origin;
+          }
         }
       } catch (_) {}
     }
@@ -30,21 +33,23 @@ class ApiConfig {
 
   /// Tests candidates in order and picks the first responsive one.
   static Future<void> resolveBaseUrl() async {
-    final candidates = <String>[];
+    final candidates = <String>[
+      'http://127.0.0.1:5000',
+      'http://localhost:5000',
+    ];
     if (kIsWeb) {
       try {
         final origin = Uri.base.origin;
         if (origin.isNotEmpty && !origin.contains('null') && !origin.contains('file://')) {
-          candidates.add(origin);
+          final isLocalDev = (origin.contains('localhost') || origin.contains('127.0.0.1')) && !origin.contains(':5000');
+          if (!isLocalDev) {
+            candidates.insert(0, origin);
+          }
         }
       } catch (_) {}
     }
 
-    candidates.addAll([
-      'http://127.0.0.1:5000',
-      'http://localhost:5000',
-      ..._fallbacks,
-    ]);
+    candidates.addAll(_fallbacks);
 
     for (final url in candidates) {
       if (url.isEmpty) continue;

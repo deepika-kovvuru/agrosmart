@@ -117,7 +117,8 @@ class OfflineApiService {
       }
       return {'success': false, 'error': decoded['error'] ?? 'Signup failed'};
     } catch (e) {
-      return {'success': false, 'error': 'Connection failed. Please try again.'};
+      print('[OfflineApiService] Signup connection error: $e');
+      return {'success': false, 'error': 'Connection failed ($e). Please check backend.'};
     }
   }
 
