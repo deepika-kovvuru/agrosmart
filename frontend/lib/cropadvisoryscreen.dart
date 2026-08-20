@@ -44,6 +44,53 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
     'Tea',
   ];
 
+  final List<Map<String, String>> _allCropPlants = [
+    {'name': 'Paddy / Rice', 'category': 'Cereals', 'emoji': '🌾'},
+    {'name': 'Maize / Corn', 'category': 'Cereals', 'emoji': '🌽'},
+    {'name': 'Wheat', 'category': 'Cereals', 'emoji': '🌾'},
+    {'name': 'Bajra / Pearl Millet', 'category': 'Millets', 'emoji': '🌾'},
+    {'name': 'Jowar / Sorghum', 'category': 'Millets', 'emoji': '🌾'},
+    {'name': 'Ragi / Finger Millet', 'category': 'Millets', 'emoji': '🌾'},
+    {'name': 'Groundnut / Peanut', 'category': 'Oilseeds', 'emoji': '🥜'},
+    {'name': 'Cotton', 'category': 'Commercial', 'emoji': '☁️'},
+    {'name': 'Soybean', 'category': 'Oilseeds', 'emoji': '🫘'},
+    {'name': 'Sugarcane', 'category': 'Commercial', 'emoji': '🎋'},
+    {'name': 'Tomato', 'category': 'Vegetables', 'emoji': '🍅'},
+    {'name': 'Chilli / Red Pepper', 'category': 'Vegetables', 'emoji': '🌶️'},
+    {'name': 'Onion', 'category': 'Vegetables', 'emoji': '🧅'},
+    {'name': 'Potato', 'category': 'Vegetables', 'emoji': '🥔'},
+    {'name': 'Brinjal / Eggplant', 'category': 'Vegetables', 'emoji': '🍆'},
+    {'name': 'Garlic', 'category': 'Vegetables', 'emoji': '🧄'},
+    {'name': 'Ginger', 'category': 'Spices', 'emoji': '🫚'},
+    {'name': 'Turmeric', 'category': 'Spices', 'emoji': '🟡'},
+    {'name': 'Mustard', 'category': 'Oilseeds', 'emoji': '🌼'},
+    {'name': 'Banana', 'category': 'Fruits', 'emoji': '🍌'},
+    {'name': 'Mango', 'category': 'Fruits', 'emoji': '🥭'},
+    {'name': 'Pomegranate', 'category': 'Fruits', 'emoji': '🔴'},
+    {'name': 'Grape', 'category': 'Fruits', 'emoji': '🍇'},
+    {'name': 'Guava', 'category': 'Fruits', 'emoji': '🍏'},
+    {'name': 'Papaya', 'category': 'Fruits', 'emoji': '🍈'},
+    {'name': 'Watermelon', 'category': 'Fruits', 'emoji': '🍉'},
+    {'name': 'Pulses / Red Gram (Tur)', 'category': 'Pulses', 'emoji': '🫘'},
+    {'name': 'Black Gram (Urad)', 'category': 'Pulses', 'emoji': '🫘'},
+    {'name': 'Green Gram (Moong)', 'category': 'Pulses', 'emoji': '🫘'},
+    {'name': 'Bengal Gram (Chickpea)', 'category': 'Pulses', 'emoji': '🫘'},
+    {'name': 'Coffee', 'category': 'Plantation', 'emoji': '☕'},
+    {'name': 'Tea', 'category': 'Plantation', 'emoji': '🍵'},
+    {'name': 'Cardamom', 'category': 'Spices', 'emoji': '🫛'},
+    {'name': 'Vanilla', 'category': 'Spices', 'emoji': '🌿'},
+    {'name': 'Black Pepper', 'category': 'Spices', 'emoji': '⚫'},
+    {'name': 'Coconut', 'category': 'Plantation', 'emoji': '🥥'},
+    {'name': 'Arecanut', 'category': 'Plantation', 'emoji': '🌰'},
+    {'name': 'Rubber', 'category': 'Plantation', 'emoji': '🪵'},
+    {'name': 'Cabbage', 'category': 'Vegetables', 'emoji': '🥬'},
+    {'name': 'Cauliflower', 'category': 'Vegetables', 'emoji': '🥦'},
+    {'name': 'Carrot', 'category': 'Vegetables', 'emoji': '🥕'},
+    {'name': 'Ladyfinger / Okra', 'category': 'Vegetables', 'emoji': '🥒'},
+    {'name': 'Dragon Fruit', 'category': 'Exotic Fruits', 'emoji': '🐉'},
+    {'name': 'Sunflower', 'category': 'Oilseeds', 'emoji': '🌻'},
+  ];
+
   final List<Map<String, String>> _growthStages = [
     {
       'stage': 'Germination & Seedling',
@@ -116,7 +163,6 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
     setState(() => _isLoadingAdvisories = true);
     final cropName = _crops[_selectedCropIndex];
     
-    // Try fetching custom backend advisories if available, otherwise generate stage-specific advisories
     if (user != null) {
       final res = await ApiService.getCropAdvisories(user!.id, crop: cropName);
       if (mounted && res.isNotEmpty) {
@@ -395,58 +441,204 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
     ).then((_) => _loadAdvisories());
   }
 
-  void _showAddCustomCropModal() {
-    final customCtrl = TextEditingController();
-    showDialog(
+  void _showCropSearchModal() {
+    String searchQuery = '';
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            const Icon(Icons.agriculture_rounded, color: AppTheme.primary),
-            const SizedBox(width: 8),
-            Text('Add Custom Crop'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Enter any crop plant name in your farm:'.tr, style: const TextStyle(fontSize: 13, color: Colors.black54)),
-            const SizedBox(height: 12),
-            TextField(
-              controller: customCtrl,
-              decoration: InputDecoration(
-                hintText: 'e.g. Cabbage, Vanilla, Cardamom, Apple...'.tr,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final filteredCrops = _allCropPlants.where((c) {
+              final q = searchQuery.toLowerCase().trim();
+              if (q.isEmpty) return true;
+              return c['name']!.toLowerCase().contains(q) ||
+                  c['category']!.toLowerCase().contains(q);
+            }).toList();
+
+            final bool exactMatchFound = _allCropPlants.any(
+                (c) => c['name']!.toLowerCase().trim() == searchQuery.toLowerCase().trim());
+
+            return Container(
+              height: MediaQuery.of(ctx).size.height * 0.82,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel'.tr)),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primary, foregroundColor: Colors.white),
-            onPressed: () {
-              final val = customCtrl.text.trim();
-              if (val.isNotEmpty) {
-                setState(() {
-                  if (!_crops.contains(val)) {
-                    _crops.insert(0, val);
-                    _selectedCropIndex = 0;
-                  } else {
-                    _selectedCropIndex = _crops.indexOf(val);
-                  }
-                });
-                Navigator.pop(ctx);
-                _loadAdvisories();
-              }
-            },
-            child: Text('Select Crop'.tr),
-          ),
-        ],
-      ),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Icon(Icons.search_rounded, color: AppTheme.primary, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Search & Select Crop Plant'.tr,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1B4332),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, color: Colors.black54),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    autofocus: true,
+                    onChanged: (val) => setModalState(() => searchQuery = val),
+                    decoration: InputDecoration(
+                      hintText: 'Type to search crop (e.g. Paddy, Tomato, Dragon Fruit...)'.tr,
+                      prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary),
+                      suffixIcon: searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 18),
+                              onPressed: () => setModalState(() => searchQuery = ''),
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  if (searchQuery.trim().isNotEmpty && !exactMatchFound) ...[
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5E9),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppTheme.primary),
+                      ),
+                      child: ListTile(
+                        onTap: () {
+                          final newCropName = searchQuery.trim();
+                          setState(() {
+                            if (!_crops.contains(newCropName)) {
+                              _crops.insert(0, newCropName);
+                              _selectedCropIndex = 0;
+                            } else {
+                              _selectedCropIndex = _crops.indexOf(newCropName);
+                            }
+                          });
+                          Navigator.pop(ctx);
+                          _loadAdvisories();
+                        },
+                        leading: const Icon(Icons.add_circle_rounded, color: AppTheme.primary, size: 28),
+                        title: Text(
+                          'Select "${searchQuery.trim()}"'.tr,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primary,
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Tap to generate custom advisory for this crop plant'.tr,
+                          style: const TextStyle(fontSize: 11.5, color: Colors.black54),
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.primary, size: 16),
+                      ),
+                    ),
+                  ],
+
+                  Expanded(
+                    child: filteredCrops.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.agriculture_rounded, size: 48, color: Colors.grey),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'No pre-listed crop matching "$searchQuery"'.tr,
+                                  style: const TextStyle(color: Colors.grey, fontFamily: 'Poppins'),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: filteredCrops.length,
+                            itemBuilder: (context, idx) {
+                              final item = filteredCrops[idx];
+                              final cropName = item['name']!.split('/')[0].trim();
+                              final isSelected = _crops[_selectedCropIndex].toLowerCase() == cropName.toLowerCase();
+
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                decoration: BoxDecoration(
+                                  color: isSelected ? const Color(0xFFE8F5E9) : Colors.grey.shade50,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: isSelected ? AppTheme.primary : Colors.grey.shade200,
+                                    width: isSelected ? 1.5 : 1,
+                                  ),
+                                ),
+                                child: ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      if (!_crops.contains(cropName)) {
+                                        _crops.insert(0, cropName);
+                                        _selectedCropIndex = 0;
+                                      } else {
+                                        _selectedCropIndex = _crops.indexOf(cropName);
+                                      }
+                                    });
+                                    Navigator.pop(ctx);
+                                    _loadAdvisories();
+                                  },
+                                  leading: Text(item['emoji']!, style: const TextStyle(fontSize: 24)),
+                                  title: Text(
+                                    item['name']!.tr,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: isSelected ? AppTheme.primary : const Color(0xFF1B4332),
+                                      fontSize: 14,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    item['category']!.tr,
+                                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                                  ),
+                                  trailing: isSelected
+                                      ? const Icon(Icons.check_circle_rounded, color: AppTheme.primary, size: 22)
+                                      : const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 20),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -829,9 +1021,68 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          // Universal Crop selector pills + Add Custom Crop
+          // Prominent Search & Select Crop Plant Bar
+          GestureDetector(
+            onTap: _showCropSearchModal,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search_rounded, color: AppTheme.primary, size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Search & Select Crop Plant ($activeCrop)...'.tr,
+                      style: const TextStyle(
+                        color: Color(0xFF1B4332),
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.manage_search_rounded, size: 16, color: AppTheme.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Search'.tr,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Universal Crop selector pills + Search trigger
           SizedBox(
             height: 38,
             child: ListView.builder(
@@ -840,7 +1091,7 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
               itemBuilder: (_, i) {
                 if (i == _crops.length) {
                   return GestureDetector(
-                    onTap: _showAddCustomCropModal,
+                    onTap: _showCropSearchModal,
                     child: Container(
                       margin: const EdgeInsets.only(right: 10),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -851,9 +1102,9 @@ class _CropAdvisoryScreenState extends State<CropAdvisoryScreen>
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.add_rounded, color: Colors.white, size: 16),
+                          const Icon(Icons.search_rounded, color: Colors.white, size: 16),
                           const SizedBox(width: 4),
-                          Text('Other Crop'.tr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text('Search All Crops'.tr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                         ],
                       ),
                     ),
