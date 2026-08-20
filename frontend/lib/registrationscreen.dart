@@ -138,64 +138,54 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     super.dispose();
   }
 
-        ),
-      );
-      return;
-    }
+  Future<void> _register() async {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
 
-    if (isValid && _agreed) {
-      setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-      final result = await OfflineApiService.signup(
-        name: _nameCtrl.text.trim(),
-        email: _emailCtrl.text.trim(),
-        phone: _phoneCtrl.text.trim(),
-        password: _passCtrl.text,
-        confirmPassword: _confirmCtrl.text,
-        state: _selectedState,
-      );
+    final result = await OfflineApiService.signup(
+      name: _nameCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+      phone: _phoneCtrl.text.trim(),
+      password: _passCtrl.text,
+      confirmPassword: _confirmCtrl.text,
+      state: _selectedState,
+      district: _selectedDistrict,
+    );
 
-      if (mounted) {
-        if (result['success'] == true) {
-          // Success! Now programmatically log in to get session details
-          final loginResult = await OfflineApiService.login(_emailCtrl.text.trim(), _passCtrl.text);
-          if (mounted) {
-            setState(() => _isLoading = false);
-            if (loginResult['success'] == true) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Registration and login successful!'.tr),
-                  backgroundColor: AppTheme.success,
-                ),
-              );
-              Navigator.pushReplacementNamed(context, '/home');
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Account created! Please sign in.'.tr),
-                  backgroundColor: AppTheme.success,
-                ),
-              );
-              Navigator.pushReplacementNamed(context, '/login');
-            }
-          }
-        } else {
+    if (mounted) {
+      if (result['success'] == true) {
+        final loginResult = await OfflineApiService.login(_emailCtrl.text.trim(), _passCtrl.text);
+        if (mounted) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text((result['error'] ?? 'Registration failed').toString().tr),
-              backgroundColor: AppTheme.error,
-            ),
-          );
+          if (loginResult['success'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Registration and login successful!'.tr),
+                backgroundColor: AppTheme.success,
+              ),
+            );
+            Navigator.pushReplacementNamed(context, '/home');
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Account created! Please sign in.'.tr),
+                backgroundColor: AppTheme.success,
+              ),
+            );
+            Navigator.pushReplacementNamed(context, '/login');
+          }
         }
+      } else {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text((result['error'] ?? 'Registration failed').toString().tr),
+            backgroundColor: AppTheme.error,
+          ),
+        );
       }
-    } else if (!_agreed) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please agree to the Terms & Conditions'.tr),
-          backgroundColor: AppTheme.error,
-        ),
-      );
     }
   }
 

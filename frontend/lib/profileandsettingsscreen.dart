@@ -197,8 +197,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             color: Color(0xFF95D5B2), size: 13),
                         const SizedBox(width: 3),
                         Text(
-                          (user?.district != null && user!.district!.isNotEmpty)
-                              ? '${user.district}, ${user.state ?? ''}'
+                          (user?.district != null && (user?.district?.isNotEmpty ?? false))
+                              ? '${user?.district}, ${user?.state ?? ''}'
                               : (user?.state ?? 'No Location Provided'.tr),
                           style: const TextStyle(
                             color: Color(0xFF95D5B2),
