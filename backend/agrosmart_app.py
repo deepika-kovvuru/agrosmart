@@ -34,7 +34,7 @@ def page_not_found(e):
     if request.path.startswith('/api/') or request.path in [
         '/signup', '/login', '/get_current_user', '/logout', '/profile', 
         '/farm_details', '/crop_advisories', '/pest_alerts', '/treatments', 
-        '/market_prices', '/mandis', '/farm_schedule', '/farming_tips', '/news_articles'
+        '/market_prices', '/mandis', '/farm_schedule', '/farming_tips', '/news_articles', '/all_users'
     ]:
         return jsonify({'error': 'Not found'}), 404
     relative_path = request.path.lstrip('/')
@@ -240,6 +240,26 @@ def signup():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+
+@app.route('/all_users', methods=['GET'])
+def get_all_users():
+    try:
+        users = User.query.order_by(User.id.desc()).all()
+        return jsonify({
+            'success': True,
+            'total_users': len(users),
+            'users': [{
+                'id': u.id,
+                'name': u.name,
+                'email': u.email,
+                'phone': u.phone,
+                'state': u.state,
+                'created_at': u.created_at.strftime('%Y-%m-%d %H:%M:%S') if u.created_at else None
+            } for u in users]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/login', methods=['POST'])
